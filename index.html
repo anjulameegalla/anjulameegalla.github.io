@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -65,4 +65,74 @@
     </div>
 </body>
 </html>
+-->
 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Construction</title>
+    <!-- Link to Google Fonts for Gormorant Garamond -->
+    <link href="https://fonts.googleapis.com/css2?family=Gormorant+Garamond:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+            color: white;
+            font-family: 'Gormorant Garamond', serif;
+            text-align: center;
+            position: relative;
+        }
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .text {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .barrier {
+            margin-top: 20px;
+            width: 0;
+            height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                #D8BFD8 0%,
+                #D8BFD8 25%,
+                black 25%,
+                black 50%
+            );
+            background-size: 40px 40px;
+            animation: moveBarrier 2s linear infinite forwards;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        @keyframes moveBarrier {
+            0% { width: 0; }
+            100% { width: 100vw; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text">Site Under Construction</div>
+        <div class="barrier"></div>
+    </div>
+</body>
+</html>
