@@ -91,6 +91,11 @@ footer {
     font-size: 0.9rem; /* Smaller font size for mobile */
 }
 
+.footer-logo {
+    font-size: 1.2rem; /* Adjust icon size */
+    color: white; /* Set icon color */
+}
+
 /* Media Queries for Mobile Optimization */
 @media (min-width: 600px) {
     /* Adjustments for tablets and larger screens */
