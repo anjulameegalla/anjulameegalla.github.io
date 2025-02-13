@@ -1,0 +1,133 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Header Section */
+header {
+    background-color: #0073e6;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2rem; /* Smaller font size for mobile */
+}
+
+header p {
+    margin: 10px 0 0;
+    font-size: 1rem; /* Smaller font size for mobile */
+}
+
+/* Projects Section */
+#projects {
+    background-color: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#projects h2 {
+    margin-top: 0;
+    font-size: 1.5rem; /* Smaller font size for mobile */
+}
+
+#projects p {
+    font-size: 1rem; /* Smaller font size for mobile */
+}
+
+/* Social Media Section */
+#social-media {
+    text-align: center;
+    margin: 20px;
+}
+
+#social-media h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem; /* Smaller font size for mobile */
+}
+
+.social-links {
+    display: flex;
+    flex-direction: column; /* Stack links vertically on mobile */
+    align-items: center;
+    gap: 15px;
+}
+
+.social-link {
+    text-decoration: none;
+    color: #0073e6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem; /* Smaller font size for mobile */
+}
+
+.social-link:hover {
+    color: #005bb5;
+}
+
+.social-link i {
+    font-size: 1.2rem; /* Smaller icon size for mobile */
+}
+
+/* Footer Section */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 0.9rem; /* Smaller font size for mobile */
+}
+
+/* Media Queries for Mobile Optimization */
+@media (min-width: 600px) {
+    /* Adjustments for tablets and larger screens */
+    header h1 {
+        font-size: 2.5rem; /* Larger font size for larger screens */
+    }
+
+    header p {
+        font-size: 1.2rem; /* Larger font size for larger screens */
+    }
+
+    #projects h2 {
+        font-size: 1.8rem; /* Larger font size for larger screens */
+    }
+
+    #projects p {
+        font-size: 1.1rem; /* Larger font size for larger screens */
+    }
+
+    #social-media h2 {
+        font-size: 1.8rem; /* Larger font size for larger screens */
+    }
+
+    .social-links {
+        flex-direction: row; /* Display links horizontally on larger screens */
+        justify-content: center;
+    }
+
+    .social-link {
+        font-size: 1.1rem; /* Larger font size for larger screens */
+    }
+
+    .social-link i {
+        font-size: 1.5rem; /* Larger icon size for larger screens */
+    }
+
+    footer {
+        font-size: 1rem; /* Larger font size for larger screens */
+    }
+}
