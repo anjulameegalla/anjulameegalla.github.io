@@ -1,86 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<script type="text/javascript"> //<![CDATA[var tlJsHost = ((window.location.protocol == "https:") ? "https://secure.trust-provider.com/" : "http://www.trustlogo.com/");document.write(unescape("%3Cscript src='" + tlJsHost + "trustlogo/javascript/trustlogo.js' type='text/javascript'%3E%3C/script%3E"));//]]>
-</script>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Network Security Portfolio</title>
+    <title>Under Construction</title>
     <style>
         body {
-            background-color: black;
-            color: gray;
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        h1, h2 {
-            color: white;
-        }
-        .section {
-            margin-bottom: 40px;
-            border-bottom: 1px solid gray;
-            padding-bottom: 10px;
-        }
-        ul {
-            list-style-type: none;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
         }
-        li {
-            margin: 5px 0;
+        .container {
+            text-align: center;
+            flex-grow: 1;
+        }
+        .text {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .barrier {
+            margin-top: 20px;
+            width: 80vw;
+            height: 20px;
+            background: repeating-linear-gradient(
+                45deg,
+                yellow 0%,
+                yellow 25%,
+                black 25%,
+                black 50%
+            );
+            background-size: 40px 40px;
+            animation: moveBarrier 1s linear infinite;
+        }
+        .footer {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+        }
+        .footer img {
+            height: 50px;
+        }
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        @keyframes moveBarrier {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 0; }
         }
     </style>
 </head>
 
-<script language="JavaScript" type="text/javascript">
-    TrustLogo("https://github.com/anjulameegalla/anjulameegalla.github.io/blob/5257646e15040258789098053b3f5b12073c164e/sectigo_trust_seal_md_106x42.png", "CL1", "none");
-    </script>
-    <a  href="https://ssl.comodo.com" id="comodoTL">Comodo SSL</a>
-
 <body>
-    <h1>Cloud Network Security Portfolio</h1>
-    
-    <div class="section">
-        <h2>About Me</h2>
-        <p>I am a passionate Cloud Network Security undergraduate with a keen interest in securing cloud infrastructures and networks.</p>
+    <div class="container">
+        <div class="text">Site Under Construction</div>
+        <div class="barrier"></div>
     </div>
-    
-    <div class="section">
-        <h2>Projects</h2>
-        <ul>
-            <li>Cloud Security Audit for AWS</li>
-            <li>Firewall Automation using Python</li>
-            <li>Zero Trust Network Implementation</li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>Skills & Certifications</h2>
-        <ul>
-            <li>Cloud Security (AWS, Azure)</li>
-            <li>Network Hardening</li>
-            <li>Penetration Testing</li>
-            <li>Certified Ethical Hacker (CEH)</li>
-            <li>AWS Certified Security – Specialty</li>
-        </ul>
-    </div>
-    
-    <div class="section">
-        <h2>Education</h2>
-        <p>Bachelor's Degree in Cloud Network Security - [Your University]</p>
-    </div>
-    
-    <div class="section">
-        <h2>Contact</h2>
-        <p>Email: mail@anjula.live</p>
-        <p>LinkedIn: linkedin.com/in/anjula-meegalla</p>
-        <p>GitHub: github.com/anjulameegalla</p>
+    <div class="footer">
+        <img src="https://example.com/domain-provider-logo.png" alt="Domain Provider">
+        <img src="https://example.com/hosting-provider-logo.png" alt="Hosting Provider">
     </div>
 </body>
 </html>
-
-
-
