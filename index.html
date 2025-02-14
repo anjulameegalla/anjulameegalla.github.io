@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Site Under Construction</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             margin: 0;
@@ -54,10 +56,21 @@
             animation: moveBarrier 1s linear infinite;
         }
 
-        @keyframes flicker {
+        /*@keyframes flicker {
             0% { opacity: 1; }
             50% { opacity: 0.6; }
             100% { opacity: 1; }
+        }*/
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            25% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+            75% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        .flicker-text {
+            animation: flicker 2s infinite;
         }
 
         @keyframes moveBarrier {
@@ -75,11 +88,14 @@
             }
         }
     </style>
+    
 </head>
+
 <body>
     <div class="container">
         <div class="text" aria-live="polite">Site Under Construction</div>
         <!--<div class="barrier"></div>-->
     </div>
 </body>
+
 </html>
