@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Under Construction</title>
+    <title>Under Construction</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -20,6 +19,7 @@
             color: white;
             font-family: 'Outfit', sans-serif;
             text-align: center;
+            position: relative; /* Required for positioning the icon */
         }
 
         .container {
@@ -56,6 +56,20 @@
             animation: moveBarrier 1s linear infinite;
         }
 
+        .info-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .info-icon:hover {
+            color: #D8BFD8; /* Change color on hover */
+        }
+
         @keyframes flicker {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -75,16 +89,24 @@
             .barrier {
                 height: 8px;
             }
+            .info-icon {
+                font-size: 20px; /* Smaller icon on mobile */
+                top: 15px;
+                right: 15px;
+            }
         }
     </style>
-
 </head>
-
 <body>
+    <!-- Info Icon -->
+    <a href="https://linktr.ee/anjulameegalla" target="_blank" class="info-icon">
+        <i class="fas fa-info-circle"></i>
+    </a>
+
+    <!-- Main Content -->
     <div class="container">
         <div class="text" aria-live="polite">Site Under Construction</div>
         <!--<div class="barrier"></div>-->
     </div>
 </body>
-
 </html>
