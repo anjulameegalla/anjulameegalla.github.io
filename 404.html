@@ -1,10 +1,10 @@
-<!--<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Construction</title>
-    <link href="https://fonts.google.com/specimen/Cormorant+Garamond" rel="stylesheet">
+    <title>Site Under Construction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -13,30 +13,35 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background: black;
             color: white;
-            font-family: 'Gormorant Garamond', serif;
+            font-family: 'Cormorant Garamond', serif;
             text-align: center;
-            position: relative;
         }
+
         .container {
+            width: 90%;
+            max-width: 600px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
+
         .text {
-            font-size: 3rem;
+            font-size: clamp(1.5rem, 8vw, 3rem);
             font-weight: bold;
             text-transform: uppercase;
             animation: flicker 1.5s infinite alternate;
+            line-height: 1.2;
+            margin-bottom: 20px;
         }
+
         .barrier {
-            margin-top: 20px;
-            width: 80vw;
-            height: 20px;
+            width: 100%;
+            height: 10px;
             background: repeating-linear-gradient(
                 45deg,
                 #D8BFD8 0%,
@@ -44,25 +49,35 @@
                 black 25%,
                 black 50%
             );
-            background-size: 40px 40px;
+            background-size: 20px 20px;
             animation: moveBarrier 1s linear infinite;
         }
+
         @keyframes flicker {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
             100% { opacity: 1; }
         }
+
         @keyframes moveBarrier {
             0% { background-position: 0 0; }
-            100% { background-position: 40px 0; }
+            100% { background-position: 20px 0; }
+        }
+
+        @media (max-width: 600px) {
+            .text {
+                font-size: clamp(1.2rem, 6vw, 2rem);
+            }
+            .barrier {
+                height: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="text">Site Under Construction</div>
+        <div class="text" aria-live="polite">Site Under Construction</div>
         <div class="barrier"></div>
     </div>
 </body>
 </html>
--->
