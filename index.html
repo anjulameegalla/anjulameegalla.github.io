@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Site Under Construction</title>
+    <title>Under Construction</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -22,7 +22,7 @@
 
         .container {
             width: 90%;
-            max-width: 600px;
+            max-width: 800px; /* Increased max-width for desktop */
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -31,12 +31,13 @@
         }
 
         .text {
-            font-size: clamp(1.5rem, 8vw, 3rem);
+            font-size: clamp(1.5rem, 8vw, 4rem); /* Adjusted font size for desktop */
             font-weight: bold;
             text-transform: uppercase;
             animation: flicker 1.5s infinite alternate;
             line-height: 1.2;
             margin-bottom: 20px;
+            white-space: nowrap; /* Prevent text from wrapping */
         }
 
         .barrier {
@@ -66,7 +67,8 @@
 
         @media (max-width: 600px) {
             .text {
-                font-size: clamp(1.2rem, 6vw, 2rem);
+                font-size: clamp(1.2rem, 6vw, 2rem); /* Adjusted for mobile */
+                white-space: normal; /* Allow text to wrap on mobile */
             }
             .barrier {
                 height: 8px;
