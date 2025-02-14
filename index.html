@@ -22,7 +22,7 @@
 
         .container {
             width: 90%;
-            max-width: 800px; /* Increased max-width for desktop */
+            max-width: 800px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -31,13 +31,13 @@
         }
 
         .text {
-            font-size: clamp(1.5rem, 8vw, 4rem); /* Adjusted font size for desktop */
+            font-size: clamp(1.5rem, 8vw, 4rem);
             font-weight: bold;
             text-transform: uppercase;
             animation: flicker 1.5s infinite alternate;
             line-height: 1.2;
             margin-bottom: 20px;
-            white-space: nowrap; /* Prevent text from wrapping */
+            white-space: nowrap;
         }
 
         .barrier {
@@ -56,7 +56,7 @@
 
         @keyframes flicker {
             0% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.6; }
             100% { opacity: 1; }
         }
 
@@ -67,8 +67,8 @@
 
         @media (max-width: 600px) {
             .text {
-                font-size: clamp(1.2rem, 6vw, 2rem); /* Adjusted for mobile */
-                white-space: normal; /* Allow text to wrap on mobile */
+                font-size: clamp(1.2rem, 6vw, 2rem);
+                white-space: normal;
             }
             .barrier {
                 height: 8px;
