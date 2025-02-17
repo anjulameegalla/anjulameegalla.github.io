@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anjula M. - Contact</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: black;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title {
+            font-size: clamp(1rem, 4vw, 1.5rem);
+            font-weight: bold;
+            text-transform: none;
+            margin-bottom: 20px;
+        }
+
+        .icons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            color: white;
+            transition: color 0.3s ease;
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        .icon:hover {
+            color: #D8BFD8;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .icon {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="title">find me on</div>
+        <div class="icons-container">
+            <a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" class="icon"><i class="fab fa-linkedin"></i></a>
+            <a href="https://github.com/anjulameegalla" target="_blank" class="icon"><i class="fab fa-github"></i></a>
+            <a href="https://anjulawrites.substack.com/" target="_blank" class="icon"><i class="fab fa-stack-overflow"></i></a>
+            <a href="https://www.facebook.com/anjulameegalla/" target="_blank" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.snapchat.com/add/anjula_mee" target="_blank" class="icon"><i class="fab fa-snapchat"></i></a>
+            <a href="https://www.pinterest.com/anjulameegalla" target="_blank" class="icon"><i class="fab fa-pinterest"></i></a>
+            <a href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com" class="icon"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+</body>
+</html>
