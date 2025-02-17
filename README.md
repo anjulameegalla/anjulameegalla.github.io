@@ -1,2 +1,1 @@
-<a href="https://anjula.live/">わたしを探して..</a>
-
+<a href="https://anjula.live/" target="_blank">わたしを探して..</a>
