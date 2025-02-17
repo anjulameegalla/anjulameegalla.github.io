@@ -1,1 +1,1 @@
-[![](https://i.gifer.com/VgO.gif)](https://anjula.live/)
+[![](わたしを探して..)](https://anjula.live/)
