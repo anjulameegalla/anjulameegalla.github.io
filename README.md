@@ -1,25 +1,18 @@
-LIVE at https://anjulameegalla.github.io or https://anjula.live
 
-Key Features:
+- LIVE at https://anjulameegalla.github.io or https://anjula.live
 
-Design
-- Minimalist Design
-- Mobile-friendly Responsive Layout
-- Smooth Transitions & Hover Effects
-- Typography
   
 Optimizations
 - Performance Optimized
 - SEO-friendly
+- Mobile-friendly Responsive Layout
+- Minimalist Design & Typo
 - Accessibility Considerations
 
-Tech Stack
-- **HTML:** **CSS:** **JavaScript:** **GitHub Pages:**
-
+<br>
 
 To run this project locally:
 
-Clone the repository:
    ```bash
    git clone https://github.com/anjulameegalla/anjulameegalla.github.io/.git
 
