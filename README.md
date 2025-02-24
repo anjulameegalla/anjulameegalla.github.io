@@ -1,6 +1,6 @@
 <br>
 
-- LIVE at https://anjulameegalla.github.io or https://anjula.live
+Portfolio is LIVE at https://anjula.live
 
 <br>
 
