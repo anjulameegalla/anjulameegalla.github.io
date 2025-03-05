@@ -51,6 +51,35 @@
             100% { background-position: 0% 50%; }
         }
 
+        .resume-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #121212;
+            background: linear-gradient(135deg, #90d5ff, #4a90e2);
+            border: none;
+            border-radius: 30px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(144, 213, 255, 0.3);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .resume-button:hover {
+            background: linear-gradient(135deg, #4a90e2, #90d5ff);
+            box-shadow: 0 6px 15px rgba(144, 213, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .resume-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(144, 213, 255, 0.2);
+        }
+
         .container {
             max-width: 800px;
             width: 90%;
@@ -158,14 +187,16 @@
 </head>
 
 <body>
-    <!--<div class="animated-bar"></div>-->
+    <!--<div class="animated-bar"></div>
 
     <div class="nav">
         <a href="#">home</a>
         <a href="https://github.com/anjulameegalla?tab=repositories" target="_blank">projects</a>
         <a href="https://anjulawrites.substack.com/" target="_blank">blog</a>
         <a href="https://anjula.live/404/" target="_blank">resume</a>
-    </div>
+    </div>-->
+
+    <a href="https://anjula.live/404/" class="resume-button" target="_blank">Download Resume</a>
 
     <div class="container">
         <div>
