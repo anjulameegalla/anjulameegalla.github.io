@@ -7,11 +7,11 @@ Portfolio is LIVE at https://anjula.live
 To run this project locally:
 
 ```bash
-# Clone this repository or download it
+# Clone the repository
 $ git clone https://github.com/anjulameegalla/anjulameegalla.github.io/.git
 
 # Go into the repository
-$ cd happybirthday
+$ cd anjulameegalla.github.io
 
 # Open it with your text editor
 $ code .
