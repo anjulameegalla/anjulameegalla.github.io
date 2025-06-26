@@ -1,6 +1,6 @@
 <br>
 
-👾 Portfolio is LIVE at https://anjula.live 
+LIVE at https://anjula.live 
 
 <br>
 
