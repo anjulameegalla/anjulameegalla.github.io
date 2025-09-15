@@ -381,13 +381,13 @@ footer {
 
 .footer-left span {
     color: var(--nav-color);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .footer-right a {
     color: var(--text-color);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     margin-left: 1rem;
 }
 
