@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Theme toggle functionality
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
 
-    // Check for saved theme preference or system preference
     const savedTheme = localStorage.getItem('theme');
     const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
 
@@ -30,7 +28,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Project category dropdown functionality
     const projectCategories = document.querySelectorAll('.project-category');
 
     projectCategories.forEach(category => {
@@ -40,27 +37,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Sticky image dragging functionality
     const stickyImageContainer = document.querySelector('.sticky-image-container');
     let isDragging = false;
 
-    if (stickyImageContainer) {
+    const backgroundMusic = document.getElementById('background-music');
+    
+    if (backgroundMusic) {
+        backgroundMusic.volume = 0.5;
+    }
+
+    if (stickyImageContainer && backgroundMusic) {
         stickyImageContainer.addEventListener('mousedown', (e) => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play().catch(error => {
+                    console.error('Autoplay prevented:', error);
+                });
+            } else {
+                backgroundMusic.pause();
+            }
+
             isDragging = true;
-            // Get the initial mouse position relative to the element
             let startX = e.clientX - stickyImageContainer.getBoundingClientRect().left;
             let startY = e.clientY - stickyImageContainer.getBoundingClientRect().top;
 
-            // Stop the bouncing animation while dragging
             stickyImageContainer.style.animation = 'none';
 
             const onMouseMove = (e) => {
                 if (isDragging) {
-                    // Calculate new position
                     let newX = e.clientX - startX;
                     let newY = e.clientY - startY;
-
-                    // Set the new position
                     stickyImageContainer.style.left = newX + 'px';
                     stickyImageContainer.style.top = newY + 'px';
                     stickyImageContainer.style.right = 'auto';
@@ -72,9 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isDragging = false;
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
-
-                // Resume the bouncing animation when dragging stops
-                stickyImageContainer.style.animation = ''; // Resets the animation property
+                stickyImageContainer.style.animation = '';
             };
 
             document.addEventListener('mousemove', onMouseMove);
