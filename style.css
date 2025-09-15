@@ -279,7 +279,7 @@ body {
 
 .dropdown-arrow {
     font-size: 0.8rem;
-    color: #cc0000;
+    color: var(--accent-color);
     transition: transform 0.2s ease-in-out;
 }
 
