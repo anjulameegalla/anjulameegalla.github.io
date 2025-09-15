@@ -1,241 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anjula meegalla - home</title>
-
-    <link rel="icon" type="image/png" href="assets/favicon.jpg">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<!--.css-->
-
-    <style>
-        :root {
-            --text-color: #ffffff;
-            --highlight-color: #90d5ff;
-            --background-color: #121212;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--background-color);
-            color: var(--text-color);
-            font-family: 'Noto Sans JP', sans-serif;
-            text-align: left;
-            position: relative;
-            padding: 40px;
-            line-height: 1.9;
-            text-transform: lowercase;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(144, 213, 255, 0.15) 0%, rgba(18, 18, 18, 0) 70%);
-            animation: radial-pulse 10s infinite ease-in-out;
-            z-index: -1;
-        }
-
-        @keyframes radial-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .animated-bar {
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #fcca4a, #ff5733, #33ff57, #4a90e2);
-            background-size: 400% 400%;
-            animation: animateBar 5s infinite linear;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        @keyframes animateBar {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .resume-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 11px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: none;
-            color: #121212;
-            background: linear-gradient(135deg, #90d5ff, #4a90e2);
-            border: none;
-            border-radius: 30px;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(144, 213, 255, 0.3);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .resume-button:hover {
-            background: linear-gradient(135deg, #4a90e2, #90d5ff);
-            box-shadow: 0 6px 15px rgba(144, 213, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .resume-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(144, 213, 255, 0.2);
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-transform: none;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 1rem;
-            margin-bottom: 20px;
-        }
-
-        .nav {
-            position: absolute;
-            top: 20px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .nav a {
-            font-weight: bold;
-            word-spacing: 5px; 
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .nav a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .social-icons a {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
-        }
-
-        .gif-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .gif-container img {
-            max-width: 200px;
-            height: auto;
-        }
-
-        @media (max-width: 600px) {
-            .name {
-                font-size: 1.2rem;
-            }
-            .description {
-                font-size: 0.9rem;
-            }
-            .nav {
-                top: 25px;
-                gap: 10px;
-            }
-            .social-icons a {
-                font-size: 1.2rem;
-            }
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .gif-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .gif-container img {
-                max-width: 150px;
-                height: auto;
-            }
-        }
-    </style>
-
+    <title>anjula's web :3</title>
+    <link rel="icon" type="image/png" href="assets/profile.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <!--div class="animated-bar"></div-->
 
-    <a href="https://drive.google.com/file/d/1Nulp5fTxvEfE32kAG9c7HhRPdVJwt8Id/view?usp=sharing" class="resume-button" target="_blank">download CV</a>
+    <header class="navbar">
+        <div class="navbar-left">
+            <img src="assets/profile.jpg" class="profile-pic">
+            <span class="site-title">anjula's web :3</span>
+        </div>
 
-    <div class="container">
-        <div>
-            <div class="name">Anjula M.</div>
-            <div class="description">
-                21 y/o <span style="text-transform: none;">Cybersecurity Undergrad</span><br>
-                interested in <span style="text-transform: none;">secOps, AD, cloud, infoSec & OSINT</span><br>
-                take a look at some recent projects and feel free to get in touch.
+        <div class="navbar-right">
+            <button class="icon-button" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="content">
+        <h1 class="main-heading">Hi, I'm</h1>
+        <div class="name-section">
+            <p class="name-line"><span class="lang-tag">(en)</span> <span class="name">Anjula</span></p>
+            <p class="name-line"><span class="lang-tag">(zh)</span> <span class="name-alt">安茱拉</span></p>
+            <p class="name-line"><span class="lang-tag">(ja)</span> <span class="name-alt">アンジュラ</span></p>
+            <p class="name-line"><span class="lang-tag">(kr)</span> <span class="name-alt">안줄라</span></p>
+        </div>
+        <p class="pronouns">(he/him)</p>
+        <p class="bio">21 y/o cybersecurity undergrad interested in secOps, AD, cloud, infoSec & OSINT.</p>
+
+        <div class="status-card">
+            <img src="assets/profile.jpg" alt="Profile" class="status-pic">
+            <div class="status-info">
+                <span class="status-name">an7ula</span>
+                <span class="status-text">No status :3</span>
             </div>
-
-            <div class="social-icons">
-                <a href="https://github.com/anjulameegalla" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="https://www.instagram.com/westvxrginia/" target="_blank" aria-label="instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
+            <div class="status-icon-container">
+                <i class="fab fa-discord status-icon"></i>
             </div>
         </div>
 
-        <div class="gif-container">
-            <img src="assets/homepage.gif" alt="Loading gif">
-        
+        <div class="social-links">
+            <a href="https://github.com/anjulameegalla" class="social-icon">
+                <i class="fab fa-github"></i>
+                <span>Github</span>
+            </a>
+            <a href="https://www.linkedin.com/in/anjula-meegalla/" class="social-icon">
+                <i class="fab fa-linkedin"></i>
+                <span>LinkedIn</span>
+            </a>
+            <a href="https://www.instagram.com/westvxrginia/" class="social-icon">
+                <i class="fab fa-instagram"></i>
+                <span>Instagram</span>
+            </a>
+            <a href="https://www.youtube.com/@Anjula" class="social-icon">
+                <i class="fab fa-youtube"></i>
+                <span>YouTube</span>
+            </a>
+            <a href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com" class="social-icon">
+                <i class="fas fa-envelope"></i>
+                <span>Email</span>
+            </a>
         </div>
-    </div>
+
+    </main>
     
-</body>
+    <div class="projects-section">
+        <h2>Projects</h2>
+        <div class="project-category">
+            <div class="category-header">
+                <span>Labs</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="category-content">
+                <a href="https://github.com/anjulameegalla/az-honeypot-lab" class="project-link">Azure Honeynet Attack Vector Analysis Lab</a>
+                <a href="https://github.com/anjulameegalla/soar-edr-lab" class="project-link">SOAR & EDR Automated Incident Response Lab</a>
+                <a href="https://github.com/anjulameegalla/win-ad-lab" class="project-link">Windows AD Practice Lab</a>
+            </div>
+        </div>
+        <div class="project-category">
+            <div class="category-header">
+                <span>Tools</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="category-content">
+                <a href="https://github.com/anjulameegalla/NameForge" class="project-link">NameForge - A Python tool to generate AD style usernames</a>
+                <!--a href="#" class="project-link">Tool 2</a-->
+            </div>
+        </div>
+        <div class="project-category">
+            <div class="category-header">
+                <span>Prep notes</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="category-content">
+                <a href="https://github.com/anjulameegalla/az-900-notes" class="project-link">AZ-900 Exam prep notes</a>
+                <!--a href="#" class="project-link">Asset 2</a-->
+            </div>
+        </div>
+        <!--div class="project-category">
+            <div class="category-header">
+                <span>#</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="category-content">
+                <a href="#" class="project-link">##</a>
+            </div>
+        </div>
+    </div-->
 
+    <div class="sticky-image-container">
+        <img src="assets/cute-anime.png" class="sticky-image">
+    </div>
+
+    <footer>
+        <div class="footer-left">
+            <span>© anjula 2025</span>
+            <span>~</span>
+        </div>
+        <div class="footer-right">
+            <a href="#">Home</a>
+            <a href="https://drive.google.com/file/d/1Nulp5fTxvEfE32kAG9c7HhRPdVJwt8Id/view?usp=sharing">Resume</a>
+            <!--a href="#">Blog</a>
+            <a href="#">System Status</a-->
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
 </html>
