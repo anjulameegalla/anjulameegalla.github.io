@@ -135,12 +135,14 @@ body {
 
 .pronouns {
     color: var(--nav-color);
+    font-weight: 500;
     margin-top: -0.5rem;
     margin-bottom: 1.5rem;
 }
 
 .bio {
     font-size: 1rem;
+    font-weight: 500;
     color: var(--link-hover);
     margin-bottom: 2.5rem;
 }
