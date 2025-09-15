@@ -107,7 +107,7 @@ body {
 }
 
 .main-heading {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 500;
 }
 
@@ -124,12 +124,13 @@ body {
 
 .lang-tag {
     font-size: 0.8rem;
-    font-weight: normal;
+    font-weight: 500;
     color: var(--nav-color);
-    margin-right: 0.5rem;
+    margin-right: 0.3rem;
 }
 
 .name-alt {
+    font-weight: 500;
     color: var(--accent-color);
 }
 
@@ -141,7 +142,7 @@ body {
 }
 
 .bio {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: var(--link-hover);
     margin-bottom: 2.5rem;
