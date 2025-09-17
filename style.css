@@ -10,6 +10,10 @@
     --sub-category-color: #cccccc;
 }
 
+* {
+  font-weight: 500;
+}
+
 body.light-mode {
     --bg-color: #f0f0f0;
     --text-color: #333;

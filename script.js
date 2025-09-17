@@ -1,4 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
+    const pageLoadMusic = document.getElementById('page-load-music');
+    let hasPageLoadMusicPlayed = false;
+
+    if (pageLoadMusic) {
+        pageLoadMusic.volume = 1;
+        document.addEventListener('click', () => {
+            if (!hasPageLoadMusicPlayed) {
+                pageLoadMusic.play().then(() => {
+                    hasPageLoadMusicPlayed = true;
+                    console.log('Page load music started playing.');
+                }).catch(error => {
+                    console.error('Page load music autoplay prevented:', error);
+                });
+            }
+        }, { once: true });
+    }    
+    
     const themeToggle = document.getElementById('theme-toggle');
     const body = document.body;
 
