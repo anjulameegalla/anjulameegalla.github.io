@@ -348,7 +348,7 @@ body {
 .sticky-image-container {
     position: fixed;
     bottom: -15px;
-    right: 20px;
+    right: 100px;
     z-index: 1000;
 }
 
