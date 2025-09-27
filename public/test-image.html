@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Image Test Page</h1>
+  
+  <div>
+    <h2>Testing image from: /static/images/blog/on-demand-os-diagram.jpg</h2>
+    <img 
+      src="/static/images/blog/on-demand-os-diagram.jpg" 
+      alt="On-Demand OS Diagram"
+      onerror="document.getElementById('error1').style.display = 'block'"
+      onload="document.getElementById('success1').style.display = 'block'"
+    />
+    <div id="error1" class="error" style="display: none">❌ Image failed to load</div>
+    <div id="success1" class="success" style="display: none">✅ Image loaded successfully</div>
+  </div>
+
+  <div>
+    <h2>Testing image with full path</h2>
+    <img 
+      src="http://localhost:3000/static/images/blog/on-demand-os-diagram.jpg" 
+      alt="On-Demand OS Diagram (Full Path)"
+      onerror="document.getElementById('error2').style.display = 'block'"
+      onload="document.getElementById('success2').style.display = 'block'"
+    />
+    <div id="error2" class="error" style="display: none">❌ Image failed to load</div>
+    <div id="success2" class="success" style="display: none">✅ Image loaded successfully</div>
+  </div>
+</body>
+</html> 

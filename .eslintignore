@@ -1,0 +1,12 @@
+coverage/
+dist/
+pnpm-lock.yaml
+.contentlayer/
+data/
+node_modules/
+.next/
+out
+public
+next.config.js
+postcss.config.js
+tailwind.config.js

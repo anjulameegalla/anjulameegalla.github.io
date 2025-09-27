@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Test</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Video Test Page</h1>
+  
+  <div>
+    <h2>Testing video from: /static/videos/blog/on-demand-os.mp4</h2>
+    <video 
+      src="/static/videos/blog/on-demand-os.mp4" 
+      controls
+      preload="metadata"
+      playsInline
+      controlsList="nodownload"
+      oncanplay="document.getElementById('success1').style.display = 'block'"
+      onerror="document.getElementById('error1').style.display = 'block'"
+    ></video>
+    <div id="error1" class="error" style="display: none">❌ Video failed to load</div>
+    <div id="success1" class="success" style="display: none">✅ Video loaded successfully</div>
+  </div>
+
+  <div>
+    <h2>Testing video with HTML5 video tag</h2>
+    <video controls preload="metadata" playsInline>
+      <source src="/static/videos/blog/on-demand-os.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</body>
+</html> 
