@@ -1,7 +1,0 @@
-coverage/
-dist/
-pnpm-lock.yaml
-.contentlayer/
-data/
-node_modules/
-.next/
