@@ -1,8 +1,8 @@
 
 
-### WEBSITE IN PROGRESS
+### WIP
 
-- Find me on [Bento!](https://bento.me/anjula)
+Find me on [Bento!](https://bento.me/anjula)
 
 
 
