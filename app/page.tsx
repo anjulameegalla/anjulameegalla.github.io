@@ -42,8 +42,8 @@ function Header() {
           </div>
         </div>
         <div className="flex flex-col">
-          <h1>Rahul Chakraborty</h1>
-          <p className="text-quaternary">Designer, Artist, Generalist</p>
+          <h1>Anjula Meegalla</h1>
+          <p className="text-quaternary">Cybersecurity Undergrad</p>
         </div>
       </div>
       <div className="flex items-end h-12">
@@ -143,28 +143,28 @@ function Contact() {
       
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <ContactLink
-          href="https://X.com/hckmstrrahul"
-          title="hckmstrrahul"
-          website="X"
-        />
-        <ContactLink
-          href="https://bento.me/rcb"
-          title="rcb"
-          website="Bento"
-        />
-        <ContactLink
-          href="https://www.figma.com/@hckmstrrahul"
-          title="hckmstrrahul"
-          website="Figma"
-        />
-        <ContactLink
-          href="https://linkedin.com/in/hckmstrrahul"
-          title="hckmstrrahul"
+          href="https://linkedin.com/in/anjula-meegalla"
+          title="anjula-meegalla"
           website="Linkedin"
         />
         <ContactLink
-          email="hi@rahulchakraborty.com"
-          title="hi@rahulchakraborty.com"
+          href="https://github.com/anjulameegalla"
+          title="anjulameegalla"
+          website="GitHub"
+        />
+        <ContactLink
+          href="https://drive.google.com/file/d/1Nulp5fTxvEfE32kAG9c7HhRPdVJwt8Id/view?usp=sharing"
+          title="download"
+          website="Resume"
+        />
+        <ContactLink
+          href="https://www.instagram.com/westvxrginia/"
+          title="westvxrginia"
+          website="Instagram"
+        />
+        <ContactLink
+          email="mailto:anjulameegalla@gmail.com"
+          title="anjulameegalla@gmail.com"
           website="Email"
         />
         
