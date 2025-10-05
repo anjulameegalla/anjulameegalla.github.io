@@ -1,241 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>anjula meegalla - home</title>
 
     <link rel="icon" type="image/png" href="assets/favicon.jpg">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<!--.css-->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --text-color: #ffffff;
-            --highlight-color: #90d5ff;
-            --background-color: #121212;
+            /* Cyberpunk Theme */
+            --background: #0d0221; --foreground: #f0f0f0;
+            --prompt: #ff00ff;     --cyan: #00f0ff;
+            --blue: #00f0ff;       --yellow: #fef200;
+            --red: #ff3333;
         }
-
+        * { box-sizing: border-box; }
+        html, body {
+            height: 100%; margin: 0; padding: 0;
+            background-color: var(--background);
+        }
         body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--background-color);
-            color: var(--text-color);
-            font-family: 'Noto Sans JP', sans-serif;
-            text-align: left;
-            position: relative;
-            padding: 40px;
-            line-height: 1.9;
-            text-transform: lowercase;
+            color: var(--foreground);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            padding: 2rem; /* This creates the margin around the terminal */
         }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(144, 213, 255, 0.15) 0%, rgba(18, 18, 18, 0) 70%);
-            animation: radial-pulse 10s infinite ease-in-out;
-            z-index: -1;
-        }
-
-        @keyframes radial-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .animated-bar {
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #fcca4a, #ff5733, #33ff57, #4a90e2);
-            background-size: 400% 400%;
-            animation: animateBar 5s infinite linear;
+        #background-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000;
-        }
-
-        @keyframes animateBar {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .resume-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 11px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: none;
-            color: #121212;
-            background: linear-gradient(135deg, #90d5ff, #4a90e2);
-            border: none;
-            border-radius: 30px;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(144, 213, 255, 0.3);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .resume-button:hover {
-            background: linear-gradient(135deg, #4a90e2, #90d5ff);
-            box-shadow: 0 6px 15px rgba(144, 213, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .resume-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(144, 213, 255, 0.2);
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-transform: none;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 1rem;
-            margin-bottom: 20px;
-        }
-
-        .nav {
-            position: absolute;
-            top: 20px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
             width: 100%;
+            height: 100%;
+            z-index: -1;
         }
-
-        .nav a {
+        #terminal {
+            position: relative;
+            padding: 20px;
+            height: 100%; /* Terminal now fills the padded body */
+            width: 100%;
+            overflow-y: auto;
+            cursor: text;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--prompt);
+            border-radius: 10px;
+        }
+        #output { white-space: pre-wrap; word-wrap: break-word; }
+        .command-line { display: flex; align-items: center; }
+        .prompt {
+            color: var(--prompt);
+            margin-right: 8px;
+            white-space: nowrap;
             font-weight: bold;
-            word-spacing: 5px; 
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.3s ease, transform 0.3s ease;
         }
-
-        .nav a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
+        #input {
+            background: transparent; border: none;
+            color: var(--foreground);
+            font-family: inherit; font-size: inherit;
+            flex-grow: 1; outline: none; padding: 0;
+            caret-color: var(--cyan);
         }
+        #input:focus { outline: none; }
+        a { color: var(--cyan); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .color-blue { color: var(--blue); }
+        .color-yellow { color: var(--yellow); }
+        .color-red { color: var(--red); }
+        .color-green { color: var(--prompt); }
 
-        .social-icons {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .social-icons a {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
-        }
-
-        .gif-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .gif-container img {
-            max-width: 200px;
-            height: auto;
-        }
-
-        @media (max-width: 600px) {
-            .name {
-                font-size: 1.2rem;
-            }
-            .description {
-                font-size: 0.9rem;
-            }
-            .nav {
-                top: 25px;
-                gap: 10px;
-            }
-            .social-icons a {
-                font-size: 1.2rem;
-            }
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .gif-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .gif-container img {
-                max-width: 150px;
-                height: auto;
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            body {
+                font-size: 18px;
+                padding: 1rem; /* Reduced padding (margin) for smaller screens */
             }
         }
     </style>
-
 </head>
-
 <body>
-    <!--div class="animated-bar"></div-->
-
-    <a href="https://drive.google.com/file/d/1aL-6HgNPeIx7FX8nbfrG6mNjcfxMy2DY/view?usp=sharing" class="resume-button" target="_blank">download CV</a>
-
-    <div class="container">
-        <div>
-            <div class="name">Anjula M.</div>
-            <div class="description">
-                21 y/o <span style="text-transform: none;">Cybersecurity UG</span><br>
-                interested in <span style="text-transform: none;">SecOps, AD, Cloud & Forensics</span><br>
-                take a look at some recent projects and feel free to get in touch.
-            </div>
-
-            <div class="social-icons">
-                <a href="https://github.com/anjulameegalla" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="https://anjula.live/LNT" target="_blank" aria-label="blog"><i class="fa-solid fa-blog"></i></a>
-                <a href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            </div>
-        </div>
-
-        <div class="gif-container">
-            <img src="assets/homepage.gif" alt="Loading gif">
-        
+    <canvas id="background-canvas"></canvas>
+    <div id="terminal" onclick="document.getElementById('input').focus();">
+        <div id="output"></div>
+        <div class="command-line">
+            <span class="prompt">guest@portfolio:~$</span>
+            <input type="text" id="input" autofocus>
         </div>
     </div>
-    
-</body>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('input');
+            const output = document.getElementById('output');
+            const terminal = document.getElementById('terminal');
+            let commandHistory = [];
+            let historyIndex = -1;
+            
+            let awaitingConfirmation = null;
+            let commandContext = null;
+            let contextData = [];
+
+            const welcomeMessage = `
+<span class="color-blue">Welcome to my interactive portfolio!</span>
+Type '<span class="color-yellow">help</span>' to see a list of available commands.
+`;
+
+            const commands = {
+                help: `
+<span class="color-blue">Available Commands:</span>
+  <span class="color-yellow">whois</span>      - About me
+  <span class="color-yellow">projects</span>   - View my projects
+  <span class="color-yellow">resume</span>     - Download my resume
+  <span class="color-yellow">socials</span>    - My socials
+  <span class="color-yellow">contact</span>    - Reach me via email
+  <span class="color-yellow">clear</span>      - Clear the terminal screen
+  <span class="color-yellow">history</span>    - Show command history
+                `,
+                whois: `
+<span class="color-green">Hey, I'm Anjula Meegalla!</span>
+I'm a 21 y/o cybersecurity undergraduate at NIT, Welisara, Sri Lanka. I'm passionate about SecOps, Active Directory, Cloud & Forensics
+Feel free to take a look at my recent projects using the '<span class="color-yellow">projects</span>' command.
+                `,
+                history: () => commandHistory.map((cmd, i) => `  ${i}: ${cmd}`).join('\n'),
+                
+                projects: () => {
+                    contextData = [
+                        { name: 'soar-edr-lab', url: 'https://github.com/anjulameegalla/soar-edr-lab' },
+                        { name: 'win-ad-lab', url: 'https://github.com/anjulameegalla/win-ad-lab' },
+                        { name: 'wazuh-tdr-lab', url: 'https://github.com/anjulameegalla/wazuh-tdr-lab' },
+                        { name: 'az-honeypot-lab', url: 'https://github.com/anjulameegalla/az-honeypot-lab' },
+                        { name: 'Visit my GitHub profile', url: 'https://github.com/anjulameegalla' }
+                    ];
+                    commandContext = 'projects';
+                    let projectOutput = "More projects can be found on my GitHub page. Type a number to open one, or type '<span class=\"color-yellow\">exit</span>' to return.\n\n";
+                    contextData.forEach((p, i) => {
+                        projectOutput += `  <span class="color-yellow">${i + 1}</span> - ${p.name}\n`;
+                    });
+                    return projectOutput;
+                },
+
+                socials: () => {
+                    contextData = [
+                        { name: 'LinkedIn', url: 'https://www.linkedin.com/in/anjula-meegalla/' },
+                        { name: 'GitHub', url: 'https://github.com/anjulameegalla' },
+                        { name: 'YouTube', url: 'https://www.youtube.com/@Anjula' },
+                        { name: 'Blog', url: 'https://anjula.live/LNT' }
+                    ];
+                    commandContext = 'socials';
+                    let socialOutput = "Find me on the web. Type a number to open a link, or type '<span class=\"color-yellow\">exit</span>' to return.\n\n";
+                    contextData.forEach((s, i) => {
+                        socialOutput += `  <span class="color-yellow">${i + 1}</span> - ${s.name}\n`;
+                    });
+                    return socialOutput;
+                },
+
+                resume: () => {
+                    awaitingConfirmation = { action: () => {
+                        const link = document.createElement('a');
+                        link.href = './assets/AnjulaMeegalla_Resume.pdf';
+                        link.download = 'AnjulaMeegalla_Resume.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        return 'Downloading resume...';
+                    }};
+                    return 'Are you sure you want to download the resume? (yes/no)';
+                },
+
+                contact: () => {
+                    awaitingConfirmation = { action: () => {
+                        window.open('https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com', '_blank');
+                        return 'Opening email client...';
+                    }};
+                    return 'Are you sure you want to open the email client? (yes/no)';
+                },
+
+                clear: () => {
+                    awaitingConfirmation = { action: () => { output.innerHTML = ''; return null; }};
+                    return 'Are you sure you want to clear the terminal? (yes/no)';
+                }
+            };
+
+            function appendOutput(command, result) {
+                if (result === null) return;
+                const commandLine = document.createElement('div');
+                if (command) {
+                    commandLine.innerHTML = `<span class="prompt">guest@portfolio:~$</span> ${command}`;
+                    output.appendChild(commandLine);
+                }
+                const resultLine = document.createElement('div');
+                resultLine.innerHTML = result;
+                output.appendChild(resultLine);
+            }
+
+            function executeCommand(commandStr) {
+                const commandKey = commandStr.toLowerCase().trim();
+
+                if (awaitingConfirmation) {
+                    if (commandKey === 'yes') {
+                        const result = awaitingConfirmation.action();
+                        appendOutput(commandStr, result);
+                    } else if (commandKey === 'no') {
+                        appendOutput(commandStr, 'Command aborted.');
+                    } else {
+                        appendOutput(commandStr, 'Please answer `yes` or `no`.');
+                        return;
+                    }
+                    awaitingConfirmation = null;
+                    return;
+                }
+
+                if (commandContext) {
+                    if (commandKey === 'exit') {
+                        appendOutput(commandStr, 'Returning to main menu...');
+                        commandContext = null;
+                        contextData = [];
+                        return;
+                    }
+                    const index = parseInt(commandKey, 10) - 1;
+                    if (!isNaN(index) && index >= 0 && index < contextData.length) {
+                        const item = contextData[index];
+                        window.open(item.url, '_blank');
+                        appendOutput(commandStr, `Opening ${item.name}...`);
+                        return;
+                    }
+                }
+                
+                let result;
+                if (commands[commandKey]) {
+                    const commandExecutor = commands[commandKey];
+                    result = typeof commandExecutor === 'function' ? commandExecutor() : commandExecutor;
+                } else {
+                    result = `<span class="color-red">Command not found: ${commandStr}</span>. Type 'help' for a list of commands.`;
+                }
+                
+                if (commandKey !== 'projects' && commandKey !== 'socials' && commands[commandKey]) {
+                    commandContext = null;
+                    contextData = [];
+                }
+                
+                appendOutput(commandStr, result);
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const command = input.value;
+                    commandHistory.unshift(command);
+                    historyIndex = -1;
+                    executeCommand(command);
+                    input.value = '';
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (historyIndex < commandHistory.length - 1) {
+                        historyIndex++;
+                        input.value = commandHistory[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        input.value = commandHistory[historyIndex];
+                    } else {
+                        historyIndex = -1;
+                        input.value = '';
+                    }
+                }
+            });
+
+            appendOutput(null, welcomeMessage);
+
+            // --- Final "Digital Rain" Animated Background Logic ---
+            const canvas = document.getElementById('background-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width, height, columns, drops;
+            const fontSize = 20;
+            const characters = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789';
+            const charArray = characters.split('');
+
+            function setupCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                
+                const columnDensity = window.innerWidth < 768 ? 1.5 : 1;
+                columns = Math.floor(width / (fontSize / columnDensity));
+                
+                drops = [];
+                for (let x = 0; x < columns; x++) {
+                    drops[x] = 1;
+                }
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(13, 2, 33, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+                
+                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--cyan').trim();
+                ctx.font = fontSize + 'px VT323';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = charArray[Math.floor(Math.random() * charArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            let animationFrameId;
+            let lastTime = 0;
+            const fps = 20;
+            const interval = 1000 / fps;
+
+            function animate(timestamp) {
+                if (timestamp - lastTime > interval) {
+                    draw();
+                    lastTime = timestamp;
+                }
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            function startAnimation() {
+                setupCanvas();
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                animate(0);
+            }
+
+            window.addEventListener('resize', startAnimation);
+
+            startAnimation();
+        });
+    </script>
+</body>
 </html>
