@@ -1,241 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>anjula meegalla - home</title>
-
-    <link rel="icon" type="image/png" href="assets/favicon.jpg">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-<!--.css-->
-
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Anjula Meegalla - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="assets/wiresphere.concat.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400,300,700,900,100">
+    <link rel="apple-touch-icon" sizes="57x57" href="/ico/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/ico/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/ico/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/ico/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/ico/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/ico/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/ico/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/ico/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ico/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/ico/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/ico/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/ico/favicon-16x16.png">
+    <link rel="manifest" href="/ico/manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ico/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <style>
-        :root {
-            --text-color: #ffffff;
-            --highlight-color: #90d5ff;
-            --background-color: #121212;
+        .container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 100%
+        }
+
+        .responsive-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%
+        }
+
+        @media (max-width:360px) and (max-width:411px) and (max-width:500px) and (max-width:600px) and (max-width:700px) {
+            .container {
+                padding-top: 1000px
+            }
         }
 
         body {
+            background-color: #1d1e22;
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--background-color);
-            color: var(--text-color);
-            font-family: 'Noto Sans JP', sans-serif;
-            text-align: left;
-            position: relative;
-            padding: 40px;
-            line-height: 1.9;
-            text-transform: lowercase;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(144, 213, 255, 0.15) 0%, rgba(18, 18, 18, 0) 70%);
-            animation: radial-pulse 10s infinite ease-in-out;
-            z-index: -1;
+            overflow: hidden;
+            overflow-y: hidden;
+            overflow-x: hidden
         }
 
-        @keyframes radial-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .animated-bar {
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #fcca4a, #ff5733, #33ff57, #4a90e2);
-            background-size: 400% 400%;
-            animation: animateBar 5s infinite linear;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        @keyframes animateBar {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .resume-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 11px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: none;
-            color: #121212;
-            background: linear-gradient(135deg, #90d5ff, #4a90e2);
-            border: none;
-            border-radius: 30px;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(144, 213, 255, 0.3);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .resume-button:hover {
-            background: linear-gradient(135deg, #4a90e2, #90d5ff);
-            box-shadow: 0 6px 15px rgba(144, 213, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .resume-button:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(144, 213, 255, 0.2);
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .name {
-            font-size: 1.5rem;
-            font-weight: bold;
-            text-transform: none;
-            margin-bottom: 10px;
-        }
-
-        .description {
-            font-size: 1rem;
-            margin-bottom: 20px;
-        }
-
-        .nav {
-            position: absolute;
-            top: 20px;
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .nav a {
-            font-weight: bold;
-            word-spacing: 5px; 
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .nav a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .social-icons a {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            color: var(--highlight-color);
-            transform: scale(1.1);
-        }
-
-        .gif-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-        }
-
-        .gif-container img {
-            max-width: 200px;
-            height: auto;
-        }
-
-        @media (max-width: 600px) {
-            .name {
-                font-size: 1.2rem;
-            }
-            .description {
-                font-size: 0.9rem;
-            }
-            .nav {
-                top: 25px;
-                gap: 10px;
-            }
-            .social-icons a {
-                font-size: 1.2rem;
-            }
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .gif-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .gif-container img {
-                max-width: 150px;
-                height: auto;
-            }
+        ::-webkit-scrollbar {
+            display: none
         }
     </style>
-
 </head>
 
 <body>
-    <!--div class="animated-bar"></div-->
-
-    <a href="https://drive.google.com/file/d/1JDWFBqiATYXn-yeceD6C_kbK_uTg4gxi/view?usp=sharing" class="resume-button" target="_blank">download CV</a>
-
-    <div class="container">
-        <div>
-            <div class="name">anjula meegalla</div>
-            <div class="description">
-                21 y/o <span style="text-transform: none;">cybersecurity undergrad</span><br>
-                passionate about <span style="text-transform: none;">secOps, AD, cloud & forensics</span><br>
-                take a look at some recent projects and feel free to get in touch.
-            </div>
-
-            <div class="social-icons">
-                <a href="https://github.com/anjulameegalla" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="https://anjula.live/LNT" target="_blank" aria-label="blog"><i class="fa-solid fa-blog"></i></a>
-                <a href="https://mail.google.com/mail/u/0/?fs=1&tf=cm&source=mailto&to=anjulameegalla@gmail.com" target="_blank" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            </div>
+    <div class="preloader" id="preloader"> 
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 257.7 223.2" xml:space="preserve">
+            <g stroke-width="6">
+                <polygon class="st0" points="69.6,214.2 10.4,111.6 69.6,9 188.1,9 247.3,111.6 188.1,214.2 "/>
+                <line class="st0" x1="69.6" y1="9" x2="188.1" y2="214.2"/>
+                <line class="st0" x1="69.6" y1="214.2" x2="188.1" y2="9"/>
+                <line class="st0" x1="10.4" y1="111.6" x2="247.3" y2="111.6"/>
+            </g>
+        </svg>
+    </div>
+    <div class="stage">
+        <div class="backgroundStack" id="backgroundStack">
+            <div class="backgroundStack-solidColor" id="backgroundStack-solidColor"></div>
+            <div class="backgroundStack-pic" id="backgroundStack-pic"></div> 
+            <canvas class="backgroundStack-gradient" id="backgroundStack-gradient"></canvas>
+            <div class="backgroundStack-3d" id="backgroundStack-3d"></div>
+            <div class="backgroundStack-noise" id="backgroundStack-noise"></div>
         </div>
+        <div class="stage-header">
+            <h1><span style="text-transform: none;"></span>I'm Anjula</h1>
+            <h2 id="stage-header-tagline"> 
+                <span>Undergraduate</span>
+                <span>Purple Teamer</span>
+                <span>Security Researcher</span>
+                <span> Perpetual Learner</span>
+            </h2>
+        </div>
+        <div id="redCountdown" class="redCountdown"></div>
+        <nav class="stage-nav" id="stage-nav">
+            <ul>
 
-        <div class="gif-container">
-            <img src="assets/homepage.gif" alt="Loading gif">
-        
+                <li>
+                    <a class="nice-link" href="#" data-page="about">
+                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>About Anjula</span></a>
+                </li>
+                <li>
+                    <a class="nice-link" href="#" data-page="contact">
+                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>Contact Anjula</span></a>
+                </li>
+            </ul>
+        </nav>
+        <div class="content-close" id="content-close">
+            <a class="nice-link" href="#">
+                <div class="hover"><span></span><span></span><span></span><span></span></div><span><i class="fa fa-angle-left"></i></span></a>
+        </div>
+        <div class="content" id="content">
+            <div class="wrapper">
+                <h2 class="content-title" id="content-title">About Anjula</h2>
+                <div class="content-content content-content--about" id="content-content--about">
+                    <div class="content-textwrapper" style="padding-top: 10px;">
+                        <h1>About</h1><br>
+
+                        <img style="display: block; margin-left: auto; margin-right: auto; width: 50%;" src="profile.png">
+                        <p style="text-align:center;margin-top: 0px;margin-bottom: 0px;">Anjula Meegalla (a0x1) </p><br>
+                        
+                        <p>As a <strong>Cybersecurity Undergraduate</strong> at NIT, Welisara, Sri Lanka, I am deeply passionate about practical security domains, including <strong>Security Operations (SecOps) </strong>, <strong>Active Directory (AD) </strong> security, <strong>Cloud</strong> environments, and <strong>Digital Forensics</strong>. I am actively developing my technical skills and applying them through various <strong>hands-on</strong> projects.</p>
+
+                        <p>I firmly believe in the power of <strong>practical learning</strong> and <strong>hands-on experience</strong> over just theoretical knowledge. It's all about developing the ability to learn, troubleshoot, and adapt effectively to become an expert in hacking and cybersecurity.</p>
+
+                        <p>👨‍💻 You can connect with me on LinkedIn or explore my blogs—links are available on the Contact page. </p>
+
+                        <p>🌟 Let's keep it fun, keep it secure, and always remember: <strong>🛡️🔐 Trust, but verify. 🤖</strong></p>
+
+                    </div>
+
+                    <p style="text-align:center;margin-top: 0px;margin-bottom: 0px;">All rights reserved © 2024</p>
+                    <span><br></span>
+                </div>
+                <div class="content-content content-content--contact" id="content-content--contact">
+                    <div class="contact-map" id="contact-map"> </div>
+                    <span><br></span>
+                    <ul class="contact-grid">
+                        <li>
+                            <div class="wrapper"> <i class="fab fa-github fa-3x"></i>
+                                <div>
+                                    <h3>GitHub</h3>
+                                    <h3> <a style="color:white ; text-decoration: none; " href="https://github.com/anjulameegalla" target="_blank" rel="noopener noreferrer">Connect with me on GitHub</a></h3>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="wrapper"> <i class="fab fa-linkedin fa-3x"></i>
+                                <div>
+                                    <h3>Linkedin</h3>
+                                    <h3> <a style="color:white ; text-decoration: none; " href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" rel="noopener noreferrer">Connect with me on Linkedin</a></h3>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="wrapper"> <i class="fas fa-blog fa-3x"></i>
+                                <div>
+                                    <h3>Late Night Thoughts - Blog</h3>
+                                    <h3> <a style="color:white ; text-decoration: none; " href="https://anjula.live/LNT" target="_blank" rel="noopener noreferrer">Explore My Latest Articles</a></h3>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="wrapper"><i class="fa fa-paper-plane fa-3x"></i>
+                                <div>
+                                    <h3>Email</h3><span>anjulameegalla@gmail.com</span></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
-    
+    <div class="col-md-6">
+        <script src="assets/jquery-2.2.4.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="config.js"></script>
+        <script src="assets/wiresphere.concat.min.js"></script>
+    </div>
 </body>
 
 </html>
