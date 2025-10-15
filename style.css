@@ -443,3 +443,61 @@ body {
         padding-top: 1000px
     }
 }
+
+.section-container {
+    max-width: 100%; 
+    margin: 40px auto;
+    padding: 20px 0;
+    overflow: hidden; 
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: var(--color-text-light);
+    text-align: center;
+    margin-bottom: 40px;
+
+}
+
+.marquee-container {
+    width: 100%;
+    overflow: hidden; 
+    white-space: nowrap; 
+    padding: 20px 0; 
+    background-color: transparent; 
+}
+
+.marquee-content {
+    width: max-content; 
+    display: inline-flex; 
+    animation: marquee-scroll 25s linear infinite; 
+}  
+
+.cert-badge {
+    height: 120px; 
+    width: auto; 
+    margin: 0 30px; 
+    filter: grayscale(80%) brightness(0.7); 
+    opacity: 0.8;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.cert-badge:hover {
+    filter: grayscale(0%) brightness(1); 
+    opacity: 1;
+}
+
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(0); 
+    }
+    100% {
+        transform: translateX(calc(-1 * (100% / 3))); 
+    }
+}
+
+@media (max-width: 768px) {
+    .marquee-content {
+        animation-duration: 25s;
+    }
+}
