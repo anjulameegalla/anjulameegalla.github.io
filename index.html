@@ -1,190 +1,201 @@
-<!doctype html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Anjula Meegalla - Portfolio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css">
-    <link rel="shortcut icon" href="assets/noise.ico">
-    <link rel="icon" href="assets/noise.ico">
-    <link rel="stylesheet" type="text/css" href="assets/wiresphere.concat.min.css">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400,300,700,900,100">
-    <link rel="apple-touch-icon" sizes="57x57" href="/ico/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="/ico/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/ico/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="/ico/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/ico/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/ico/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/ico/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/ico/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/ico/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/ico/android-icon-192x192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/ico/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/ico/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/ico/favicon-16x16.png">
-    <link rel="manifest" href="/ico/manifest.json">
-    <link rel="stylesheet" href="style.css">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="/ico/ms-icon-144x144.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anjula M. - Portfolio</title>
+    <meta name="description" content="21 y/o Cybersecurity undergrad interested in SecOps, AD, cloud, infoSec & forensics.">
+    <meta name="keywords" content="Anjula Meegalla, Cybersecurity, Portfolio, SecOps, Active Directory, Cloud Security, InfoSec, Forensics, Penetration Testing, Sri Lanka, LK">
+    <meta name="robots" content="index, follow">
+
     <style>
-        .container {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            padding-top: 100%
-        }
-
-        .responsive-iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            height: 100%
-        }
-
-        @media (max-width:360px) and (max-width:411px) and (max-width:500px) and (max-width:600px) and (max-width:700px) {
-            .container {
-                padding-top: 1000px
-            }
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --prompt-user: #76e38a;
+            --prompt-symbol: #e0e0e0;
+            --command-color: #f0f0f0; 
+            --link-color: #61afef; 
+            --discord-color: #5865F2; 
         }
 
         body {
-            background-color: #1d1e22;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 1.1rem;
+            line-height: 1.6;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
-            overflow-y: hidden;
-            overflow-x: hidden
+            padding: 2rem;
+            padding-top: 3rem;
+            padding-left: 3rem;
         }
 
-        ::-webkit-scrollbar {
-            display: none
+        .container {
+            max-width: 800px;
+        }
+
+        .terminal-line {
+            display: flex;
+            align-items: center;
+        }
+
+        .prompt-user {
+            color: var(--prompt-user);
+        }
+
+        .prompt-symbol {
+            color: var(--prompt-symbol);
+            margin-right: 0.5em;
+        }
+
+        .command {
+            color: var(--command-color);
+            font-weight: bold;
+        }
+
+        .output {
+            margin-top: 1em;
+            padding-left: 0.5em;
+        }
+
+        .output p {
+            margin: 0.5em 0;
+        }
+
+        .output ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .output li {
+            margin-bottom: 0.25em;
+        }
+
+        .output a {
+            color: var(--link-color);
+            text-decoration: none;
+        }
+
+        .output a:hover {
+            text-decoration: underline;
+        }
+
+        .output a.link-discord {
+            color: var(--discord-color);
+        }
+
+        .output-item {
+            opacity: 0; 
+            transform: translateY(10px); 
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .output-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .site-footer {
+            position: fixed; 
+            bottom: 1rem; 
+            left: 0;    
+            width: 100%; 
+            text-align: center; 
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .site-footer p {
+            margin: 0;
+        }
+                
+        .cursor {
+            display: inline-block;
+            background-color: var(--text-color);
+            width: 10px;
+            height: 1.2em;
+            margin-left: 5px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { background-color: transparent }
+            50% { background-color: var(--text-color) }
         }
     </style>
 </head>
 
+
 <body>
-    <div class="preloader" id="preloader"> 
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 257.7 223.2" xml:space="preserve">
-            <g stroke-width="6">
-                <polygon class="st0" points="69.6,214.2 10.4,111.6 69.6,9 188.1,9 247.3,111.6 188.1,214.2 "/>
-                <line class="st0" x1="69.6" y1="9" x2="188.1" y2="214.2"/>
-                <line class="st0" x1="69.6" y1="214.2" x2="188.1" y2="9"/>
-                <line class="st0" x1="10.4" y1="111.6" x2="247.3" y2="111.6"/>
-            </g>
-        </svg>
-    </div>
-    <div class="stage">
-        <div class="backgroundStack" id="backgroundStack">
-            <div class="backgroundStack-solidColor" id="backgroundStack-solidColor"></div>
-            <div class="backgroundStack-pic" id="backgroundStack-pic"></div> 
-            <canvas class="backgroundStack-gradient" id="backgroundStack-gradient"></canvas>
-            <div class="backgroundStack-3d" id="backgroundStack-3d"></div>
-            <div class="backgroundStack-noise" id="backgroundStack-noise"></div>
-        </div>
-        <div class="stage-header">
-            <h1><span style="text-transform: none;"></span>I'm Anjula</h1>
-            <h2 id="stage-header-tagline"> 
-                <span>Undergraduate</span>
-                <span>Blue Teamer</span>
-                <span>Script Kiddie</span>
-            </h2>
-        </div>
-        <div id="redCountdown" class="redCountdown"></div>
-        <nav class="stage-nav" id="stage-nav">
-            <ul>
 
-                <li>
-                    <a class="nice-link" href="#" data-page="about">
-                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>About Anjula</span></a>
-                </li>
-                <li>
-                    <a class="nice-link" href="#" data-page="contact">
-                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>Contact Anjula</span></a>
-                </li>
-            </ul>
-        </nav>
-        <div class="content-close" id="content-close">
-            <a class="nice-link" href="#">
-                <div class="hover"><span></span><span></span><span></span><span></span></div><span><i class="fa fa-angle-left"></i></span></a>
-        </div>
-        <div class="content" id="content">
-            <div class="wrapper">
-                <h2 class="content-title" id="content-title">About Anjula</h2>
-                <div class="content-content content-content--about" id="content-content--about">
-                    <div class="content-textwrapper" style="padding-top: 10px;">
-                        <h1>About</h1><br>
-
-                        <img style="display: block; margin-left: auto; margin-right: auto; width: 44%;" src="assets/noise.gif">
-                        <br>
-                        
-                        <p>As a cybersecurity undergraduate at NIT, Welisara, Sri Lanka, I am deeply focused on practical security domains, including security operations (SecOps), Active Directory (AD), cloud security, and digital forensics. I am actively applying and expanding my technical skills through dedicated hands-on projects.</p>
-
-                        <p>I firmly believe in the power of practical learning and hands-on experience over just theoretical knowledge. It's all about developing the ability to learn, troubleshoot, and adapt effectively to become an expert in cybersecurity.</p>
-
-                        <p>You can connect with me on LinkedIn or explore my blogs—links are available on the Contact page. </p>
-
-                        <p>🌟 Let's keep it fun, keep it secure, and always keep learning!</p>
-
-                    </div>
-                    <br>
-
-                    <!--p style="text-align:center;margin-top: 10px;margin-bottom: 10px;">© 2025. All rights reserved.</p-->
-
-                    <span><br><br></span>
-                </div>
-                <div class="content-content content-content--contact" id="content-content--contact">
-                    <div class="contact-map" id="contact-map"> </div>
-                    <span><br></span>
-                    <ul class="contact-grid">
-                        <li>
-                            <div class="wrapper"> <i class="fab fa-github fa-3x"></i>
-                                <div>
-                                    <h3>GitHub</h3>
-                                    <h3> <a style="color:white ; text-decoration: none; " href="https://github.com/anjulameegalla" target="_blank" rel="noopener noreferrer">Find my projects on GitHub</a></h3>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="wrapper"> <i class="fab fa-linkedin fa-3x"></i>
-                                <div>
-                                    <h3>Linkedin</h3>
-                                    <h3> <a style="color:white ; text-decoration: none; " href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" rel="noopener noreferrer">Connect with me on Linkedin</a></h3>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="wrapper"> <i class="fas fa-blog fa-3x"></i>
-                                <div>
-                                    <h3>Blog</h3>
-                                    <h3> <a style="color:white ; text-decoration: none; " href="https://anjula.live/blog" target="_blank" rel="noopener noreferrer">Explore my latest articles</a></h3>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="wrapper"><i class="fa fa-envelope fa-3x"></i>
-                                <div>
-                                    <h3>Email</h3><span><strong>hello@anjula.live</strong></span></div>
-                            </div>
-                        </li>
-                    </ul>            
-                </div>
-                </div>
+    <div class="container">
+        <div class="terminal-line">
+            <div>
+                <span class="prompt-user">anjula@portfolio</span>
+                <span class="prompt-symbol">:~$</span>
             </div>
+            <span id="command" class="command"></span>
+            <span id="cursor" class="cursor"></span>
         </div>
-    </div>
-    <div class="col-md-6">
-        <script src="assets/jquery-2.2.4.min.js"></script>
-        <script src="https://maps.googleapis.com/maps/api/js"></script>
-        <script src="config.js"></script>
-        <script src="assets/wiresphere.concat.min.js"></script>
-    </div>
-</body>
+        
+        <div id="output" class="output" style="display: none;">
+            <p class="output-item">Hi, I'm <strong>Anjula M.</strong></p>
+            <p class="output-item">21 y/o Cybersecurity undergrad interested in SecOps, AD, cloud, infoSec & forensics.</p>
+            
+            <ul class="output-item">
+                <li><a href="https://github.com/anjulameegalla" target="_blank" rel="noopener noreferrer">[ GitHub ]</a></li>
+                <li><a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" rel="noopener noreferrer">[ LinkedIn ]</a></li>
+                <li><a href="https://anjula.live/blog/the-digital-ghost-paradox.html" target="_blank" rel="noopener noreferrer">[ Paradox-es ]</a></li>
+                <li><a href="https://discord.gg/23SqAmqe" class="link-discord" target="_blank" rel="noopener noreferrer">[ Discord ]</a></li>
+            </ul>
 
+            <p class="output-item">say hello at <a href="mailto:hello@anjula.live">hello@anjula.live</a></p>
+        </div>
+
+        <footer class="site-footer">
+            <p>&copy; 2025 Anjula M.</p>
+        </footer>
+
+    </div>
+
+
+    <script>
+        
+        const commandText = "whoami";
+        const commandElement = document.getElementById("command");
+        const cursorElement = document.getElementById("cursor");
+        const outputElement = document.getElementById("output");
+        const typeSpeed = 100;
+
+        function typeCommand(index) {
+            if (index < commandText.length) {
+                commandElement.textContent += commandText.charAt(index);
+                setTimeout(() => typeCommand(index + 1), typeSpeed);
+            } else {
+
+                cursorElement.style.display = "none"; 
+                outputElement.style.display = "block";
+
+                const itemsToShow = document.querySelectorAll('.output-item');
+                let delay = 100;
+                const delayIncrement = 200;
+
+                itemsToShow.forEach((item) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, delay);
+                    delay += delayIncrement;
+                });
+            }
+        }
+
+        setTimeout(() => {
+            typeCommand(0);
+        }, 500);
+
+    </script>
+
+</body>
 </html>
