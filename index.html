@@ -1,76 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anjula M. - Portfolio</title>
-    <meta name="description" content="21 y/o Cybersecurity undergrad interested in SecOps, AD, cloud, infoSec & forensics.">
-    <meta name="keywords" content="Anjula Meegalla, Cybersecurity, Portfolio, SecOps, Active Directory, Cloud Security, InfoSec, Forensics, Penetration Testing, Sri Lanka, LK">
+    <title>Anjula M. | infoSec</title>
+    <meta name="author" content="Anjula M.">
+    <meta name="description" content="Personal portfolio for Anjula M., a cybersecurity undergraduate specializing in SecOps, Active Directory, cloud security, and forensics.">
+    <meta name="keywords" content="Anjula M, Cybersecurity, Portfolio, SecOps, Active Directory, Cloud Security, Forensics, Penetration Testing, Sri Lanka">
+    <link rel="canonical" href="https://anjula.live/">
     <meta name="robots" content="index, follow">
-
+    <meta property="og:url" content="https.anjula.live/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Anjula M. | Cybersecurity Portfolio">
+    <meta property="og:description" content="Personal portfolio for Anjula M., a cybersecurity undergraduate specializing in SecOps, Active Directory, and cloud security.">
+        
     <style>
         :root {
             --bg-color: #1a1a1a;
             --text-color: #e0e0e0;
-            --prompt-user: #76e38a;
-            --prompt-symbol: #e0e0e0;
+            --prompt-user: #76e38a; 
+            --prompt-symbol: #e0e0e0; 
             --command-color: #f0f0f0; 
-            --link-color: #61afef; 
-            --discord-color: #5865F2; 
+            --link-color: #61afef;
+            --mail-color: #e0e0e0;
+            --discord-color: #5865F2;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.1rem; 
+            line-height: 1.5;
             margin: 0;
-            padding: 2rem;
-            padding-top: 3rem;
-            padding-left: 3rem;
+            padding: 1.9rem; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box; 
         }
 
         .container {
             max-width: 800px;
         }
 
-        .terminal-line {
-            display: flex;
-            align-items: center;
-        }
-
-        .prompt-user {
-            color: var(--prompt-user);
-        }
-
-        .prompt-symbol {
-            color: var(--prompt-symbol);
-            margin-right: 0.5em;
-        }
-
-        .command {
-            color: var(--command-color);
-            font-weight: bold;
-        }
-
         .output {
             margin-top: 1em;
-            padding-left: 0.5em;
+            text-align: center; 
         }
 
-        .output p {
-            margin: 0.5em 0;
-        }
-
-        .output ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .output li {
-            margin-bottom: 0.25em;
+        .output p, .output .link-block {
+            margin: 1.5em 0; 
         }
 
         .output a {
@@ -85,117 +66,207 @@
         .output a.link-discord {
             color: var(--discord-color);
         }
+        
+        .output a.special-link {
+            color: var(--prompt-user);
+        }
+        
+        .link-block a {
+            display: inline-block;
+            margin: 0.25em 0.5em; 
+        }
 
-        .output-item {
+        .scramble-item {
             opacity: 0; 
-            transform: translateY(10px); 
+            transform: translateY(10px);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
         }
 
-        .output-item.visible {
+        .scramble-item.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+            cursor: pointer; 
+        }
+
+        #cryptic-text {
+            font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+            color: var(--prompt-user); 
+            font-size: 1.1rem; 
+            white-space: nowrap;
+            overflow: hidden;
+            text-shadow: 0 0 5px var(--prompt-user);
+        }
+        
+        .container, .site-footer {
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
         }
 
         .site-footer {
             position: fixed; 
-            bottom: 1rem; 
+            bottom: 1rem;  
             left: 0;    
-            width: 100%; 
+            width: 100%;    
             text-align: center; 
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #777;
         }
-
         .site-footer p {
             margin: 0;
         }
-                
-        .cursor {
-            display: inline-block;
-            background-color: var(--text-color);
-            width: 10px;
-            height: 1.2em;
-            margin-left: 5px;
-            animation: blink 1s step-end infinite;
-        }
 
-        @keyframes blink {
-            from, to { background-color: transparent }
-            50% { background-color: var(--text-color) }
-        }
     </style>
 </head>
 
-
 <body>
 
+    <div id="preloader">
+        <span id="cryptic-text"></span>
+    </div>
     <div class="container">
-        <div class="terminal-line">
-            <div>
-                <span class="prompt-user">anjula@portfolio</span>
-                <span class="prompt-symbol">:~$</span>
-            </div>
-            <span id="command" class="command"></span>
-            <span id="cursor" class="cursor"></span>
-        </div>
         
         <div id="output" class="output" style="display: none;">
-            <p class="output-item">Hi, I'm <strong>Anjula M.</strong></p>
-            <p class="output-item">21 y/o Cybersecurity undergrad interested in SecOps, AD, cloud, infoSec & forensics.</p>
+            <p class="scramble-item">
+                <span class="scramble-text">Quien resiste, gana.</span>
+            </p>
             
-            <ul class="output-item">
-                <li><a href="https://github.com/anjulameegalla" target="_blank" rel="noopener noreferrer">[ GitHub ]</a></li>
-                <li><a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" rel="noopener noreferrer">[ LinkedIn ]</a></li>
-                <li><a href="https://anjula.live/blog/the-digital-ghost-paradox.html" target="_blank" rel="noopener noreferrer">[ Paradox-es ]</a></li>
-                <li><a href="https://discord.gg/23SqAmqe" class="link-discord" target="_blank" rel="noopener noreferrer">[ Discord ]</a></li>
-            </ul>
+            <div class="scramble-item link-block">
+                <a href="https://www.linkedin.com/in/anjula-meegalla/" class="scramble-text" target="_blank" rel="noopener noreferrer">[ LinkedIn ]</a>
+                <a href="https://github.com/anjulameegalla" class="scramble-text" target="_blank" rel="noopener noreferrer">[ GitHub ]</a>
+                <a href="https://anjula.live/blog/the-digital-ghost-paradox.html" class="scramble-text special-link" target="_blank" rel="noopener noreferrer">[ Paradox-es ]</a> 
+                <a href="https://discord.gg/23SqAmqe" class="scramble-text link-discord" target="_blank" rel="noopener noreferrer">[ Discord ]</a>
+            </div>
 
-            <p class="output-item">say hello at <a href="mailto:hello@anjula.live">hello@anjula.live</a></p>
+            <p class="scramble-item">
+                <span class="scramble-text">say hello at </span><a href="mailto:hello@anjula.live" class="scramble-text">hello@anjula.live</a>
+            </sP>
+        </div>
         </div>
 
-        <footer class="site-footer">
-            <p>&copy; 2025 Anjula M.</p>
-        </footer>
-
-    </div>
-
+    <footer class="site-footer">
+        <p>&copy; Anjula M. 2025 | All rights reserved.</p>
+    </footer>
 
     <script>
-        
-        const commandText = "whoami";
-        const commandElement = document.getElementById("command");
-        const cursorElement = document.getElementById("cursor");
+
+        const preloader = document.getElementById('preloader');
+        const crypticText = document.getElementById('cryptic-text');
+        const mainContainer = document.querySelector('.container');
+        const mainFooter = document.querySelector('.site-footer');
         const outputElement = document.getElementById("output");
-        const typeSpeed = 100;
 
-        function typeCommand(index) {
-            if (index < commandText.length) {
-                commandElement.textContent += commandText.charAt(index);
-                setTimeout(() => typeCommand(index + 1), typeSpeed);
-            } else {
+        const intervalSpeed = 120;
+        const charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?~";
 
-                cursorElement.style.display = "none"; 
-                outputElement.style.display = "block";
-
-                const itemsToShow = document.querySelectorAll('.output-item');
-                let delay = 100;
-                const delayIncrement = 200;
-
-                itemsToShow.forEach((item) => {
-                    setTimeout(() => {
-                        item.classList.add('visible');
-                    }, delay);
-                    delay += delayIncrement;
-                });
+        function generateRandomString(length) {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += charSet.charAt(Math.floor(Math.random() * charSet.length));
             }
+            return result;
         }
 
-        setTimeout(() => {
-            typeCommand(0);
-        }, 500);
+        let animationInterval = setInterval(() => {
+            let randomLength = Math.floor(Math.random() * 20) + 15; 
+            crypticText.textContent = generateRandomString(randomLength);
+        }, intervalSpeed);
+
+        preloader.addEventListener('click', () => {
+            
+            clearInterval(animationInterval);
+            
+            preloader.style.opacity = '0';
+            preloader.style.visibility = 'hidden';
+
+            preloader.addEventListener('transitionend', () => {
+
+                preloader.remove();
+                
+                mainContainer.style.opacity = '1';
+                mainFooter.style.opacity = '1';
+                outputElement.style.display = 'block';
+
+                const scrambleCharSet = "A?B<C#D%E&F(G)H*I+J,K-L.N/O!P:Q;R=S>T@U[V]W^X_Y`Z{a|b}c~d";
+                
+                const scrambleSpeed = 120; 
+                const scrambleIterations = 2; 
+                
+                function scrambleText(element, onComplete) {
+                    if (!element) {
+                        if (onComplete) onComplete();
+                        return;
+                    }
+                    const originalText = element.textContent;
+                    const len = originalText.length;
+                    let iterations = 0;
+                    
+                    if (!element.dataset.originalText) {
+                         element.dataset.originalText = originalText;
+                    }
+                    const trueOriginalText = element.dataset.originalText;
+                    
+                    let interval = setInterval(() => {
+                        let newText = '';
+                        let allRevealed = true;
+                        for (let i = 0; i < len; i++) {
+                            
+                            let charIterations = Math.max(0, iterations - i);
+                            if (charIterations < scrambleIterations) {
+                                allRevealed = false;
+
+                                if(trueOriginalText[i] === ' ') {
+                                    newText += ' ';
+                                } else {
+                                    newText += scrambleCharSet.charAt(Math.floor(Math.random() * scrambleCharSet.length));
+                                }
+                            } else {
+                                newText += trueOriginalText[i];
+                            }
+                        }
+                        element.textContent = newText;
+
+                        if (allRevealed) {
+                            clearInterval(interval);
+                            element.textContent = trueOriginalText;
+                            if (onComplete) onComplete();
+                        }
+                        iterations++;
+                    }, scrambleSpeed);
+                }
+
+                const allItems = document.querySelectorAll('.scramble-item');
+                const allText = document.querySelectorAll('.scramble-text');
+
+                allItems.forEach(item => {
+                    item.classList.add('visible');
+                });
+
+                setTimeout(() => {
+                    allText.forEach(textEl => {
+                        scrambleText(textEl); 
+                    });
+                }, 400); 
+
+            }, { once: true }); 
+        });
 
     </script>
-
+    
 </body>
 </html>
