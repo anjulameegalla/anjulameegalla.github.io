@@ -143,7 +143,7 @@
         
         <div id="output" class="output" style="display: none;">
             <p class="scramble-item">
-                <span class="scramble-text"> >> ./contact.sh --secure</span>
+                <span class="scramble-text no-hover-scramble"> >> ./contact.sh --secure</span>
             </p>
             
             <div class="scramble-item link-block">
@@ -154,7 +154,7 @@
             </div>
 
             <p class="scramble-item">
-                <span class="scramble-text">say hello at </span><a href="mailto:hello@anjula.live" class="scramble-text" target="_blank" rel="noopener noreferrer">hello@anjula.live</a>
+                <span class="scramble-text no-hover-scramble">say hello at </span><a href="mailto:hello@anjula.live" class="scramble-text no-hover-scramble" target="_blank" rel="noopener noreferrer">hello@anjula.live</a>
             </sP>
         </div>
         </div>
@@ -163,110 +163,7 @@
         <p>&copy; Anjula M. 2025</p>
     </footer>
 
-    <script>
-
-        const preloader = document.getElementById('preloader');
-        const crypticText = document.getElementById('cryptic-text');
-        const mainContainer = document.querySelector('.container');
-        const mainFooter = document.querySelector('.site-footer');
-        const outputElement = document.getElementById("output");
-
-        const intervalSpeed = 120;
-        const charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?~";
-
-        function generateRandomString(length) {
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += charSet.charAt(Math.floor(Math.random() * charSet.length));
-            }
-            return result;
-        }
-
-        let animationInterval = setInterval(() => {
-            let randomLength = Math.floor(Math.random() * 20) + 15; 
-            crypticText.textContent = generateRandomString(randomLength);
-        }, intervalSpeed);
-
-        preloader.addEventListener('click', () => {
-            
-            clearInterval(animationInterval);
-            
-            preloader.style.opacity = '0';
-            preloader.style.visibility = 'hidden';
-
-            preloader.addEventListener('transitionend', () => {
-
-                preloader.remove();
-                
-                mainContainer.style.opacity = '1';
-                mainFooter.style.opacity = '1';
-                outputElement.style.display = 'block';
-
-                const scrambleCharSet = "A?B<C#D%E&F(G)H*I+J,K-L.N/O!P:Q;R=S>T@U[V]W^X_Y`Z{a|b}c~d";
-                
-                const scrambleSpeed = 120; 
-                const scrambleIterations = 2; 
-                
-                function scrambleText(element, onComplete) {
-                    if (!element) {
-                        if (onComplete) onComplete();
-                        return;
-                    }
-                    const originalText = element.textContent;
-                    const len = originalText.length;
-                    let iterations = 0;
-                    
-                    if (!element.dataset.originalText) {
-                         element.dataset.originalText = originalText;
-                    }
-                    const trueOriginalText = element.dataset.originalText;
-                    
-                    let interval = setInterval(() => {
-                        let newText = '';
-                        let allRevealed = true;
-                        for (let i = 0; i < len; i++) {
-                            
-                            let charIterations = Math.max(0, iterations - i);
-                            if (charIterations < scrambleIterations) {
-                                allRevealed = false;
-
-                                if(trueOriginalText[i] === ' ') {
-                                    newText += ' ';
-                                } else {
-                                    newText += scrambleCharSet.charAt(Math.floor(Math.random() * scrambleCharSet.length));
-                                }
-                            } else {
-                                newText += trueOriginalText[i];
-                            }
-                        }
-                        element.textContent = newText;
-
-                        if (allRevealed) {
-                            clearInterval(interval);
-                            element.textContent = trueOriginalText;
-                            if (onComplete) onComplete();
-                        }
-                        iterations++;
-                    }, scrambleSpeed);
-                }
-
-                const allItems = document.querySelectorAll('.scramble-item');
-                const allText = document.querySelectorAll('.scramble-text');
-
-                allItems.forEach(item => {
-                    item.classList.add('visible');
-                });
-
-                setTimeout(() => {
-                    allText.forEach(textEl => {
-                        scrambleText(textEl); 
-                    });
-                }, 400); 
-
-            }, { once: true }); 
-        });
-
-    </script>
+    <script src="main.js"></script>
     
 </body>
 </html>
