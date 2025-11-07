@@ -102,4 +102,47 @@ document.addEventListener('DOMContentLoaded', () => {
             document.addEventListener('mouseup', onMouseUp);
         });
     }
+
+    // --- NEW CODE ---
+    // Initialize the sakura petal animation
+    createSakuraPetals();
 });
+
+
+// --- NEW FUNCTION ---
+/**
+ * Creates and animates sakura petals falling in the background.
+ */
+function createSakuraPetals() {
+    const container = document.getElementById('sakura-container');
+    if (!container) return;
+
+    const numPetals = 30; // Adjust the number of petals here
+
+    for (let i = 0; i < numPetals; i++) {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+
+        // Random horizontal start position
+        petal.style.left = Math.random() * 100 + 'vw';
+        
+        // Random fall duration (7 to 15 seconds)
+        const fallDuration = (Math.random() * 8) + 7;
+        
+        // Random sway duration (2 to 5 seconds)
+        const swayDuration = (Math.random() * 3) + 2;
+        
+        // Random animation delay (0 to 10 seconds)
+        const delay = Math.random() * 10;
+
+        // Apply all the random values
+        petal.style.animation = 
+            `fall ${fallDuration}s linear ${delay}s infinite, ` +
+            `sway ${swayDuration}s ease-in-out ${delay}s infinite`;
+        
+        // Random opacity (0.4 to 0.9)
+        petal.style.opacity = Math.random() * 0.5 + 0.4;
+
+        container.appendChild(petal);
+    }
+}

@@ -467,3 +467,50 @@ footer {
         margin: 0 0.5rem;
     }
 }
+
+#sakura-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none; /* Allows clicks to pass through */
+    z-index: -1; /* Behind all content, but in front of body bg */
+}
+
+.petal {
+    position: absolute;
+    top: -20px; /* Start off-screen */
+    width: 20px;
+    height: 12px;
+    background: #ffb6c1; /* Sakura Pink */
+    border-radius: 1px 10px 10px 10px;
+    opacity: 0; /* Will be set by JS */
+
+    /* These animations will be customized by JS */
+    animation: fall linear infinite, 
+               sway ease-in-out infinite;
+}
+
+/* Use a darker petal for light mode to ensure visibility */
+body.light-mode .petal {
+    background: #ff8fa3;
+}
+
+/* Vertical fall animation */
+@keyframes fall {
+    from { 
+        transform: translateY(0) rotate(0deg); 
+    }
+    to { 
+        transform: translateY(110vh) rotate(360deg); 
+    }
+}
+
+/* Horizontal sway animation */
+@keyframes sway {
+    0%   { margin-left: 0px; }
+    50%  { margin-left: 40px; }
+    100% { margin-left: 0px; }
+}
