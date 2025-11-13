@@ -1,155 +1,217 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title>トップ • アンジュラのウェブサイト</title>
-    <link rel="icon" type="image/png" href="assets/profile.jpg">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Anjula Meegalla - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/fontawesome.min.css">
+    <link rel="shortcut icon" href="assets/noise.ico">
+    <link rel="icon" href="assets/noise.ico">
+    <link rel="stylesheet" type="text/css" href="assets/wiresphere.concat.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400,300,700,900,100">
+    <link rel="apple-touch-icon" sizes="57x57" href="/ico/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/ico/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/ico/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/ico/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/ico/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/ico/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/ico/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/ico/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/ico/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/ico/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/ico/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/ico/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/ico/favicon-16x16.png">
+    <link rel="manifest" href="/ico/manifest.json">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ico/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <style>
+        .container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 100%
+        }
+
+        .responsive-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%
+        }
+
+        @media (max-width:360px) and (max-width:411px) and (max-width:500px) and (max-width:600px) and (max-width:700px) {
+            .container {
+                padding-top: 1000px
+            }
+        }
+
+        body {
+            background-color: #1d1e22;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overflow-y: hidden;
+            overflow-x: hidden
+        }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
+    </style>
 </head>
+
 <body>
-    <div id="sakura-container"></div>
-
-    <header class="navbar">
-        <div class="navbar-left">
-            <img src="assets/profile.jpg" class="profile-pic">
-            <span class="site-title">アンジュラのウェブサイト :3</span>
-        </div>
-
-        <div class="navbar-right">
-            <a href="/en.html" class="icon-button" id="en-lang-button"> EN </a>
-            
-            <button class="icon-button" id="theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
-    </header>
-
-    <main class="content">
-        <audio id="background-music">
-            <source src="assets/arigatouV.mp3" type="audio/mpeg">
-        </audio>
-        
-        <audio id="page-load-music">
-            <source src="assets/theme.mp3" type="audio/mpeg">
-        </audio>
-
-        <h1 class="main-heading">初めまして、</h1>
-        <div class="name-section">
-            <p class="name-line"><span class="lang-tag">(en)</span> <span class="name">Anjula</span></p>
-            <p class="name-line"><span class="lang-tag">(zh)</span> <span class="name-alt">安茱拉</span></p>
-            <p class="name-line"><span class="lang-tag">(ja)</span> <span class="name-alt">アンジュラ</span></p>
-            <p class="name-line"><span class="lang-tag">(kr)</span> <span class="name-alt">안줄라</span></p>
-        </div>
-        <h1 class="main-heading">です。</h1>
-
-        <p class="bio">AD、SecOps、OSINT に情熱を注いでいる21歳。</p>
-        
-        <div class="status-card"
-            onclick="window.location.href='https://discord.gg/23SqAmqe'" 
-            style="cursor: pointer;">
-            
-            <img src="assets/profile.jpg" alt="Profile" class="status-pic">
-            <div class="status-info">
-                <span class="status-name">an7ula</span>
-                <span class="status-text">ステータスなし :3</span>
-            </div>
-            <div class="status-icon-container">
-                <i class="fab fa-discord status-icon"></i>
-            </div>
-        </div>
-
-        <div class="social-links">
-            <a href="https://github.com/anjulameegalla" target="_blank" rel="noopener noreferrer" class="social-icon">
-                <i class="fab fa-github"></i>
-                <span>ギットハブ</span>
-            </a>
-            <a href="https://www.linkedin.com/in/anjula-meegalla/" target="_blank" rel="noopener noreferrer" class="social-icon">
-                <i class="fab fa-linkedin"></i>
-                <span>リンクトイン</span>
-            </a>
-            <a href="https://anjula.live/blog/" target="_blank" rel="noopener noreferrer" class="social-icon">
-                <i class="fas fa-blog"></i>
-                <span>ブログ</span>
-            </a>
-            <a href="https://www.youtube.com/@Anjula" target="_blank" rel="noopener noreferrer" class="social-icon">
-                <i class="fab fa-youtube"></i>
-                <span>ユーチューブ</span>
-            </a>
-            <a href="mailto:hello@anjula.live" target="_blank" rel="noopener noreferrer" class="social-icon">
-                <i class="fas fa-envelope"></i>
-                <span>メール</span>
-            </a>
-        </div>
-
-    </main>
-    
-    <div class="projects-section">
-        <h2>プロジェクト</h2>
-        <div class="project-category">
-            <div class="category-header">
-                <span>💻 ホームラボプロジェクト</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-            <div class="category-content">
-                <a href="https://github.com/anjulameegalla/az-honeypot-lab" target="_blank" rel="noopener noreferrer" class="project-link">MS Azure ハニーネット攻撃ベクトル分析ラボ</a>
-                <a href="https://github.com/anjulameegalla/soar-edr-lab" target="_blank" rel="noopener noreferrer" class="project-link">SOAR・EDR 自動化インシデントレスポンスラボ</a>
-                <a href="https://github.com/anjulameegalla/win-ad-lab" target="_blank" rel="noopener noreferrer" class="project-link">Windows AD 演習ラボ</a>
-                <a href="https://github.com/anjulameegalla/wazuh-tdr-lab" target="_blank" rel="noopener noreferrer" class="project-link">Wazuh Threat Detection 演習ラボ</a>
-            </div>
-        </div>
-        <div class="project-category">
-            <div class="category-header">
-                <span>🛠️ ツール</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-            <div class="category-content">
-                <a href="https://github.com/anjulameegalla/NameForge" target="_blank" rel="noopener noreferrer" class="project-link">NameForge ツール</a>
-                <a href="https://github.com/anjulameegalla/Synfo" target="_blank" rel="noopener noreferrer" class="project-link">Synfo ツール</a>
-            </div>
-        </div>
-        <div class="project-category">
-            <div class="category-header">
-                <span>📄 レポート • ノート</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-            <div class="category-content">
-                <a href="#" class="project-link">THM Vulnnet Roasted レポート</a>
-                <a href="#" class="project-link">CWL CRTA Exam 準備ノート</a>
-            </div>
-        </div>
-
-        <!-- HIDDEN!!! you are almost there, find & email me the "SECRET" code --><!--a secret href="https://anjula.live/blog" class="scramble-text special-link" target="_blank" rel="noopener noreferrer">[ paradox=pass* ]</a>
-        <div class="project-category">
-            <div class="category-header">
-                <span>#</span>
-                <span class="dropdown-arrow">▼</span>
-            </div>
-            <div class="category-content">
-                <a href="#" class="project-link">##</a>
-            </div>
-        </div>
-    </div-->
-
-    <div class="sticky-image-container">
-        <img src="assets/arigatou.gif" class="sticky-image">
+    <div class="preloader" id="preloader"> 
+        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 257.7 223.2" xml:space="preserve">
+            <g stroke-width="6">
+                <polygon class="st0" points="69.6,214.2 10.4,111.6 69.6,9 188.1,9 247.3,111.6 188.1,214.2 "/>
+                <line class="st0" x1="69.6" y1="9" x2="188.1" y2="214.2"/>
+                <line class="st0" x1="69.6" y1="214.2" x2="188.1" y2="9"/>
+                <line class="st0" x1="10.4" y1="111.6" x2="247.3" y2="111.6"/>
+            </g>
+        </svg>
     </div>
+    <div class="stage">
+        <div class="backgroundStack" id="backgroundStack">
+            <div class="backgroundStack-solidColor" id="backgroundStack-solidColor"></div>
+            <div class="backgroundStack-pic" id="backgroundStack-pic"></div> 
+            <canvas class="backgroundStack-gradient" id="backgroundStack-gradient"></canvas>
+            <div class="backgroundStack-3d" id="backgroundStack-3d"></div>
+            <div class="backgroundStack-noise" id="backgroundStack-noise"></div>
+        </div>
+        <div class="stage-header">
+            <h1><span style="text-transform: none;"></span>I'm Anjula</h1>
+            <h2 id="stage-header-tagline"> 
+                <span>Undergraduate</span>
+                <span>Purple Teamer</span>
+                <span>Security Researcher</span>
+                <span>Script Kiddie</span>
+            </h2>
+        </div>
+        <div id="redCountdown" class="redCountdown"></div>
+        <nav class="stage-nav" id="stage-nav">
+            <ul>
 
-    <footer>
-        <div class="footer-left">
-            <span>© anjula 2025年 ~にゃー</span>
+                <li>
+                    <a class="nice-link" href="#" data-page="about">
+                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>About Anjula</span></a>
+                </li>
+                <li>
+                    <a class="nice-link" href="#" data-page="contact">
+                        <div class="hover"><span></span><span></span><span></span><span></span></div><span>Contact Anjula</span></a>
+                </li>
+            </ul>
+        </nav>
+        <div class="content-close" id="content-close">
+            <a class="nice-link" href="#">
+                <div class="hover"><span></span><span></span><span></span><span></span></div><span><i class="fa fa-angle-left"></i></span></a>
         </div>
-        <div class="footer-right">
-            <a href="https://www.youtube.com/@senzawa" target="_blank" rel="noopener noreferrer">音楽クレジット</a>
-            <a href="https://gtmetrix.com/reports/anjula.live/CgdYdpSJ/" target="_blank" rel="noopener noreferrer">システムの状態 ●</a>
+        <div class="content" id="content">
+            <div class="wrapper">
+                <h2 class="content-title" id="content-title">About Anjula</h2>
+                <div class="content-content content-content--about" id="content-content--about">
+                    <div class="content-textwrapper" style="padding-top: 10px;">
+                        <h1>About Anjula</h1><br>
+
+                        <img style="display: block; margin-left: auto; margin-right: auto; width: 50%; border-radius: 8px;" src="assets/anjula.png">
+                        <br>
+                        
+                        <p>As a <strong>cybersecurity undergraduate</strong> at NIT, Welisara, Sri Lanka, I am deeply focused on practical security domains, including <strong>Security Operations (SecOps), Active Directory, Linux Administration, and OSINT.</strong> I am actively applying and expanding my technical skills through dedicated hands-on projects.</p>
+
+                        <p>I firmly believe in the power of <strong>practical learning</strong> <strong>and hands-on experience</strong> over just theoretical knowledge. It's all about developing the ability to learn, troubleshoot, and adapt effectively to become an expert in cybersecurity.</p>
+
+                        <p>You can connect with me on LinkedIn or explore my blogs— links are available on the Contact page. </p>
+
+                        <p>🌟 <strong>Let's keep it fun, keep it secure, and always keep learning!</strong></p>
+
+                    </div>
+                    <br>
+
+                    <p style="text-align:center;margin-top: 10px;margin-bottom: 10px;">© 2025. All rights reserved.</p>
+
+                    <span></span>
+                </div>
+
+                <div class="content-content content-content--contact" id="content-content--contact">
+                    <div class="contact-map" id="contact-map"> </div>
+                    <ul class="contact-grid">
+                        <li>
+                        <div class="wrapper">
+                            <a href="https://github.com/anjulameegalla" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style="color: white; text-decoration: none; display: flex; align-items: center; gap: 20px;">
+                            <i class="fab fa-github fa-3x"></i>
+                            <div>
+                                <h3>GitHub</h3>
+                                <h3>Connect with me on GitHub</h3>
+                            </div>
+                            </a>
+                        </div>
+                        </li>
+                    <li>
+                        <div class="wrapper">
+                        <a href="https://www.linkedin.com/in/anjula-meegalla/" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style="color: white; text-decoration: none; display: flex; align-items: center; gap: 20px;">
+                            <i class="fab fa-linkedin fa-3x"></i>
+                            <div>
+                            <h3>LinkedIn</h3>
+                            <h3>Connect with me on LinkedIn</h3>
+                            </div>
+                        </a>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="wrapper">
+                        <a href="https://anjula.live/blog" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            style="color: white; text-decoration: none; display: flex; align-items: center; gap: 20px;">
+                            <i class="fas fa-blog fa-3x"></i>
+                            <div>
+                            <h3>Blogs</h3>
+                            <h3>Explore my latest articles</h3>
+                            </div>
+                        </a>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="wrapper">
+                        <a href="mailto:hello@anjula.live" 
+                            style="color: white; text-decoration: none; display: flex; align-items: center; gap: 20px;">
+                            <i class="fas fa-envelope fa-3x"></i>
+                            <div>
+                            <h3>Email</h3>
+                            <span>hello@anjula.live</span>
+                            </div>
+                        </a>
+                        </div>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            </div>
         </div>
-    </footer>
-    
-    <script src="script.js"></script>
+    </div>
+    <div class="col-md-6">
+        <script src="assets/jquery-2.2.4.min.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="config.js"></script>
+        <script src="assets/wiresphere.concat.min.js"></script>
+    </div>
 </body>
+
 </html>
