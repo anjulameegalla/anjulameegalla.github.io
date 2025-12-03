@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Intrusion Detection & Active Threat Response with Wazuh | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;             /* Enable flexbox */
+            align-items: center;       /* Vertically align center */
+        }
+        
+        /* Date remains on the left by default */
+        .postdate { 
+            display: inline-block; 
+        }
+
+        /* Tags pushed to the right */
+        .article-tag { 
+            margin-left: auto;        /* Pushes tags to the far right */
+            display: inline-block;
+        }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        .content h3 { margin-top: 1.5rem; color: var(--text-color); }
+        blockquote { border-left: 4px solid var(--accent-color); margin: 1rem 0; padding-left: 1rem; color: var(--meta-color); }
+        
+        /* Footer */
+        #footer { margin-top: 4rem; border-top: 1px dotted var(--border-color); padding-top: 1rem; font-size: 0.8rem; color: var(--meta-color); display: flex; justify-content: space-between; }
+        
+        /* Icons (Mock for template) */
+        .fas, .fab { font-style: normal; }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; color: #24292e; }
+
+        /* Ensure images fit container */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; border: 1px solid var(--border-color); }
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Intrusion Detection & Active Threat Response with Wazuh
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-12-03" itemprop="datePublished">Dec 03, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">Wazuh</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">Blue Team</a>,
+                        <a class="tag-link-link" href="#" rel="tag">Linux</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                <p>
+                    This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a <strong>brute-force attack</strong> using <strong>Hydra</strong> against a monitored <strong>Ubuntu Agent</strong> VM.
+                </p>
+                <p>
+                    The Wazuh agent on the Ubuntu server detects this hostile activity, collects the relevant logs, and forwards them to the central <strong>Wazuh Manager</strong>. Upon analyzing the data and identifying the signature of the brute-force attack, the manager triggers an active response, automatically deploying a new <strong>firewall rule</strong> on the agent to block the attacker's IP address and neutralize the threat.
+                </p>
+
+                <h2>Lab Overview</h2>
+                <img src="images/diagram.png" alt="Lab Overview Diagram">
+                
+                <p><strong>Utilities Used:</strong></p>
+                <ul>
+                    <li>DigitalOcean - 2x Ubuntu 24.04 Droplets</li>
+                    <li>VMWare - Kali VM</li>
+                    <li>Termius - for SSH session mgmt</li>
+                </ul>
+
+                <h2>Setting up Wazuh Manager</h2>
+
+                <h3>Install Wazuh Manager</h3>
+                <p>We start by installing the manager on our primary Ubuntu Droplet using the official installation script:</p>
+                
+                <pre><code>curl -sO https://packages.wazuh.com/&lt;latest&gt;/wazuh-install.sh && sudo bash ./wazuh-install.sh -a</code></pre>
+
+                <p>Copy the username and password generated at the end of the installation. If you forgot to save the password, you can recover it with this command:</p>
+                
+                <pre><code>sudo tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt</code></pre>
+
+                <p>After installation, ensure the firewall allows traffic on port 443 and verify the service status:</p>
+
+                <pre><code>ufw allow 443
+systemctl status wazuh-manager.service</code></pre>
+
+                <img src="images/image.png" alt="Wazuh Manager Service Status">
+
+                <p>Once running, we can log in to the Wazuh dashboard.</p>
+                <img src="images/image 1.png" alt="Wazuh Login Screen">
+                <img src="images/image 2.png" alt="Wazuh Dashboard Overview">
+
+                <h2>Setup Wazuh Agent on Ubuntu</h2>
+                <p>For the Linux victim machine, we select the DEB amd64 version and run the installation commands.</p>
+
+                <img src="images/image 6.png" alt="Linux Agent Selection">
+                <img src="images/image 7.png" alt="Linux Installation Command">
+
+                <p>Start the agent and check its status:</p>
+                <pre><code>sudo systemctl daemon-reload
+sudo systemctl enable wazuh-agent
+sudo systemctl start wazuh-agent
+sudo systemctl status wazuh-agent</code></pre>
+
+                <img src="images/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png" alt="Ubuntu Agent Status">
+                <img src="images/image 8.png" alt="Ubuntu Agent Active on Dashboard">
+
+                <h2>Configure Ubuntu Agent & Active Response</h2>
+                
+                <h3>Agent Configuration</h3>
+                <p>Ensure the agent config points to the correct Manager IP by editing <code>/var/ossec/etc/ossec.conf</code>.</p>
+                <pre><code>nano /var/ossec/etc/ossec.conf</code></pre>
+                <img src="images/image 9.png" alt="Editing ossec.conf">
+
+                <h3>Adding Active Response Rule</h3>
+                <p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired. This is done in the manager's <code>ossec.conf</code>.</p>
+
+                <pre><code>&lt;active-response&gt;
+  &lt;command&gt;firewall-drop&lt;/command&gt;
+  &lt;location&gt;local&lt;/location&gt;
+  &lt;rules_id&gt;5710&lt;/rules_id&gt;
+  &lt;timeout&gt;600&lt;/timeout&gt;
+&lt;/active-response&gt;</code></pre>
+
+                <img src="images/image 10.png" alt="Active Response Configuration">
+
+                <h2>PoC [Proof-of-Concept]</h2>
+                <p>To test the defense, I used <strong>Hydra</strong> (downloadable from <a href="https://github.com/vanhauser-thc/thc-hydra.git">GitHub</a>) on a Kali Linux machine to perform an SSH brute-force attack against the Ubuntu agent.</p>
+
+                <h3>1. Initial Connectivity</h3>
+                <p>First, verify we can ping the target before the attack.</p>
+                <pre><code>ping &lt;ubuntu vm public ip&gt;</code></pre>
+                <img src="images/image 11.png" alt="Successful Ping Test">
+
+                <h3>2. Execute Brute-Force Attack</h3>
+                <p>Run Hydra using the <code>rockyou.txt</code> wordlist.</p>
+                <pre><code>sudo hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://139.59.126.244</code></pre>
+                <img src="images/image 12.png" alt="Hydra Attack Execution">
+
+                <h3>3. Verify Active Response</h3>
+                <p>After the attack starts, try pinging the VM again. It should fail (timeout) because the firewall rule has been automatically applied.</p>
+                <img src="images/image 15.png" alt="Ping Failed after Attack">
+
+                <h3>4. Wazuh Logs</h3>
+                <p>The Wazuh dashboard confirms the events: SSHd failed login attempts followed by the <code>Host firewall-drop</code> active response.</p>
+                <img src="images/image 13.png" alt="Wazuh Alert Logs">
+                <img src="images/image 14.png" alt="Firewall Drop Event">
+
+                <h2>Challenges & Lessons Learned</h2>
+                <p>Setting up Active Response is powerful but requires careful tuning. During this lab, I encountered a few interesting hurdles:</p>
+                <ul>
+                    <li><strong>Timeout Configuration:</strong> I initially set the <code>&lt;timeout&gt;</code> to a very short duration for testing. This made it hard to verify if the block was actually working because the IP would get unbanned before I could switch windows to ping it. Increasing it to 600 seconds (10 minutes) gave me ample time to verify the block.</li>
+                    <li><strong>Agent Connectivity:</strong> My Ubuntu agent initially refused to connect to the manager. It turned out that the DigitalOcean droplet firewall was blocking port 1514 by default. I had to explicitly allow this port on the cloud provider's firewall dashboard, not just inside the OS with UFW.</li>
+                    <li><strong>Rule ID Specificity:</strong> Choosing the right <code>rules_id</code> for the active response is critical. If you pick a generic rule (like "authentication failed"), you might accidentally lock out legitimate users who mistype their password once. Targeting Rule 5710 (multiple failed attempts) ensures we only punish brute-force behavior.</li>
+                </ul>
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

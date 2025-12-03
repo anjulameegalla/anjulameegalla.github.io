@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Automated Incident Response with SOAR & EDR Integration | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;             /* Enable flexbox */
+            align-items: center;       /* Vertically align center */
+        }
+        
+        /* Date remains on the left by default */
+        .postdate { 
+            display: inline-block; 
+        }
+
+        /* Tags pushed to the right */
+        .article-tag { 
+            margin-left: auto;        /* Pushes tags to the far right */
+            display: inline-block;
+        }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        .content h3 { margin-top: 1.5rem; color: var(--text-color); }
+        blockquote { border-left: 4px solid var(--accent-color); margin: 1rem 0; padding-left: 1rem; color: var(--meta-color); }
+        
+        /* Footer */
+        #footer { margin-top: 4rem; border-top: 1px dotted var(--border-color); padding-top: 1rem; font-size: 0.8rem; color: var(--meta-color); display: flex; justify-content: space-between; }
+        
+        /* Icons (Mock for template) */
+        .fas, .fab { font-style: normal; }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; }
+
+        /* Ensure images fit container */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; border: 1px solid var(--border-color); }
+
+        /* Video Embed */
+        video {
+            width: 100%;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Automated Incident Response with SOAR & EDR Integration
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-12-03" itemprop="datePublished">Dec 03, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">SOAR</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">EDR</a>,
+                        <a class="tag-link-link" href="#" rel="tag">Automation</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                <p>
+                    This project outlines the creation of a SOAR lab that integrates with an EDR tool to automate incident handling. The core idea is to build an automated workflow that detects, analyzes, and responds to security threats on an endpoint with minimal human intervention. This setup is designed to significantly reduce the manual workload for security teams and speed up the response to potential attacks.
+                </p>
+                
+                <h2>Demo</h2>
+                <video controls poster="">
+                    <source src="videos/demo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p><em>Above: A live demonstration of the automated detection and alerting workflow.</em></p>
+
+                <h2>Lab Overview</h2>
+                <p>The lab uses <strong>LimaCharlie</strong> as the EDR to monitor endpoints and detect threats, <strong>Tines</strong> as a no-code automation platform to orchestrate the response workflow, and <strong>Slack</strong> for sending real-time notifications.</p> 
+                
+                <p>The project involves installing a LimaCharlie agent on a Windows Server, configuring detection rules for malicious activity (like credential dumping via LaZagne), and then using Tines to automate actions based on the alerts.</p>
+
+                <h2>Playbook Workflow</h2>
+                <p>The following diagram illustrates the flow of data from the endpoint to the EDR, and finally to the SOAR platform for decision making and alerting.</p>
+                
+                <img src="images/diagram.png" alt="Playbook Workflow Diagram">
+
+                <p>Here's the full playbook config <a href="files/soar-edr-playbook.json" download>JSON file</a>.</p>
+
+
+                <h2>LimaCharlie Configuration</h2>
+
+                <h3>Installation</h3>
+                <p>To begin, we install the LimaCharlie sensor on the target Windows machine:</p>
+                <pre><code>lc_sensor.exe -i YOUR_INSTALLATION_KEY</code></pre>
+
+                <img src="images/limacharlie.png" alt="LimaCharlie Interface">
+
+                <h3>Detection & Response Rule</h3>
+                <p>We configure a specific rule to detect the usage of <strong>LaZagne</strong>, a credential dumping tool. The rule looks for process events ending in "LaZagne.exe", specific command line arguments, or a known file hash.</p>
+
+                <strong>Detect:</strong>
+                <pre><code>events:
+  - NEW_PROCESS
+  - EXISTING_PROCESS
+op: and
+rules:
+  - op: is windows
+  - op: or
+    rules:
+    - case sensitive: false
+      op: ends with
+      path: event/FILE_PATH
+      value: LaZagne.exe
+    - case sensitive: false
+      op: contains
+      path: event/COMMAND_LINE
+      value: LaZagne
+    - case sensitive: false
+      op: contains
+      path: event/COMMAND_LINE
+      value: ' all'
+    - case sensitive: false
+      op: is
+      path: event/HASH
+      value: 'dc06d62ee95062e714f2566c95b8edaabfd387023b1bf98a09078b84007d5268'</code></pre>
+
+                <strong>Respond:</strong>
+                <pre><code>- action: report
+  name: detect-hacktool-lazagne
+  metadata:
+    author: Anon
+    description: Detects the execution of LaZagne credential dumping tool via file path, command line, or file hash.
+    falsepositives: 
+      - Legitimate penetration testing tools named 'lazagne'
+    level: high
+    tags:
+      - attack.credential_access
+    name: HackTool - Lazagne</code></pre>
+
+                <h2>Tines Automation Configuration</h2>
+                <p>Once the alert is generated by LimaCharlie, Tines picks it up to orchestrate the response. We structure the message to extract key details like the source IP, username, and file path.</p>
+
+                <h3>Message Structure</h3>
+                <pre><code>Detection Info.
+
+Title : &lt;&lt;retrieve_detections.body.cat&gt;&gt;
+Time : &lt;&lt;retrieve_detections.body.detect.routing.event_time&gt;&gt;
+Computer : &lt;&lt;retrieve_detections.body.detect.routing.hostname&gt;&gt;
+Source IP : &lt;&lt;retrieve_detections.body.detect.routing.ext_ip&gt;&gt;
+Username : &lt;&lt;retrieve_detections.body.detect.event.USER_NAME&gt;&gt;
+File Path : &lt;&lt;retrieve_detections.body.detect.event.FILE_PATH&gt;&gt;
+Command Line : &lt;&lt;retrieve_detections.body.detect.event.COMMAND_LINE&gt;&gt;
+Sensor ID : &lt;&lt;retrieve_detections.body.detect.routing.sid&gt;&gt;
+
+Detection Link : &lt;&lt;retrieve_detections.body.link&gt;&gt;</code></pre>
+
+                <h3>Tines Storybook</h3>
+                <p>The visual storybook in Tines handles the logic: retrieving the alert, formatting the data, and dispatching it to the communication channels.</p>
+                <img src="images/tinesPlaybook.png" alt="Tines Storybook Workflow">
+
+                <h2>Challenges & Lessons Learned</h2>
+                <p>While the final playbook ran smoothly, the setup process came with a few hurdles that are worth noting for anyone attempting to replicate this:</p>
+                <ul>
+                    <li><strong>False Positives:</strong> Initially, the detection rule was too broad. I triggered a few alerts just by renaming a text file to include "LaZagne". I had to tighten the logic to specifically look for process execution events rather than just file system changes.</li>
+                    <li><strong>JSON Parsing in Tines:</strong> Extracting nested JSON data from the LimaCharlie payload was tricky. I learned that using the "Explode" mode in Tines is crucial when the event structure varies between different alert types.</li>
+                    <li><strong>Latency:</strong> There is a slight delay (approx 30-60 seconds) between the detection on the endpoint and the Slack notification. For critical containment actions, this latency is acceptable, but real-time blocking should ideally happen at the EDR level itself.</li>
+                </ul>
+
+                <h2>Evidence & Results</h2>
+                <p>When the attack is simulated on the endpoint, the automation triggers successfully, delivering alerts via both Email and Slack.</p>
+
+                <h3>Email Alerts</h3>
+                <img src="images/emailAlerts.png" alt="Evidence of Email Alerts">
+
+                <h3>Slack Channel Alerts</h3>
+                <img src="images/slackAlerts.png" alt="Evidence of Slack Alerts">
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

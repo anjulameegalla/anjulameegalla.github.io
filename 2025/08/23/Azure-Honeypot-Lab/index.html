@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Cloud-Based Honeypot: Analyzing RDP Attacks | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Date remains on the left */
+        .postdate { 
+            display: inline-block; 
+        }
+
+        /* Tags pushed to the right */
+        .article-tag { 
+            margin-left: auto;
+            display: inline-block;
+        }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        
+        /* Blockquotes */
+        blockquote { border-left: 4px solid var(--accent-color); margin: 1rem 0; padding-left: 1rem; color: var(--meta-color); }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; color: #24292e; }
+
+        /* Table Styling */
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { border: 1px solid var(--border-color); padding: 0.5rem; text-align: left; }
+        th { color: var(--text-color); background-color: #f6f8fa; }
+
+        /* Images */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; border: 1px solid var(--border-color); }
+
+        /* Video Embed */
+        video {
+            width: 100%;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Footer */
+        #footer { 
+            margin-top: 4rem; 
+            border-top: 1px dotted var(--border-color); 
+            padding-top: 1rem; 
+            font-size: 0.8rem; 
+            color: var(--meta-color); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        #footer ul { 
+            list-style: none; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+        }
+        #footer li { 
+            display: inline-block; 
+            margin-left: 1rem; 
+        }
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Cloud-Based Honeypot: Analyzing RDP Attacks
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-12-02" itemprop="datePublished">Dec 02, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">Azure</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">Security</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                <p>
+                    In this project, we are setting up an <strong>Azure Honeypot Lab</strong> using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the internet, we can gather data on where attacks are originating from and visualize them on a world map.
+                </p>
+                
+                <p><strong>Goal:</strong> Transform raw Windows Event Logs into a visual Threat Intelligence Map.</p>
+                
+                <video controls poster="">
+                    <source src="videos/demo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <p><em>Above: A timelapse of the live attack map populating over a 24-hour period.</em></p>
+
+                <h2>Lab Architecture Overview</h2>
+                <p>The lab consists of three main components:</p>
+                <ul>
+                    <li><strong>Windows 10 VM:</strong> Acts as the honeypot.</li>
+                    <li><strong>Log Analytics Workspace:</strong> Ingests the custom logs.</li>
+                    <li><strong>Microsoft Sentinel:</strong> Serves as the SIEM for visualization.</li>
+                </ul>
+                
+                <img src="images/overview.png" alt="Architecture Overview Diagram">
+                
+                <h3>The Workflow</h3>
+                <ol>
+                    <li>Attackers attempt to RDP into the exposed VM.</li>
+                    <li>Windows records these as <strong>Event ID 4625</strong> (Failed Logon).</li>
+                    <li>A custom PowerShell script extracts the IP, Username, and Timestamp.</li>
+                    <li>The script queries a Geolocation API to get the physical location of the IP.</li>
+                    <li>Data is written to a custom log file (<code>failed_rdp.log</code>) and sent to Azure Sentinel.</li>
+                </ol>
+
+                <h2>Prerequisites & Setup</h2>
+                <p>Before running the script, ensure you have the following:</p>
+                <ul>
+                    <li><strong>Azure Resources:</strong> A Virtual Machine, Network Security Group (allowing RDP), and a Log Analytics Workspace.</li>
+                    <li><strong>IP2Location API Key:</strong> You will need a free API key to enrich IP addresses with geo-data. <a href="https://ipgeolocation.io/ip-location-api.html">Get your API Key here</a>.</li>
+                </ul>
+
+                <h2>The PowerShell Exporter</h2>
+                <p>This PowerShell script is the heart of the honeypot. It monitors the Windows Event Viewer for security events, specifically looking for failed login attempts.</p>
+
+                <blockquote>
+                    <strong>Key Configuration:</strong> Set your <code>$API_KEY</code> variable and ensure the <code>$LOGFILE_PATH</code> is accessible (e.g., <code>C:\ProgramData\failed_rdp.log</code>).
+                </blockquote>
+
+                <pre><code># Partial Script Snippet for Context
+$API_KEY      = "YOUR_API_KEY_HERE"
+$LOGFILE_NAME = "failed_rdp.log"
+$LOGFILE_PATH = "C:\ProgramData\$($LOGFILE_NAME)"
+
+# Filter for Failed RDP events (EventID 4625)
+$XMLFilter = @'
+&lt;QueryList&gt; 
+   &lt;Query Id="0" Path="Security"&gt;
+         &lt;Select Path="Security"&gt;
+              *[System[(EventID='4625')]]
+          &lt;/Select&gt;
+    &lt;/Query&gt;
+&lt;/QueryList&gt; 
+'@</code></pre>
+                
+                <p>You can <a href="files/honeypot.ps1" download>download the full script here</a>.</p>
+                
+                <h3>How the Script Works</h3>
+                <ul>
+                    <li><strong>Event Monitoring:</strong> An infinite loop continuously checks Windows Event Viewer for Event ID <code>4625</code>.</li>
+                    <li><strong>Data Extraction:</strong> When a failed login is found, the script pulls the <code>Source IP</code> ($event.properties[19]), <code>Username</code>, and <code>Timestamp</code>.</li>
+                    <li><strong>Geolocation Enrichment:</strong> The script pauses for 1 second (to avoid rate limits) and queries the <em>ipgeolocation.io</em> API to get the Latitude, Longitude, and Country of the attacker.</li>
+                    <li><strong>Logging:</strong> The enriched data is appended to <code>failed_rdp.log</code> in a format that Azure can easily parse.</li>
+                </ul>
+
+                <img src="images/pwshLogs.png" alt="PowerShell Script Running and Generating Logs">
+
+                <h2>Ingesting & Querying Data in Azure</h2>
+                <p>Once the log file is being populated on the VM, we configure the Log Analytics Workspace to ingest this custom log.</p>
+
+                <h3>1. Parsing the Custom Log</h3>
+                <p>Use the following KQL (Kusto Query Language) query to parse the raw data fields from the custom log file:</p>
+
+                <pre><code>FAILED_RDP_GEO_CL 
+| extend username = extract(@"username:([^,]+)", 1, RawData),
+         timestamp = extract(@"timestamp:([^,]+)", 1, RawData),
+         latitude = extract(@"latitude:([^,]+)", 1, RawData),
+         longitude = extract(@"longitude:([^,]+)", 1, RawData),
+         sourcehost = extract(@"sourcehost:([^,]+)", 1, RawData),
+         state = extract(@"state:([^,]+)", 1, RawData),
+         label = extract(@"label:([^,]+)", 1, RawData),
+         destination = extract(@"destinationhost:([^,]+)", 1, RawData),
+         country = extract(@"country:([^,]+)", 1, RawData)
+| where destination != "samplehost"
+| where sourcehost != ""
+| summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude</code></pre>
+
+                <img src="images/logQuery.png" alt="KQL Query Results in Azure">
+
+                <h3>2. Visualizing the Attack Map</h3>
+                <p>To build the visual map in Microsoft Sentinel Workbooks, we use a similar query but summarize by location for the map render:</p>
+
+                <pre><code>...
+| summarize event_count=count() by latitude, longitude, sourcehost, label, destination, country</code></pre>
+
+                <h2>Results & Analysis</h2>
+                <p>After leaving the honeypot running for 24 hours, the map populates with live attack data. The visualization below shows the volume and origin of RDP brute-force attempts.</p>
+
+                <img src="images/sentinelMap2.png" alt="World Map of Incoming Attacks after 24 hours">
+
+                <h3>Top Attack Sources</h3>
+                <p>The data revealed significant activity from specific regions. Here is a breakdown of the top sources captured during the test run:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>No. of Attempts</th>
+                            <th>Common IPs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Poland</td>
+                            <td>16.4K</td>
+                            <td>149.50.96.98</td>
+                        </tr>
+                        <tr>
+                            <td>Mozambique</td>
+                            <td>5.88K</td>
+                            <td>160.242.36.216</td>
+                        </tr>
+                        <tr>
+                            <td>China</td>
+                            <td>4.17K</td>
+                            <td>125.75.66.99</td>
+                        </tr>
+                        <tr>
+                            <td>Netherlands</td>
+                            <td>3.85K</td>
+                            <td>92.63.197.23 , 185.170.144.3 , 84.84.121.37</td>
+                        </tr>
+                        <tr>
+                            <td>UK</td>
+                            <td>1.61K</td>
+                            <td>80.94.95.215</td>
+                        </tr>
+                        <tr>
+                            <td>Korea</td>
+                            <td>1016</td>
+                            <td>115.92.155.19 , 122.202.246.213</td>
+                        </tr>
+                        <tr>
+                            <td>India</td>
+                            <td>709</td>
+                            <td>203.192.237.115 , 103.119.179.133 , 125.18.138.42</td>
+                        </tr>
+                        <tr>
+                            <td>Serbia</td>
+                            <td>358</td>
+                            <td>109.92.111.135</td>
+                        </tr>
+                        <tr>
+                            <td>Nepal</td>
+                            <td>340</td>
+                            <td>110.44.116.60</td>
+                        </tr>
+                        <tr>
+                            <td>Sudan</td>
+                            <td>220</td>
+                            <td>41.209.126.101</td>
+                        </tr>
+                        <tr>
+                            <td>USA</td>
+                            <td>140</td>
+                            <td>185.243.96.107 , 67.205.146.203</td>
+                        </tr>
+                        <tr>
+                            <td>Russia</td>
+                            <td>64</td>
+                            <td>185.39.19.42</td>
+                        </tr>
+                        <tr>
+                            <td>Ukraine</td>
+                            <td>47</td>
+                            <td>185.243.96.107</td>
+                        </tr>
+                        <tr>
+                            <td>Luxembourg</td>
+                            <td>30</td>
+                            <td>158.64.24.12</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><em>Note: It is fascinating to see over 16,000 attempts originating from a single IP in Poland within a 24-hour window.</em></p>
+
+                <h2>Challenges & Lessons Learned</h2>
+                <p>Running this honeypot in a real cloud environment taught me several practical lessons about Azure management and API integration:</p>
+                <ul>
+                    <li><strong>API Rate Limiting:</strong> The script initially failed to log all attacks because the free tier of the Geolocation API has a rate limit (approx. 1,000 requests per day). I had to ensure the script included a <code>Start-Sleep</code> command to pause execution between queries to avoid hitting the 429 "Too Many Requests" error.</li>
+                    <li><strong>Azure Cost Management:</strong> Leaving a Virtual Machine and a Log Analytics Workspace running can incur unexpected costs. I learned the importance of setting up "Auto-Shutdown" on the VM and monitoring the data ingestion volume, as ingesting thousands of logs per day can impact the Azure bill.</li>
+                    <li><strong>KQL Optimization:</strong> When you have over 16,000 logs from a single source (like the IP from Poland), the map visualization can become cluttered or slow to render. I learned to use <code>summarize</code> efficiently in KQL to group data by country or region before rendering the map points.</li>
+                </ul>
+
+                <h2>Conclusion</h2>
+                <p>This project demonstrates how easily a Windows machine exposed to the internet attracts malicious traffic. By integrating PowerShell scripting with Azure Sentinel, we can transform noise into actionable threat intelligence.</p>
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

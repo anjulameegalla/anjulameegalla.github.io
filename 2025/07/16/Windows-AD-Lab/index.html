@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Windows Active Directory Practice Lab on Azure | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;
+            align-items: center;
+        }
+        .postdate { display: inline-block; }
+        .article-tag { margin-left: auto; display: inline-block; }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        .content h3 { margin-top: 1.5rem; color: var(--text-color); }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; color: #24292e; }
+
+        /* Images */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; border: 1px solid var(--border-color); }
+        
+        /* Lists */
+        ul { margin-left: 1rem; }
+        
+        /* Horizontal Rule */
+        hr { border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0; }
+
+        /* Footer */
+        #footer { 
+            margin-top: 4rem; 
+            border-top: 1px dotted var(--border-color); 
+            padding-top: 1rem; 
+            font-size: 0.8rem; 
+            color: var(--meta-color); 
+            display: flex; 
+            justify-content: space-between; /* Pushes Copyright to left, Link to right */
+            align-items: center; 
+        }
+
+        /* Fix for footer links showing bullet points */
+        #footer ul { 
+            list-style: none; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+        }
+        
+        #footer li { 
+            display: inline-block; 
+            margin-left: 1rem; 
+        }
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Windows Active Directory Practice Lab on Azure
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-12-04" itemprop="datePublished">Dec 04, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">Active Directory</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">Azure</a>,
+                        <a class="tag-link-link" href="#" rel="tag">Windows Server</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+
+                <p>
+                    This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment ("Gotham City") with a Domain Controller and multiple client workstations to practice AD administration, user management, and network configuration.
+                </p>
+
+                <h2>Lab Architecture & Resources</h2>
+                <p>The lab is contained within a single Resource Group (<code>ADLab</code>) and Virtual Network (<code>ADLabNet</code> - 10.0.1.0/24). It consists of three primary Virtual Machines:</p>
+                
+                <ul>
+                    <li><strong>GOTHAM-DC:</strong> Windows Server 2019 (The Domain Controller)</li>
+                    <li><strong>THEBATMAN:</strong> Windows 10 Enterprise (User: Bruce Wayne)</li>
+                    <li><strong>WAYNEENT:</strong> Windows 10 Enterprise (User: Lucius Fox)</li>
+                </ul>
+                
+                <!--h2>AD lab creation - Initial steps</h2>
+
+                <h3>Creating Azure resources</h3>
+                <ul>
+                    <li>Resource group : ADLab</li>
+                    <li>VNet : ADLabNet / default range : 10.0.1.0/24</li>
+                </ul-->
+
+                <h3>Domain controller</h3>
+                <ul>
+                    <li>VM name : GOTHAM-DC</li>
+                    <li>Image : Windows Server 2019 Datacenter</li>
+                    <li>Username : anjula</li>
+                    <li>Password : labuser123Anjula</li>
+                    <li>Vnet : ADLabNet (10.0.1.0/24)</li>
+                    <li>Connection : RDP (3389)</li>
+                </ul>
+
+                <h3>User machine 1</h3>
+                <ul>
+                    <li>VM name : THEBATMAN</li>
+                    <li>Image : Windows 10 Enterprise</li>
+                    <li>Username : bwayne</li>
+                    <li>Password : myPassword01</li>
+                    <li>Vnet : ADLabNet (10.0.1.0/24)</li>
+                    <li>Connection : RDP (3389)</li>
+                </ul>
+
+                <h3>User machine 2</h3>
+                <ul>
+                    <li>VM name : WAYNEENT</li>
+                    <li>Image : Windows 10 Enterprise</li>
+                    <li>Username : lfox</li>
+                    <li>Password : myPassword02</li>
+                    <li>Vnet : ADLabNet (10.0.1.0/24)</li>
+                    <li>Connection : RDP (3389)</li>
+                </ul>
+
+                <hr>
+
+                <h3>Connecting to DC VM</h3>
+                <p>RDP into GOTHAM-DC with Username : anjula & Password : labuser123Anjula</p>
+                <img src="images/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png" alt="RDP Connection">
+
+                <h3>Configuring services</h3>
+                <p>Launch Server manager > Add roles and features > Add roles and features wizard</p>
+                <ul>
+                    <li>Server Roles : Active Directory Domain Service</li>
+                </ul>
+                <p>Install service.</p>
+                <p>Choose “Promote this server to a domain controller”.</p>
+
+                <h3>Promoting VM to domain controller</h3>
+                <p>Active directory domain service configuration wizard > Deployment configuration > Add a new forest</p>
+                <ul>
+                    <li>Root domain name : GOTHAM.local</li>
+                    <li>Forest function level : Windows Server 2016</li>
+                    <li>Domain function level : Windows Server 2016</li>
+                    <li>Password : labuser123Anjula</li>
+                    <li>NetBIOS domain name : GOTHAM</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599684_y.jpg" alt="AD Config Wizard">
+                <img src="images/photo_6320918058767599685_y.jpg" alt="Deployment Config">
+                <img src="images/photo_6320918058767599687_y.jpg" alt="Additional Options">
+                <img src="images/photo_6320918058767599688_y.jpg" alt="Prerequisites Check">
+
+                <p>Reboot machine.</p>
+                <p>RDP into GOTHAM-DC with domain credentials; Username : GOTHAM\anjula & Password : labuser123Anjula</p>
+
+                <img src="images/photo_6320918058767599691_x.jpg" alt="Server Manager">
+
+                <h3>Configuring certificate services</h3>
+                <p>Launch Server manager > Add roles and features > Add roles and features wizard</p>
+                <ul>
+                    <li>Server roles : Active Directory Certificate Services</li>
+                </ul>
+                <p>Install service.</p>
+                <p>Choose “Configure Active Directory certificate services on the destination server”.</p>
+
+                <img src="images/photo_6320918058767599692_y.jpg" alt="AD CS Config">
+                <img src="images/photo_6320918058767599693_y.jpg" alt="Role Services">
+
+                <p>AD CS configuration wizard ></p>
+                <ul>
+                    <li>Credentials : GOTHAM\anjula</li>
+                    <li>Role services : Certification Authority</li>
+                    <li>Setup type : Enterprise CA</li>
+                    <li>CA type : Root CA</li>
+                    <li>Private key > Validity period : 99 years</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599694_y.jpg" alt="CA Type">
+                <img src="images/photo_6320918058767599695_y.jpg" alt="Private Key">
+                <img src="images/photo_6320918058767599696_y.jpg" alt="Cryptography">
+                <img src="images/photo_6320918058767599697_y.jpg" alt="Confirmation">
+
+                <p>Configure and reboot machine.</p>
+
+                <hr>
+
+                <h3>Setting up a share</h3>
+                <p>This PC > C:\ Drive > Create new folder “hackme”</p>
+                <p>Launch Server manager > File and storage services > Shares > Tasks > New share wizard ></p>
+                <ul>
+                    <li>File share profile : SMB Share - Quick</li>
+                    <li>Share location > custom path : C:\hackme</li>
+                    <li>Share name : hackme</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599699_y.jpg" alt="Share Config">
+
+                <p>Create and close.</p>
+
+                <hr>
+
+                <h3>Creating domain users</h3>
+                <p>Launch Server manager > Tools > Active Directory users and computers > MARVEL.local</p>
+                <p>Create new Organizational unit (OU) “Groups”</p>
+                <p>Move every entry except “Guest” and “anjula” from Users to Groups</p>
+
+                <img src="images/photo_6320918058767599701_y.jpg" alt="Creating OUs">
+                <img src="images/photo_6320918058767599703_x.jpg" alt="Moving Users">
+                <img src="images/photo_6320918058767599702_y.jpg" alt="OU Structure">
+
+                <p>MARVEL.local > Users ></p>
+                <p>Create new user</p>
+                <ul>
+                    <li>First name : Bruce</li>
+                    <li>Last name : Wayne</li>
+                    <li>User login name : bwayne</li>
+                    <li>Password : Password1</li>
+                    <li>Check “Password never expires”</li>
+                </ul>
+
+                <p>Create another user</p>
+                <ul>
+                    <li>First name : Lucious</li>
+                    <li>Last name : Fox</li>
+                    <li>User login name : lfox</li>
+                    <li>Password : Password2</li>
+                    <li>Check “Password never expires”</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599704_y.jpg" alt="Creating User Bruce">
+                <img src="images/photo_6320918058767599705_x.jpg" alt="Password Settings">
+                <img src="images/photo_6320918058767599707_x.jpg" alt="Creating User Lucius">
+                <img src="images/photo_6320918058767599706_x.jpg" alt="Copying User">
+
+                <p>Copy user “anjula” to create another user</p>
+                <ul>
+                    <li>First name : SQL</li>
+                    <li>Last name : Service</li>
+                    <li>User login name : SQLService</li>
+                    <li>Password : MYpassword123#</li>
+                </ul>
+
+                <p>SQLService > properties ></p>
+                <ul>
+                    <li>Description : “Password is MYpassword123#”</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599708_y.jpg" alt="SQLService Properties">
+                <img src="images/photo_6320918058767599709_x.jpg" alt="SQLService Description">
+                <img src="images/photo_6320918058767599711_x.jpg" alt="User List">
+
+                <hr>
+
+                <h3>Setting up SPNs</h3>
+                <p>Launch Command prompt as administrator.</p>
+                <p>Setup SPN for SQLService account</p>
+
+                <pre><code>setspn -a GOTHAM-DC/SQLService.GOTHAM.local:60111 GOTHAM\SQLService</code></pre>
+
+                <p>Confirm SPN.</p>
+
+                <pre><code>setspn -T GOTHAM.local -Q */*</code></pre>
+
+                <img src="images/d1317293-f3a1-4a5d-b028-a16ac54999de.png" alt="SPN Output">
+                <img src="images/photo_6320918058767599713_y.jpg" alt="SPN Verification">
+
+                <h3>Domain machine IP address</h3>
+                <p>Command prompt ></p>
+                <pre><code>ipconfig</code></pre>
+                <ul>
+                    <li><strong>IP : 10.0.1.4/24</strong></li>
+                </ul>
+
+                <hr>
+
+                <h3>Connecting to user machines</h3>
+                <p>RDP into THEBATMAN with Username : bwayne and Password : myPassword01</p>
+                <p>Launch File explorer > Network</p>
+                <p>Turn on Network discovery.</p>
+                <p>Launch Settings > Network & internet > Ethernet > Change adapter settings</p>
+                <p>Choose Ethernet > properties > Internet Protocol version 4 (TCP/IPv4)</p>
+                <ul>
+                    <li>Preferred DNS server : 10.0.1.4</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599724_y.jpg" alt="DNS Configuration">
+
+                <p>RDP connection will be lost. Reconnect to the same user “bwayne”</p>
+                <p>Launch Settings > Accounts > Access work or school > Connect</p>
+                <p>Choose “Join this device to a local Active Directory domain”.</p>
+                <ul>
+                    <li>Domain name : GOTHAM.local</li>
+                </ul>
+                <p>Join a domain ></p>
+                <ul>
+                    <li>User : anjula</li>
+                    <li>Password : labuser123Anjula</li>
+                </ul>
+
+                <img src="images/photo_6320918058767599725_w.jpg" alt="Join Domain">
+                <img src="images/photo_6320918058767599726_x.jpg" alt="Domain Success">
+
+                <p>Restart machine.</p>
+                <p>RDP into WAYNEENT with Username : lfox and Password : myPassword02</p>
+                <p>Repeat the same process above.</p>
+
+                <h3>Configuring Domain users to user machines</h3>
+                <p>Launch GOTHAM-DC > Server manager > Tools > Active Directory users and computers > MARVEL.local > Computers</p>
+                <p>Both user computers “THEBATMAN” and “WAYNEENT” is listed under the domain.</p>
+
+                <img src="images/photo_6320918058767599728_y.jpg" alt="Computers OU">
+
+                <p>RDP into THEBATMAN with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+                <p>Go to Computer management > Local users and groups > Groups > Administrators.</p>
+                <p>Choose “Add”</p>
+                <p>Select Users, computers, service accounts or groups ></p>
+                <ul>
+                    <li>Enter object names to select : bwayne</li>
+                </ul>
+                <p>Check names, then apply.</p>
+
+                <img src="images/photo_6320918058767599729_y.jpg" alt="Adding bwayne to Admins">
+                <img src="images/photo_6320918058767599732_x.jpg" alt="Admin Group Confirmation">
+
+                <p>RDP into WAYNEENT with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+                <p>Go to Computer management > Local users and groups > Groups > Administrators.</p>
+                <p>Choose “Add”</p>
+                <p>Select Users, computers, service accounts or groups ></p>
+                <ul>
+                    <li>Enter object names to select : lfox</li>
+                </ul>
+                <p>Check names & choose “Add” again</p>
+                <ul>
+                    <li>Enter object names to select : bwayne</li>
+                </ul>
+                <p>Check names, then apply.</p>
+
+                <img src="images/photo_6320918058767599733_x.jpg" alt="Adding lfox to Admins">
+
+                <hr>
+
+                <h3>Re-connecting to machines with Domain user accounts</h3>
+                <p>RDP into THEBATMAN machine with;</p>
+                <ul>
+                    <li>Username : GOTHAM\bwayne</li>
+                    <li>Password : Password1</li>
+                </ul>
+                <p>RDP into WAYNEENT machine with both;</p>
+                <ul>
+                    <li>Username : GOTHAM\bwayne</li>
+                    <li>Password : Password1</li>
+                </ul>
+                <p>and</p>
+                <ul>
+                    <li>Username : GOTHAM\lfox</li>
+                    <li>Password : Password2</li>
+                </ul>
+
+                <h2>Challenges & Lessons Learned</h2>
+                <p>Building this lab in the cloud highlighted a few specific networking nuances:</p>
+                <ul>
+                    <li><strong>DNS Resolution:</strong> The most critical step was manually setting the DNS server on the client VMs to the DC's internal IP (10.0.1.4). Without this, the clients would default to Azure's public DNS and fail to resolve <code>GOTHAM.local</code>.</li>
+                    <li><strong>RDP Interruptions:</strong> When changing the DNS settings on the network adapter, the RDP connection momentarily drops. It's important to be patient and wait for the connection to re-establish before panicking!</li>
+                    <li><strong>Naming Conventions:</strong> Planning the NetBIOS name and domain structure (like splitting OUs early) saved a lot of headache later when managing permissions.</li>
+                </ul>
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

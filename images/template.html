@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <!-- Title -->
+    <title>{{ POST_TITLE }} | anjulameegalla</title>
+
+    <!-- Original Theme Links (Uncomment if you have these files) -->
+    <!-- <link rel="stylesheet" href="/css/style.css"> -->
+    <!-- <link rel="stylesheet" href="/css/rtl.css"> -->
+    <!-- <link rel="shortcut icon" href="/images/favicon.ico"> -->
+
+    <!-- Basic Standalone Styles (For preview purposes - Remove if using original theme CSS) -->
+    <style>
+        :root {
+            --bg-color: #1d1f21;
+            --text-color: #c5c8c6;
+            --link-color: #81a2be;
+            --accent-color: #b294bb;
+            --meta-color: #969896;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: #fff; }
+        .meta { color: var(--meta-color); font-size: 0.9rem; margin-bottom: 2rem; }
+        .article-tag { margin-left: 1rem; }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: #fff; border-bottom: 1px dotted #333; padding-bottom: 0.5rem; }
+        blockquote { border-left: 4px solid var(--accent-color); margin: 1rem 0; padding-left: 1rem; color: var(--meta-color); }
+        
+        /* Footer */
+        #footer { margin-top: 4rem; border-top: 1px dotted #333; padding-top: 1rem; font-size: 0.8rem; color: var(--meta-color); display: flex; justify-content: space-between; }
+        
+        /* Icons (Mock for template) */
+        .fas, .fab { font-style: normal; }
+    </style>
+
+    <!-- RSS -->
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <!-- Header / Navigation -->
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                    <li><a href="/projects">projects</a></li>
+                    <li><a href="/about">about</a></li>
+                    <li><a href="/atom.xml">rss</a></li>
+                </ul>
+            </span>
+        </span>
+        
+        <!-- Action Buttons (Share, etc) -->
+        <span id="actions">
+            <ul>
+                <li><a class="icon" href="#" onclick="window.history.back()"><i class="fas fa-chevron-left" aria-hidden="true"></i> Back</a></li>
+                <li><a class="icon" href="#" onclick="window.scrollTo(0,0)"><i class="fas fa-chevron-up" aria-hidden="true"></i> Top</a></li>
+            </ul>
+        </span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    {{ POST_TITLE }}
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="{{ DATE_ISO }}" itemprop="datePublished">{{ DATE_HUMAN_READABLE }}</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">{{ TAG_1 }}</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">{{ TAG_2 }}</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                <!-- POST CONTENT START -->
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. This is where your post introduction goes.
+                    Replace this section with your actual content.
+                </p>
+
+                <h2>Heading Level 2</h2>
+                <p>
+                    Here is a paragraph of text. You can use standard HTML tags here.
+                </p>
+                
+                <blockquote>
+                    This is a blockquote area for highlighting important text.
+                </blockquote>
+
+                <h3>Sub-heading</h3>
+                <ul>
+                    <li>Point one</li>
+                    <li>Point two</li>
+                    <li>Point three</li>
+                </ul>
+
+                <!-- Example Image Placeholder -->
+                <!-- <img src="/images/your-image.png" alt="Description" /> -->
+
+                <!-- POST CONTENT END -->
+            </div>
+        </article>
+    </div>
+    
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                    <li><a href="/atom.xml">rss</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Uncomment if you have the local files
+    <script src="/lib/jquery/jquery.min.js"></script>
+    <script src="/js/main.js"></script>
+    -->
+
+</body>
+</html>
