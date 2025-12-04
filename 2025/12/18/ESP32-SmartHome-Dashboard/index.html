@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Building an ESP32 IoT Smart Home Dashboard | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;
+            align-items: center;
+        }
+        .postdate { display: inline-block; }
+        .article-tag { margin-left: auto; display: inline-block; }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        .content h3 { margin-top: 1.5rem; color: var(--text-color); }
+        blockquote { border-left: 4px solid var(--accent-color); margin: 1rem 0; padding-left: 1rem; color: var(--meta-color); }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; color: #24292e; }
+
+        /* Images */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0 0.5rem 0; border: 1px solid var(--border-color); }
+        
+        /* Captions */
+        .caption {
+            font-size: 0.85rem;
+            color: var(--meta-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        /* Lists */
+        ul { margin-left: 1rem; }
+
+        /* Footer Fixed */
+        #footer { 
+            margin-top: 4rem; 
+            border-top: 1px dotted var(--border-color); 
+            padding-top: 1rem; 
+            font-size: 0.8rem; 
+            color: var(--meta-color); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        #footer ul { list-style: none; margin: 0; padding: 0; display: flex; }
+        #footer li { display: inline-block; margin-left: 1rem; }
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Building an ESP32 IoT Smart Home Dashboard
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-11-18" itemprop="datePublished">Dec 18, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">IoT</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">ESP32</a>,
+                        <a class="tag-link-link" href="#" rel="tag">Python</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                <p>
+                    This project creates a complete data loop between your physical room and a web interface. It involves sensing environmental data using an ESP32 microcontroller, processing it via a Python Flask backend, and visualizing it on a custom-built dashboard.
+                </p>
+
+                <img src="images/dashboard-desktop1.png" alt="Dashboard Desktop View">
+                <p class="caption">Figure 1: Desktop View - Live Sensor Widgets</p>
+
+                <img src="images/dashboard-desktop2.png" alt="Dashboard Desktop View 2">
+                <p class="caption">Figure 2: Desktop View - Historical Data Charts</p>
+
+                <img src="images/dashboard-mobile.jpeg" alt="Dashboard Mobile View">
+                <p class="caption">Figure 3: Mobile Responsive View</p>
+
+                <h2>How It Works</h2>
+                <p>The system operates in three main stages:</p>
+                
+                <ol>
+                    <li><strong>Sensing & Processing:</strong> The ESP32 continuously reads data from DHT11 (Temp/Humidity) and MQ-2 (Gas/Smoke) sensors. It calculates PPM values for gas and monitors motion via a PIR sensor, publishing everything to a public MQTT broker (HiveMQ).</li>
+                    <li><strong>Data Management & Server:</strong> A Python Flask server subscribes to the MQTT broker. When data arrives, it logs it into a SQLite database (<code>sensor_data.db</code>) to maintain a history of readings.</li>
+                    <li><strong>Visualization & Control:</strong> The web dashboard visualizes live data and trends. Toggling a switch on the UI sends a request to the Python server, which publishes a command back to the ESP32 to trigger physical hardware (LEDs or Relays).</li>
+                </ol>
+
+                <h2>Project Features</h2>
+                <ul>
+                    <li><strong>Live Sensor Monitoring:</strong> Real-time data for Temperature, Humidity, Air Quality (in PPM), and Motion.</li>
+                    <li><strong>Historical Analytics:</strong> Sensor data is logged to a database and visualized with interactive charts.</li>
+                    <li><strong>Advanced Two-Way Control:</strong> Toggle physical devices (LED and 5V Relay) directly from the dashboard.</li>
+                    <li><strong>Remote Sensor Management:</strong> Individually enable or disable specific sensors (DHT, Gas, PIR) to save power.</li>
+                    <li><strong>Robust Architecture:</strong> Uses MQTT for fast, lightweight communication.</li>
+                    <li><strong>Modern Responsive UI:</strong> A professional "Glassmorphism" design built with Tailwind CSS.</li>
+                    <li><strong>Public Access:</strong> Accessible from anywhere in the world using a secure <code>ngrok</code> tunnel.</li>
+                </ul>
+
+                <h2>Project Architecture</h2>
+                <p>The data flows through the system in two main ways:</p>
+                <ul>
+                    <li><strong>Sensor Data (ESP32 to Dashboard):</strong> ESP32 (Sensors) &rarr; MQTT Broker &rarr; Python Backend (Flask) &rarr; SQLite Database & Web Frontend</li>
+                    <li><strong>Control (Dashboard to ESP32):</strong> Web Frontend &rarr; Python Backend &rarr; MQTT Broker &rarr; ESP32 (Toggles LED, Relay & Logic)</li>
+                </ul>
+
+                <h2>Hardware Requirements</h2>
+                <ul>
+                    <li>ESP32 Development Board</li>
+                    <li>DHT11 (Temperature & Humidity Sensor)</li>
+                    <li>MQ-2 (Smoke/Gas Sensor)</li>
+                    <li>HC-SR501 (PIR Motion Sensor)</li>
+                    <li>5V Relay Module (JQC3F-05VDC-C)</li>
+                    <li>1x LED & 330 Ohm Resistor</li>
+                    <li>Breadboard and Jumper Wires</li>
+                </ul>
+                <img src="images/hardware.jpeg" style="width: 350px; margin-left: auto; margin-right: auto;" alt="Hardware Setup">
+                <p class="caption">Figure 4: Physical Hardware Setup on Breadboard</p>
+
+
+                <h2>Software & Libraries</h2>
+                
+                <h3>1. ESP32 (Arduino IDE)</h3>
+                <p>You will need to install the following libraries via the Arduino Library Manager:</p>
+                <ul>
+                    <li><a href="https://github.com/knolleary/pubsubclient" target="_blank">PubSubClient</a> (by Nick O'Leary)</li>
+                    <li><a href="https://github.com/adafruit/DHT-sensor-library" target="_blank">DHT sensor library</a> (by Adafruit)</li>
+                    <li><a href="https://github.com/adafruit/Adafruit_Sensor" target="_blank">Adafruit Unified Sensor</a> (by Adafruit)</li>
+                </ul>
+
+                <h3>2. Python Backend (Your PC)</h3>
+                <p>You will need Python 3 and the following libraries:</p>
+                <pre><code>pip install Flask paho-mqtt</code></pre>
+
+                <h3>Project Files</h3>
+                <p>Download the source code to get started:</p>
+                <ul>
+                    <li><a href="files/sketch.ino" download>Download ESP32 Firmware (.ino)</a></li>
+                    <li><a href="files/app.py" download>Download Python Backend (.py)</a></li>
+                    <li><a href="files/dash.html" download>Download HTML Dashboard Template (.html)</a></li>
+                </ul>
+
+                <h2>Step-by-Step Project Flow</h2>
+
+                <h3>Part 1: Hardware Setup</h3>
+                <p>Wire your components to the ESP32. The pins below match the provided code:</p>
+                <ul>
+                    <li><strong>DHT11 (DATA):</strong> &rarr; GPIO 4</li>
+                    <li><strong>MQ-2 Sensor (A0):</strong> &rarr; GPIO 34</li>
+                    <li><strong>PIR Sensor (OUT):</strong> &rarr; GPIO 23</li>
+                    <li><strong>LED (Positive Leg):</strong> &rarr; 330 Ohm Resistor &rarr; GPIO 25</li>
+                    <li><strong>Relay Module (IN):</strong> &rarr; GPIO 26</li>
+                    <li><strong>Power:</strong> Connect Relay VCC to <strong>VIN</strong> (5V). Connect all GND pins to ESP32 GND.</li>
+                </ul>
+
+                <h3>Part 2: Device (ESP32) Configuration</h3>
+                <ol>
+                    <li>Open your ESP32 sketch (`.ino` file) in the Arduino IDE.</li>
+                    <li>Install the libraries listed above.</li>
+                    <li>Update the Wi-Fi credentials at the top of the file:</li>
+                </ol>
+                <pre><code>const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";</code></pre>
+                <ol start="4">
+                    <li>Upload the code to your ESP32.</li>
+                    <li>Open the <strong>Serial Monitor</strong> (115200 baud). Wait for the "Clean Air Calibration" to finish.</li>
+                </ol>
+
+                <h3>Part 3: Backend (Python) Setup</h3>
+                <ol>
+                    <li>Create a project folder (e.g., `iot-dashboard`).</li>
+                    <li>Inside it, place your Python script: `app.py`.</li>
+                    <li>Create a folder named `templates`.</li>
+                    <li>Place the `index.html` file **inside** the `templates` folder.</li>
+                    <li>Open a terminal in your project folder and install dependencies: <code>pip install Flask paho-mqtt</code></li>
+                </ol>
+
+                <h3>Part 4: Running the System Locally</h3>
+                <ol>
+                    <li>Ensure your ESP32 is powered on.</li>
+                    <li>Run the Flask app:</li>
+                </ol>
+                <pre><code>python app.py</code></pre>
+                <ol start="3">
+                    <li>The server will start, connect to MQTT, and generate the `sensor_data.db` file.</li>
+                    <li>Open your browser to: <strong>http://127.0.0.1:5000</strong>.</li>
+                </ol>
+
+                <h3>Part 5: Public Access with ngrok</h3>
+                <p>To access your dashboard from your phone or outside your home:</p>
+                <ol>
+                    <li>Download `ngrok` and authenticate it.</li>
+                    <li>With `app.py` running, open a <strong>new terminal</strong> and run:</li>
+                </ol>
+                <pre><code>ngrok http 5000</code></pre>
+                <ol start="3">
+                    <li>Use the generated `https://...ngrok.io` URL on any device.</li>
+                </ol>
+
+                <h2>Future Improvements</h2>
+                <ul>
+                    <li><strong>Permanent Cloud Deployment:</strong> Deploy the `app.py` to a VPS or cloud platform for 24/7 uptime without a PC.</li>
+                    <li><strong>Private Broker:</strong> Switch from the public HiveMQ broker to a private Mosquitto instance for enhanced security.</li>
+                    <li><strong>PCB Design:</strong> Move from a breadboard to a custom printed circuit board for a cleaner hardware look.</li>
+                </ul>
+
+                <h2>Challenges & Lessons Learned</h2>
+                <p>Building this IoT system revealed several interesting technical hurdles:</p>
+                <ul>
+                    <li><strong>Voltage Logic Levels:</strong> The ESP32 operates on 3.3V logic, but the Relay module and MQ-2 sensor prefer 5V. I had to ensure the Relay VCC was connected to the **VIN** pin (5V) of the ESP32 to trigger reliable switching.</li>
+                    <li><strong>MQTT Latency:</strong> Using a public broker like HiveMQ is great for free testing, but sometimes introduces latency. For a snappier response time when toggling the LED, I optimized the Python loop to publish commands immediately without waiting for the next sensor read cycle.</li>
+                    <li><strong>Sensor Calibration:</strong> The MQ-2 gas sensor requires a "burn-in" period. Initially, the readings were fluctuating wildly. Adding a calibration delay in the `setup()` function of the ESP32 code stabilized the baseline air quality readings.</li>
+                </ul>
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+</body>
+</html>

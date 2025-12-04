@@ -140,6 +140,7 @@
                 
                 <pre><code>curl -sO https://packages.wazuh.com/&lt;latest&gt;/wazuh-install.sh && sudo bash ./wazuh-install.sh -a</code></pre>
 
+                <a href="https://documentation.wazuh.com/current/quickstart.html">Documentation</a>
                 <p>Copy the username and password generated at the end of the installation. If you forgot to save the password, you can recover it with this command:</p>
                 
                 <pre><code>sudo tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt</code></pre>
@@ -168,17 +169,25 @@ sudo systemctl start wazuh-agent
 sudo systemctl status wazuh-agent</code></pre>
 
                 <img src="images/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png" alt="Ubuntu Agent Status">
+                <p>Back on the Wazuh dashboard, we should see the new agent connected.</p>
                 <img src="images/image 8.png" alt="Ubuntu Agent Active on Dashboard">
 
                 <h2>Configure Ubuntu Agent & Active Response</h2>
                 
                 <h3>Agent Configuration</h3>
-                <p>Ensure the agent config points to the correct Manager IP by editing <code>/var/ossec/etc/ossec.conf</code>.</p>
+                <p>Ensure that the Wazuh agent is properly configured to communicate with the Wazuh server (Check the IP of Wazuh):</p>
                 <pre><code>nano /var/ossec/etc/ossec.conf</code></pre>
                 <img src="images/image 9.png" alt="Editing ossec.conf">
 
+                <p>Restart the agent if any changes were done.</p>
+                <pre><code>sudo systemctl restart wazuh-agent</code></pre>
+
                 <h3>Adding Active Response Rule</h3>
-                <p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired. This is done in the manager's <code>ossec.conf</code>.</p>
+                <p>Navigate and edit the <code>ossec.conf</code> file on Wazuh manager.</p>
+                <pre><code> nano /var/ossec/etc/ossec.conf</code></pre>
+
+                <p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired.</p>
+            
 
                 <pre><code>&lt;active-response&gt;
   &lt;command&gt;firewall-drop&lt;/command&gt;
@@ -186,6 +195,8 @@ sudo systemctl status wazuh-agent</code></pre>
   &lt;rules_id&gt;5710&lt;/rules_id&gt;
   &lt;timeout&gt;600&lt;/timeout&gt;
 &lt;/active-response&gt;</code></pre>
+
+                <p>This configuration suggests that when a rule with ID 5710 is triggered, the firewall will drop the corresponding traffic for a duration of 10 minutes. It's a common approach for dealing with potential threats or suspicious activity.</p>
 
                 <img src="images/image 10.png" alt="Active Response Configuration">
 
@@ -199,6 +210,8 @@ sudo systemctl status wazuh-agent</code></pre>
 
                 <h3>2. Execute Brute-Force Attack</h3>
                 <p>Run Hydra using the <code>rockyou.txt</code> wordlist.</p>
+                <pre><code>sudo hydra -l [username] -P [passlist.txt] ssh://[ubuntu vm ip address]</code></pre>
+                <p>In my case, I used the following command:</p>
                 <pre><code>sudo hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://139.59.126.244</code></pre>
                 <img src="images/image 12.png" alt="Hydra Attack Execution">
 
