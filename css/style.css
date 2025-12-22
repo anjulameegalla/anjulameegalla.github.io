@@ -1475,3 +1475,75 @@ code {
   width: -moz-fit-content;
   width: -webkit-fit-content;
 }
+
+/* newly added */
+
+/* Floating Resume Widget Container */
+.resume-widget {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999; /* Ensures it stays on top of other elements */
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* The Round Bubble */
+.resume-bubble {
+    width: 58px;
+    height: 58px;
+    background-color: #333; /* Dark background to match minimal theme */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Hover Effect for Bubble */
+.resume-widget:hover .resume-bubble {
+    transform: scale(1.1);
+    background-color: #444; /* Slightly lighter on hover */
+}
+
+/* The "Download my resume" Pop-up Text */
+.resume-tooltip {
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-right: 15px; /* Spacing between text and bubble */
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+/* Small arrow pointing to the bubble */
+.resume-tooltip::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 6px 0 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent #333;
+}
+
+/* Show Text on Hover */
+.resume-widget:hover .resume-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
