@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    
+    <title>Implementing a Spiceworks based Ticketing System & Documentation Lab | anjulameegalla</title>
+
+    <style>
+        :root {
+            /* LIGHT MODE VARIABLES */
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --link-color: #0366d6;
+            --accent-color: #6f42c1;
+            --meta-color: #666666;
+            --border-color: #eaecef;
+            --font-main: "Menlo", "Meslo LG", monospace;
+            
+            /* Custom Colors for Tickets */
+            --badge-high: #d73a49;
+            --badge-med: #d29922;
+            --badge-low: #28a745;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        a { color: var(--link-color); text-decoration: none; border-bottom: 1px dotted var(--link-color); }
+        a:hover { border-bottom: 1px solid var(--link-color); }
+        .max-width { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem; }
+        
+        /* Header */
+        #header-post { margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: baseline; }
+        #nav ul { list-style: none; padding: 0; display: flex; gap: 1rem; }
+        #nav li { display: inline-block; }
+        
+        /* Post */
+        .posttitle { text-transform: uppercase; margin-bottom: 0.5rem; color: var(--text-color); }
+        
+        /* Meta Section (Date & Tags) */
+        .meta { 
+            color: var(--meta-color); 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            display: flex;
+            align-items: center;
+        }
+        .postdate { display: inline-block; }
+        .article-tag { margin-left: auto; display: inline-block; }
+        .article-tag i { margin-right: 0.3rem; }
+        
+        /* Content Placeholder */
+        .content { margin-bottom: 4rem; }
+        .content h2 { margin-top: 2rem; color: var(--text-color); border-bottom: 1px dotted var(--border-color); padding-bottom: 0.5rem; }
+        .content h3 { margin-top: 1.5rem; color: var(--text-color); }
+        .content h4 { margin-top: 1.2rem; font-weight: bold; color: var(--text-color); }
+        
+        /* Code Blocks */
+        pre { background-color: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; border: 1px solid var(--border-color); }
+        code { font-family: var(--font-main); font-size: 0.9em; color: #24292e; background-color: rgba(27,31,35,0.05); padding: 0.2em 0.4em; border-radius: 3px; }
+
+        /* Images */
+        img { max-width: 100%; height: auto; display: block; margin: 1rem 0; border: 1px solid var(--border-color); }
+        .img-container { text-align: center; margin: 1.5rem 0; }
+        
+        /* Lists */
+        ul, ol { margin-left: 1rem; }
+        li { margin-bottom: 0.5rem; }
+
+        /* --- Custom Styles for Ticketing Guide --- */
+        
+        /* Table of Contents */
+        .toc {
+            background-color: #f6f8fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        .toc h3 { margin-top: 0; font-size: 1.1rem; }
+        .toc ul { margin: 0; list-style: none; padding-left: 0; }
+        .toc li { margin-bottom: 0.5rem; }
+        .toc li::before { content: "•"; color: var(--accent-color); display: inline-block; width: 1em; margin-left: -1em; }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+        th, td { border: 1px solid var(--border-color); padding: 0.5rem; text-align: left; }
+        th { color: var(--text-color); background-color: #f6f8fa; }
+
+        /* Ticket Cards */
+        .ticket-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .ticket-title { font-weight: bold; font-size: 1.1rem; }
+        
+        /* Badges */
+        .badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .badge-high { background-color: var(--badge-high); }
+        .badge-med { background-color: var(--badge-med); }
+        .badge-low { background-color: var(--badge-low); }
+        
+        .section-break {
+            margin: 3rem 0;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        /* Footer Fixed */
+        #footer { 
+            margin-top: 4rem; 
+            border-top: 1px dotted var(--border-color); 
+            padding-top: 1rem; 
+            font-size: 0.8rem; 
+            color: var(--meta-color); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        #footer ul { list-style: none; margin: 0; padding: 0; display: flex; }
+        #footer li { display: inline-block; margin-left: 1rem; }
+
+
+
+        /* Style the buttons that are used to open and close the accordion panel */
+        .accordion {
+            background-color: #fff;
+            color: #333;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-main);
+        }
+
+        /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+        .accordion:hover, .accordion.active {
+            background-color: #e8f0fe; /* Light blue hover */
+            color: #0078d4;
+        }
+
+        /* Style the panel - hidden by default */
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            display: none; /* Hidden by default */
+            overflow: hidden;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* The Content inside the panel */
+        .panel-content {
+            padding: 20px 0;
+        }  
+
+        /* Icon for the dropdown */
+        .accordion:after {
+            content: '\002B'; /* Unicode character for "plus" sign (+) */
+            color: #777;
+            font-weight: bold;
+            float: right;
+            margin-left: 5px;
+        }
+
+        .accordion.active:after {
+            content: "\2212"; /* Unicode character for "minus" sign (-) */
+        }
+    
+    </style>
+
+    <link rel="alternate" href="/atom.xml" title="anjulameegalla" type="application/atom+xml" />
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div id="header-post">
+        <span id="menu">
+            <span id="nav">
+                <ul>
+                    <li><a href="/">~/</a></li>
+                </ul>
+            </span>
+        </span>
+    </div>
+
+    <div class="content index my4">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+            <header>
+                <h1 class="posttitle" itemprop="name headline">
+                    Implementing a Spiceworks based Ticketing System & Documentation Lab
+                </h1>
+                <div class="meta">
+                    <div class="postdate">
+                        <time datetime="2025-12-06" itemprop="datePublished">Dec 29, 2025</time>
+                    </div>
+                    <div class="article-tag">
+                        <i class="fas fa-tag"></i>
+                        <a class="tag-link-link" href="#" rel="tag">Help Desk</a>, 
+                        <a class="tag-link-link" href="#" rel="tag">Spiceworks</a>,
+                        <a class="tag-link-link" href="#" rel="tag">IT Support</a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content" itemprop="articleBody">
+                
+                <div class="toc">
+                    <h3>Table of Contents</h3>
+                    <ul>
+                        <li><a href="#overview">Lab Overview</a></li>
+                        <li><a href="#intro">Introduction</a></li>
+                        <li><a href="#setup">Lab Setup</a></li>
+                        <li><a href="#common-tasks">Common Ticket Tasks</a></li>
+                        <li><a href="#rdp">Remote Assistance</a></li>
+                        <li><a href="#logging">How to Properly Log a Ticket</a></li>
+                        <li><a href="#scenarios">Practice Scenarios</a></li>
+                        <li><a href="#kb">Knowledge Base</a></li>
+                        <li><a href="#inventory">Inventory Management</a></li>
+                        <li><a href="#conclusion">Conclusion</a></li>
+                    </ul>
+                </div>
+
+                <section id="overview">
+                    <h2>Lab Overview</h2>
+                    <p>This project is a comprehensive simulation of an IT Help Desk environment using <strong>Spiceworks Cloud Help Desk</strong>. Beyond basic ticket logging, this lab demonstrates the full lifecycle of IT support—from initial triage and prioritization to resolution and documentation.</p>
+                    <p>It integrates key IT Service Management (ITSM) concepts, including <strong>Incident Management</strong>, <strong>Remote Support</strong>, <strong>Knowledge Management</strong>, and <strong>Asset/Inventory Management</strong>, providing a realistic view of Tier 1 and Tier 2 support operations.</p>
+
+                    <h3>Objectives</h3>
+                    <p>By completing this lab, you will learn to:</p>
+                    <ul>
+                        <li>Master the full ticket lifecycle by creating, triaging, assigning, and resolving tickets in compliance with SLA requirements.</li>
+                        <li>Initiate and manage remote assistance sessions to directly troubleshoot and resolve end-user technical issues.</li>
+                        <li>Create and publish Knowledge Base articles to document solutions and empower users with self-service options.</li>
+                        <li>Scan for network devices and associate inventory assets with specific tickets to enhance hardware tracking and visibility.</li>
+                        <li>Simulate real-world support scenarios by handling common requests such as password resets, access denials, and hardware failures.</li>
+                    </ul>
+                </section>
+
+                <section id="intro">
+                    <h2>Introduction</h2>
+                    <h3>1. What is a Ticketing System</h3>
+                    <p>A ticketing system is a tool used by IT teams to record, track, manage, and resolve technical issues submitted by users. It ensures:</p>
+                    <ul>
+                        <li>Clear documentation</li>
+                        <li>Proper routing</li>
+                        <li>Efficient communication</li>
+                        <li>Accountability</li>
+                        <li>Traceability of troubleshooting steps</li>
+                    </ul>
+                    <p><strong>Examples:</strong> Spiceworks, Jira Service Management, Zendesk, Freshservice.</p>
+
+                    <h3>2. Key Terms</h3>
+                    <ul>
+                        <li><strong>Ticket ID:</strong> A unique number assigned to every ticket for tracking and referencing.</li>
+                        <li><strong>Requester:</strong> The person reporting an issue.</li>
+                        <li><strong>Category:</strong> The classification of the issue (e.g., Hardware, Software, Network).</li>
+                        <li><strong>Assigned To:</strong> The technician responsible for handling the ticket.</li>
+                    </ul>
+
+                    <h4>Priority Levels</h4>
+                    <table>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Meaning</th>
+                            <th>Impact</th>
+                            <th>Example</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Critical (P1)</strong></td>
+                            <td>Major outage</td>
+                            <td>High</td>
+                            <td>Company email system down</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High (P2)</strong></td>
+                            <td>Department-level issue</td>
+                            <td>Moderate</td>
+                            <td>Accounting software offline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Medium (P3)</strong></td>
+                            <td>Single-user issue</td>
+                            <td>Low</td>
+                            <td>Outlook not syncing</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Low (P4)</strong></td>
+                            <td>Minor request</td>
+                            <td>Minimal</td>
+                            <td>User needs a new mouse</td>
+                        </tr>
+                    </table>
+
+                    <h4>Status Types</h4>
+                    <table>
+                        <tr>
+                            <th>Status</th>
+                            <th>Meaning</th>
+                        </tr>
+                        <tr>
+                            <td><strong>New</strong></td>
+                            <td>Ticket created, not yet reviewed</td>
+                        </tr>
+                        <tr>
+                            <td><strong>In Progress</strong></td>
+                            <td>Technician working on it</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pending User Response</strong></td>
+                            <td>Waiting for user info</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Escalated</strong></td>
+                            <td>Sent to higher-level technician</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resolved</strong></td>
+                            <td>Technician fixed the issue</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Closed</strong></td>
+                            <td>User confirms issue is solved</td>
+                        </tr>
+                    </table>
+
+                    <h3>3. Service Level Agreements (SLA)</h3>
+                    <p>An SLA is a commitment between a service provider and a client. In a help desk context, it defines the expected time frame for responding to and resolving tickets based on their priority.</p>
+                    
+                    <h4>Common SLA Targets</h4>
+                    <table>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Response Time</th>
+                            <th>Resolution Time</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Critical (P1)</strong></td>
+                            <td>15 Minutes</td>
+                            <td>4 Hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High (P2)</strong></td>
+                            <td>1 Hour</td>
+                            <td>8 Hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Medium (P3)</strong></td>
+                            <td>4 Hours</td>
+                            <td>24 Hours</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Low (P4)</strong></td>
+                            <td>24 Hours</td>
+                            <td>48 Hours</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="setup">
+                    <h2>Lab Setup</h2>
+                    <p>This lab will use Spiceworks Cloud Help Desk as the ticketing system. Go to the link below and click Launch Help Desk.<br>
+                    <a href="https://www.spiceworks.com/free-help-desk-software/?utm_campaign=cloud_help_desk&utm_medium=platform_redirect&utm_source=community">Spiceworks Free Help Desk</a></p>
+
+                    <p>You will now create an account to access the help desk software.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/1.png" alt="Setup Step 1">
+                    </div>
+
+                    <p>Next you will need to enter a company name and domain name. You can just enter generic names for the purposes of the lab. Click Launch Help Desk to continue.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/2.png" alt="Setup Step 2">
+                    </div>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="common-tasks">
+                    <h2>Common Ticket Tasks</h2>
+                    <p>You will first arrive at the Tickets tab. You will now go through the most common tasks associated with tickets.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/3.png" alt="Tickets Tab">
+                    </div>
+
+                    <h3>a. Creating Tickets</h3>
+                    <p>Often you will first receive a call from an end user with a problem. You will then need to create a ticket yourself so that you can document the interaction. You can create a ticket by clicking the New Ticket button in the upper right.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/4.png" alt="New Ticket Button">
+                    </div>
+
+                    <p>You can now go through the process of creating a ticket. The Contact field is where you would normally add the user’s name. For the purposes of the lab, you can add your user account here. For the summary and description, you can enter a generic scenario like "Wi-fi not working on laptop". Under Assignee, you can add your user account since you are the one handling the incident. Next choose a priority and category. Then click Create to continue.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/5.png" alt="Creating Ticket Form">
+                    </div>
+
+                    <p>You will now see the newly created ticket in the Tickets tab. Click on it to open the ticket.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/6.png" alt="Ticket List">
+                    </div>
+                    <p>A menu will popup on the right. This will allow you to edit the Attributes for this ticket.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/7.png" alt="Ticket Attributes">
+                    </div>
+
+                    <h3>b. Assigning / Escalating Tickets</h3>
+                    <p>Sometimes you will get a ticket that you cannot solve yourself or is outside your scope of work. Examples of this might include the company’s web servers being down. You will need to assign that ticket to the right department. You can either assign it to the entire department or to a specific person in that department.</p>
+                    <p>You can assign a ticket by clicking the dropdown menu under the Assignee field. You can then search for the specific department or person you want to assign the ticket to.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/8.png" alt="Assigning Ticket">
+                    </div>
+
+                    <h3>c. Changing Ticket Priority</h3>
+                    <p>When you first receive a ticket, you will have to look at the priority assigned to it and decide if its correct for that issue. Often end users will assign the wrong priority to the tickets they submit. They may want their tickets to be resolved right away so they place a higher priority in hopes it gets addressed faster.</p>
+                    <p>To change the priority of a ticket. Click on the drop-down menu under the Priority menu. You can now change it to the appropriate level.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/9.png" alt="Changing Priority 2">
+                    </div>
+
+                    <h3>d. Changing Ticket Due Date</h3>
+                    <p>If there is a service level agreement in place, you will have a certain time frame to resolve tickets. To make sure tickets don’t fall through the gaps, you should assign a due date to tickets.</p>
+                    <p>To change the due date of a ticket. Click on the Due Date field. You can now change it to a date that is reasonable for a ticket of that priority to be resolved.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/10.png" alt="Due Date 2">
+                    </div>
+
+                    <h3>e. Changing Time Spent on Ticket</h3>
+                    <p>Noting the time spent working on a ticket will help management identify what tickets are occupying the most time. You can click the predefined time buttons or click Custom to enter a more specific number.</p>
+                    <p>You can click the predefined time buttons or click Custom to enter a more specific number.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/11.png" alt="Time Spent">
+                    </div>
+
+                    <h3>f. Add Tasks to Tickets</h3>
+                    <p>When dealing with more complex tasks, it is helpful to document the steps you want to take to resolve the problem. This is also helpful to know what steps you or another colleague have already taken.</p>
+                    <p>Add a task by entering it in the text field under the Tasks attribute. You can click the box next to a task to mark it as complete. Completed tasks will have a strike-through over them.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/12.png" alt="Adding Tasks">
+                    </div>
+
+                    <h3>g. Documenting Tickets</h3>
+                    <p>As you take steps to complete a ticket, its important to document the interaction. This will help others understand the steps you took to resolve this particular ticket. This is helpful for others who want to reference this ticket to understand how to solve similar problems in the future.</p>
+                    <p>The documentation area is on the left side of the page when you click on the ticket. Here you can type a public response that is visible to the user or type an internal note that is for documentation purposes.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/13.png" alt="Documenting">
+                    </div>
+
+                    <h3>h. Changing Ticket Status</h3>
+                    <p>Once a problem is resolved, you can now close the ticket by setting the status to Closed. You can change the status of a ticket by clicking on the drop-down menu under Status.</p>
+                    <p>You can change the status of a ticket by clicking on the drop-down menu under Status.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/14.png" alt="Status 1">
+                    </div>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="rdp">
+                    <h2>Remote Assistance</h2>
+                    <p>To resolve an issue for an end user, it's useful to be able to see their screen or even take control of the machine to fix the problem. You can do this by using the remote assistance features in Spiceworks. This feature uses an integration with Zoho Assist.</p>
+
+                    <h3>Setup remote assistance</h3>
+                    <p>The easiest way to access the remote assistance feature is to click on the ticket and then click on the <strong>Remote session</strong> button on the right.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/15.png" alt="Remote Session Button">
+                    </div>
+
+                    <p>The following dialogue will popup. Click <strong>Start remote session</strong> on the left.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/16.png" alt="Start Remote Session Dialog">
+                    </div>
+
+                    <p>Click the link in step 1 to open the remote session. Send the link in step 2 to the end user.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/17.png" alt="Session Links">
+                    </div>
+
+                    <p>You will see the following page until the end user sets up the remote session on their end. You will need to talk them through the process if needed. Follow the steps below to do that.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/18.png" alt="Technician Waiting Screen">
+                    </div>
+
+                    <p>The end user will see the following screen when they click on the link you send them. The session ID will be filled out so they only need to enter their name then click <strong>Join Session</strong>.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/19.png" alt="User Join Screen">
+                    </div>
+
+                    <p>They will then need to download and install the remote desktop software.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/20.png" alt="Download Software">
+                    </div>
+
+                    <p>After the download is completed, the end user will need to open the installer to continue. It will take a short while to install.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/21.png" alt="Installing">
+                    </div>
+
+                    <p>When the installation is complete, the end user will see the following popup. They will need to click <strong>Join</strong> to launch the remote session.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/22.png" alt="Final Join Button">
+                    </div>
+
+                    <p>You will see something like "The User has joined the session, Waiting for session confirmation" while you wait for the end user to Join the session.</p>
+
+                    <p>Once they join the session, you will see the end user’s desktop. In the lower corner you will see this box below. This lets you know you are in a remote session. You are now controlling the user’s machine.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/23.png" alt="Session Active">
+                    </div>
+
+                    <p>The remote software will give you an option to elevate to admin if you are performing tasks that need that. It is under <strong>Session -> Elevate to Admin mode</strong>.</p>
+                    <div class="img-container">
+                        <img src="/2025/12/29/Ticketing-System-Lab/images/24.png" alt="Elevate to Admin">
+                    </div>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="logging">
+                    <h2>How to Properly Log a Ticket</h2>
+                    <h4>✔ Gather User Information</h4>
+                    <ul>
+                        <li>Name, Email, Contact number, Department, Location</li>
+                    </ul>
+                    <h4>✔ Gather System Information</h4>
+                    <ul>
+                        <li>Device type, Operating system, Software version, Network type</li>
+                    </ul>
+                    <h4>✔ Categorize the Issue</h4>
+                    <ul>
+                        <li>Software, Hardware, Network, Access request</li>
+                    </ul>
+                    <h4>✔ Determine Priority Level</h4>
+                    <ul>
+                        <li>Based on impact and urgency.</li>
+                    </ul>
+                </section>
+                
+                <div class="section-break"></div>
+
+                <section id="scenarios">
+                    <h2>Practice Scenarios</h2>
+
+                    <button class="accordion">Scenario A - Outlook Inbox Not Syncing</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/A.png" alt="Session A">
+                        </div>
+                        <p><strong>Requested by:</strong> Sarah M., Marketing</p>
+                        <p><strong>Summary:</strong> Outlook Inbox Not Syncing</p>
+                        <p><strong>Description:</strong> User reports that her Outlook inbox is not syncing and she has missed several client emails.</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Collected system details. Restarted Outlook and verified account settings. Checked mailbox size limits and current sync status. Initiated a manual folder update.</p>
+                        <p><strong>Response:</strong> "Hi Sarah, I have manually forced a synchronization of your inbox and verified your account settings. Your missing emails should be downloading now. Please let me know if it gets stuck again."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario B - Unable to Connect to Office Wi-Fi</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/B.png" alt="Session B">
+                        </div>
+                        <p><strong>Requested by:</strong> John R., Sales</p>
+                        <p><strong>Summary:</strong> Unable to Connect to Office Wi-Fi</p>
+                        <p><strong>Description:</strong> User is unable to connect to the office Wi-Fi and cannot access his cloud files before a meeting.</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Verified network adapter status. Checked Wi-Fi availability and tested connection on a separate device to rule out an outage. Reset the user's network adapter.</p>
+                        <p><strong>Response:</strong> "Hi John, I have reset your network adapter settings. You should be able to reconnect to the office Wi-Fi now and access your cloud files."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario C - Monitor Won't Turn On</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/C.png" alt="Session C">
+                        </div>
+                        <p><strong>Requested by:</strong> Emily T., HR</p>
+                        <p><strong>Summary:</strong> Monitor Won't Turn On</p>
+                        <p><strong>Description:</strong> User reports that her monitor will not turn on even after rebooting the system.</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Inspected power cable and tested HDMI/DisplayPort connections. Tested with a spare monitor which worked immediately. Confirmed original monitor hardware failure. Installed replacement.</p>
+                        <p><strong>Response:</strong> "Hi Emily, I've confirmed your monitor had a hardware failure. I have installed a replacement screen at your desk."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario D - Forgotten Password</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/D.png" alt="Session D">
+                        </div>
+                        <p><strong>Requested by:</strong> Ray B., Sales</p>
+                        <p><strong>Summary:</strong> Forgotten Password</p>
+                        <p><strong>Description:</strong> User reported being unable to log in due to a forgotten password.</p>
+                        <p><strong>Priority:</strong> Low (P4)</p>
+                        <p><strong>Actions taken to resolve:</strong> Verified user identity via manager. Located `rayb` account in Active Directory. Used the 'Reset Password' function and checked 'User must change password at next logon'.</p>
+                        <p><strong>Response:</strong> "Hi, your password has been reset. Please use the temporary credentials provided to log in. You will be prompted to create a new password immediately."</p>
+                        <p><strong>Status:</strong> Resolved</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario E - Account Locked (Failed Attempts)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/E.png" alt="Session E">
+                        </div>
+                        <p><strong>Requested by:</strong> Corea C., HR</p>
+                        <p><strong>Summary:</strong> Account Locked (Failed Attempts)</p>
+                        <p><strong>Description:</strong> User was unable to log in due to multiple failed password attempts. Account was locked.</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Located `coreac` in Active Directory Users and Computers. Selected 'Reset Password' and checked 'Unlock Account'. Enabled 'User must change password at next logon'.</p>
+                        <p><strong>Response:</strong> "Hi, I have unlocked your account and reset the password. Please try logging in again. Ensure Caps Lock is off."</p>
+                        <p><strong>Status:</strong> Resolved</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario F - Permission Issue (Finance Folder)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/F.png" alt="Session F">
+                        </div>
+                        <p><strong>Requested by:</strong> Brian K., Finance</p>
+                        <p><strong>Summary:</strong> Permission Issue (Finance Folder)</p>
+                        <p><strong>Description:</strong> User unable to access shared network folder `\\server\finance`.</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Verified user group membership in AD using PowerShell (`Get-ADUser`). Confirmed user was missing from `Finance_Group`. Added user to the group using `Add-ADGroupMember`.</p>
+                        <p><strong>Response:</strong> "Hi, I have added you to the Finance Group. Please log off and log back in to refresh your permissions. You should now have access to the folder."</p>
+                        <p><strong>Status:</strong> Resolved</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario G - Account Locked Out (Unable to Login)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/G.png" alt="Session G">
+                        </div>
+                        <p><strong>Requested by:</strong> Sarah J., Sales</p>
+                        <p><strong>Summary:</strong> Account Locked Out (Unable to Login)</p>
+                        <p><strong>Description:</strong> "I went to get coffee and came back and now it says my account is locked? I swear I typed my password right."</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Verified user identity via phone. Checked Active Directory; confirmed account status was 'Locked'. Reviewed Security Logs (Event 4740) and identified a mobile device attempting to authenticate with old credentials. Unlocked the account.</p>
+                        <p><strong>Response:</strong> "Hi Sarah, I have unlocked your account. It appears your mobile phone was attempting to connect to the office Wi-Fi with an old password, triggering the lockout. Please update the password on your phone."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario H - New User Onboarding (John)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/H.png" alt="Session H">
+                        </div>
+                        <p><strong>Requested by:</strong> Mike R., HR</p>
+                        <p><strong>Summary:</strong> New User Onboarding (John)</p>
+                        <p><strong>Description:</strong> "Hi team, we have a new guy, John, starting in the marketing department tomorrow. He needs an email and access to the shared drive."</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Replied to HR to obtain the mandatory "New User Onboarding Form". Upon receipt, created the User Object in Active Directory. Assigned membership to `Domain Users` and `Marketing_RW` groups. Provisioned Office 365 mailbox.</p>
+                        <p><strong>Response:</strong> "Hi Mike, John's account has been created. I have assigned him to the Marketing groups for shared drive access and provisioned his email. His login credentials have been sent to you securely."</p>
+                        <p><strong>Status:</strong> Resolved</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario I - Printer Hardware Malfunction</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/I.png" alt="Session I">
+                        </div>
+                        <p><strong>Requested by:</strong> David M., Finance</p>
+                        <p><strong>Summary:</strong> Printer Hardware Malfunction</p>
+                        <p><strong>Description:</strong> "The big printer in the hallway is making a weird noise and it won't print my spreadsheets. It says something about a tray?"</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Checked Embedded Web Server (EWS) -> Device Status -> Found error "Paper Jam Tray 2". Physically inspected the tray and discovered worn pickup rollers causing a jam. Cleaned rollers and cleared the paper path.</p>
+                        <p><strong>Response:</strong> "Hi David, I found a paper jam in Tray 2 caused by dust on the pickup rollers. I've cleaned the rollers and cleared the jam. The printer is back online."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario J - Access to HR Secure Printer</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/J.png" alt="Session J">
+                        </div>
+                        <p><strong>Requested by:</strong> Jessica P., Managing Partner</p>
+                        <p><strong>Summary:</strong> Access to HR Secure Printer</p>
+                        <p><strong>Description:</strong> "I'm trying to print a confidential contract but I only see the 'General Staff' printer on my list. Can someone add the secure HR printer to my laptop?"</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Verified user membership in `Security Group - HR Printers`. Initiated remote session, navigated to `\\PrintServer`, and mapped the "HR_Secure_Ptr" queue to the local machine.</p>
+                        <p><strong>Response:</strong> "Hi Jessica, I have remotely mapped the secure HR printer to your laptop. You should now see 'HR_Secure_Ptr' in your list of available printers."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario K - Poor Signal in Boardroom B</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/K.png" alt="Session K">
+                        </div>
+                        <p><strong>Requested by:</strong> Kevin M., Accounts</p>
+                        <p><strong>Summary:</strong> Poor Signal in Boardroom B</p>
+                        <p><strong>Description:</strong> "Every time we try to do a video call in Boardroom B, the video freezes. Can we get a booster or something in there?"</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Performed site survey with Wi-Fi analyzer; RSSI was weak at -75dBm. Located the Access Point in Boardroom B and found it unplugged. Re-patched AP into the PoE switch. Confirmed signal improved to -45dBm.</p>
+                        <p><strong>Response:</strong> "Hi Kevin, I investigated the issue and found the Wireless Access Point in the boardroom had been disconnected. I've reconnected it, and the signal strength is now excellent."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario L - VPN Handshake Failure</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/L.png" alt="Session L">
+                        </div>
+                        <p><strong>Requested by:</strong> Pam B., Admin</p>
+                        <p><strong>Summary:</strong> VPN Handshake Failure</p>
+                        <p><strong>Description:</strong> "I'm trying to connect to the VPN to access the file server but it keeps saying 'Handshake Failed'."</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Reviewed VPN client logs which showed a TLS key negotiation failure (blocked by home router). Switched VPN client profile to "TCP Fallback" mode (Port 443) to bypass the restriction.</p>
+                        <p><strong>Response:</strong> "Hi Pam, I've updated your VPN profile to use a different connection mode that is more compatible with home networks. You should be able to connect now."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario M - Broken Peripheral (Mouse)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/M.png" alt="Session M">
+                        </div>
+                        <p><strong>Requested by:</strong> Jim H., Sales</p>
+                        <p><strong>Summary:</strong> Broken Peripheral (Mouse)</p>
+                        <p><strong>Description:</strong> "The scroll wheel on my mouse just snaps and spins freely. It's really annoying."</p>
+                        <p><strong>Priority:</strong> Low (P4)</p>
+                        <p><strong>Actions taken to resolve:</strong> Checked inventory for available stock. Deployed "Logitech B100" replacement. Updated asset tracking system to mark the old mouse as "Scrapped".</p>
+                        <p><strong>Response:</strong> "Hi Jim, I've dropped off a brand new mouse at your desk. I've disposed of the broken one for you."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario N - Monitor No Signal</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/N.png" alt="Session N">
+                        </div>
+                        <p><strong>Requested by:</strong> Creed B., QA</p>
+                        <p><strong>Summary:</strong> Monitor No Signal</p>
+                        <p><strong>Description:</strong> "I turned on the computer tower but the screen says 'No Signal'. I tried moving the mouse but nothing happened."</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Checked physical connections. Discovered the HDMI cable was loose at the PC tower end. Reseated the cable firmly and secured it.</p>
+                        <p><strong>Response:</strong> "Hi Creed, it was just a loose cable connection behind the computer. I've tightened it up and the display is working fine now."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario O - System Crash (BSOD)</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/O.png" alt="Session O">
+                        </div>
+                        <p><strong>Requested by:</strong> Dwight S., Sales</p>
+                        <p><strong>Summary:</strong> System Crash (BSOD)</p>
+                        <p><strong>Description:</strong> "I was in the middle of a report and the screen turned blue with a frown face :( and then restarted. Error code was something like 0x00000."</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Analyzed memory dump file using BlueScreenView. Identified error in `nvlddmkm.sys` (Nvidia Driver). Booted to Safe Mode, used DDU to strip old drivers, and installed the latest stable Nvidia driver.</p>
+                        <p><strong>Response:</strong> "Hi Dwight, the crash was caused by a corrupted graphics driver. I have completely reinstalled the driver software. Your system should be stable now."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario P - Laptop Overheating / High Fan Noise</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/P.png" alt="Session P">
+                        </div>
+                        <p><strong>Requested by:</strong> Stanley H., Sales</p>
+                        <p><strong>Summary:</strong> Laptop Overheating / High Fan Noise</p>
+                        <p><strong>Description:</strong> "My laptop is getting extremely hot and the fan is loud even when I just have Outlook open."</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Checked Task Manager; found `Chrome.exe` stuck consuming 80% CPU. Terminated the process. Physically cleaned dust from intake vents. Idle temperature dropped to 45°C.</p>
+                        <p><strong>Response:</strong> "Hi Stanley, I've cleared out the laptop vents and closed a stuck browser process that was overheating the machine. It's running cool and quiet again."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario Q - Excel Crashing on Macro Run</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/Q.png" alt="Session Q">
+                        </div>
+                        <p><strong>Requested by:</strong> Oscar M., Accounting</p>
+                        <p><strong>Summary:</strong> Excel Crashing on Macro Run</p>
+                        <p><strong>Description:</strong> "Every time I try to run the macro on the 'Q3_Budget_Final.xlsx' sheet, Excel just closes completely."</p>
+                        <p><strong>Priority:</strong> Medium (P3)</p>
+                        <p><strong>Actions taken to resolve:</strong> Launched `excel.exe /safe` and tested file; it worked. Disabled COM Add-ins sequentially. Identified "Obsolete Accounting Plugin" as the cause. Uninstalled the plugin.</p>
+                        <p><strong>Response:</strong> "Hi Oscar, the crash was caused by an old accounting plugin that isn't compatible with the new budget sheet. I've removed it, and your macros are running smoothly now."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                    <button class="accordion">Scenario R - Phishing Attempt</button>
+                    <div class="panel">
+                    <div class="panel-content">
+                        <div class="img-container">
+                            <img src="/2025/12/29/Ticketing-System-Lab/images/R.png" alt="Session R">
+                        </div>
+                        <p><strong>Requested by:</strong> Angela M., Accounting</p>
+                        <p><strong>Summary:</strong> Phishing Attempt (ceo@gmai1.com)</p>
+                        <p><strong>Description:</strong> "I got an email from the CEO asking me to buy gift cards urgently. The email address looks slightly wrong (ceo@gmai1.com)."</p>
+                        <p><strong>Priority:</strong> High (P2)</p>
+                        <p><strong>Actions taken to resolve:</strong> Analyzed email headers to confirm spoofing. Blocked the sender domain in the Email Gateway. Used PowerShell to purge the malicious email from all user mailboxes to prevent others from clicking.</p>
+                        <p><strong>Response:</strong> "Hi Angela, great catch! This was indeed a phishing attempt. We have blocked the sender and removed the email from the system. Thank you for reporting this so quickly."</p>
+                        <p><strong>Status:</strong> Closed</p>
+                    </div>
+                    </div>
+
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="kb">
+                    <h2>Knowledge Base</h2>
+                    <p>The most important tool in any ticketing system is the knowledge base. This is where you can write articles on how to troubleshoot and solve common problems. This helps everyone on your team and makes resolving tickets much easier. As the knowledge base grows, it becomes the go-to place to quickly find solutions to common problems.</p>
+                    
+                    <p>Click the <strong>Knowledge Base</strong> tab to open it up.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323553-b87d28ff-cec0-40a6-a606-81348e105966.png" alt="Knowledge Base Tab">
+                    </div>
+
+                    <p>Here you can choose to see articles created by everyone in the community, just your team, or by yourself. Being able to see the articles from everyone in the community will be helpful when solving problems that you are unfamiliar with.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323575-59cdfb79-e524-428d-8bbf-fe726a3d7860.png" alt="KB Filters">
+                    </div>
+
+                    <p>To create a new article, click the <strong>New Article</strong> button on the right.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323609-b7ef8afb-a5a3-455f-b33d-e8a5c907ec87.png" alt="New Article Button">
+                    </div>
+
+                    <p>You can now give your article a title and a brief summary of what the article will be about.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323645-9f380ce4-899a-4998-aeaa-cc04dec96072.png" alt="Article Title">
+                    </div>
+
+                    <p>You can then click the <strong>Add Step</strong> button to add steps to troubleshooting and resolving the issue. The steps will help create direct and actionable items that someone can easily follow.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323701-720f6802-0fb8-4904-8441-519eb9095d74.png" alt="Add Step">
+                    </div>
+
+                    <p>You can now name the step and fill out the details for that step. You can continue to do this for all steps.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323723-7b48732c-5cc9-4b78-8dbf-7a059c453a2a.png" alt="Step Details">
+                    </div>
+
+                    <p>After adding the steps, you can also add a conclusion or even references for a particular issue.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323734-e76daf8b-5e4a-4cd4-8628-26c04572004c.png" alt="Conclusion">
+                    </div>
+
+                    <p>You can then click <strong>Save</strong> to commit your article to the knowledge base.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323745-e71637ce-dbae-4af0-afa1-c8ad9ab51279.png" alt="Save Article">
+                    </div>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="inventory">
+                    <h2>Inventory Management</h2>
+                    <p>Tracking and managing devices in an organization plays an important role in supporting the organization. The inventory management tab in Spiceworks allows you to easily scan your network for all devices. You can then associate those devices with tickets, allowing you to track incidents to resolution.</p>
+
+                    <h3>Inventory Management Setup</h3>
+                    <p>Open the inventory management tab by clicking on the <strong>Device Inventory</strong> tab on the left.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323786-50870b20-66cb-4c87-a094-04dc23b43c39.png" alt="Device Inventory Tab">
+                    </div>
+
+                    <p>Click <strong>Create a new environment</strong>.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323798-575d8ffa-f9c1-413e-a40d-0565e14c031c.png" alt="Create Environment">
+                    </div>
+
+                    <p>You will now have the option to download software that will allow you to scan your network. This will be installed on the main computer that you use to run your helpdesk software on. Click <strong>Download Scanning Agent</strong> to proceed.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323814-6cd643ea-365b-4804-9ae3-bcf007fc6524.png" alt="Download Scanning Agent">
+                    </div>
+
+                    <p>Choose your operating system and copy the site key.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323824-2d9204bb-ef65-4ac9-abbb-3cf356b30ccf.png" alt="Site Key">
+                    </div>
+
+                    <p>Once downloaded, open the installer to begin installation.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323835-ebc4734e-c49d-4866-9a09-fb7425d0ec6d.png" alt="Installer">
+                    </div>
+
+                    <p>During the installation, you will be asked to enter the site key you copied earlier. You can press continue to the end to finish the installation.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323853-b5317613-e52c-4ce7-99ae-f0ee8f791722.png" alt="Enter Site Key">
+                    </div>
+
+                    <p>After the installation is complete, the scanning agent will start scanning your network in the background. It might take a while to complete this task. You might have to right click on the Spiceworks tray icon on the lower right and click <strong>Browse</strong> to surface Scan Inventory.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323874-c93f9bd4-83a8-49cd-8107-fa026915707c.png" alt="System Tray Icon">
+                    </div>
+
+                    <h3>Install Collection Agent</h3>
+                    <p>To get more detailed information from the scans, you can also need to download the Collection Agent from the Device Inventory tab. This will need to be installed on each machine that you want detailed information on.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323923-491e293f-6d28-4d29-8d2d-ee87da936e7e.png" alt="Collection Agent">
+                    </div>
+
+                    <p>Choose your operating system to start the download.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323946-df2cf22f-de0f-4ad3-9d80-a70b0883b113.png" alt="Download Agent">
+                    </div>
+
+                    <p>After downloading, launch the installation file.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323958-3830a2cf-17b9-49a1-8149-89804cdec5eb.png" alt="Install Collection Agent">
+                    </div>
+
+                    <p>You will be asked to enter your site key. This will be automatically filled out. Press Continue to the end to finish the installation.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323972-181f9731-ca35-4ad0-ae1b-ba6be0f50ba6.png" alt="Finish Installation">
+                    </div>
+
+                    <h3>Scan For Devices</h3>
+                    <p>Go back to the Spiceworks inventory tab. Click the <strong>Add Devices or Install Agents</strong> button. Click <strong>Scan IP ranges</strong>.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210323999-3cac8b95-d4f8-4b47-8c17-4811facb72fb.png" alt="Scan IP">
+                    </div>
+
+                    <p>You should see a popup like the one below. If it does not popup, then it means the scanning agent has not scanned your system yet. You might have to restart your machine or wait longer for the scanning to complete. It should display the IP range of your network. You can manually add any IP addresses if needed.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324019-78dcbccf-a7ce-429b-b3b1-8cdedb444c13.png" alt="IP Range Popup">
+                    </div>
+
+                    <p>When the scan is complete, you should see the list of devices on your network in the Device Inventory Tab.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324039-578d7502-3724-48ac-9c61-a6ef2408b553.png" alt="Device List">
+                    </div>
+
+                    <p>You can click on a device to see more information about it. Here you can look at the hardware, network adapters and even the software installed on that device.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324055-79718c54-426c-42e5-a022-0b2c21e0c09f.png" alt="Device Details">
+                    </div>
+
+                    <h3>Device Inventory Tasks</h3>
+                    <p>Now that you have a list of all devices on your network, you can associate them with tickets. You will now go through some of the common tasks and tickets associated with Devices.</p>
+
+                    <h4>Associating Device to Existing Ticket</h4>
+                    <p>If you have a ticket for a hardware related problem, you can now associate a device with that ticket. Open the ticket and type in the device name under related devices. Devices with similar names will show up in the drop-down menu. You can then select the correct device that is having the problem.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324108-ada74ccd-a30e-40d1-a376-d9a90a4a49c7.png" alt="Associate Device">
+                    </div>
+
+                    <p>When you go back to the Device Inventory tab, you can click on the device and go to the tickets tab. You will now see the ticket that is associated with that device. If there is no ticket currently associated with that device then you will have an option to create a new ticket for that device.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324131-65e9251a-20c0-43cc-9d74-f8af365ae7d7.png" alt="Device Tickets">
+                    </div>
+
+                    <p>You can also create a new ticket for a device by clicking the menu button by its name. There you will have the option to create a ticket.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324149-66353ac2-3170-4643-a7ba-2d5e4d34f320.png" alt="Create Ticket from Device">
+                    </div>
+
+                    <h4>Assigning Device to User</h4>
+                    <p>You can also manually assign a device to a user by going to the Device inventory tab, then clicking on the device. You can then click on the menu button and select <strong>Edit</strong>.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324186-9544c67e-120d-46d7-b02f-da2f90b302b5.png" alt="Edit Device">
+                    </div>
+
+                    <p>You can now enter the name of the person that the device will be assigned to. You can add more information such as the location of the device or the serial number. You can also add additional information in the description if needed such as if the device is down and needs to be replaced.</p>
+                    <div class="img-container">
+                        <img src="https://user-images.githubusercontent.com/121589466/210324199-e65c64bf-cad0-403b-a70f-3f4e5f06a3f7.png" alt="Assign User">
+                    </div>
+                </section>
+
+                <div class="section-break"></div>
+
+                <section id="conclusion">
+                    <h2>Challenges & Lessons Learned</h2>
+                    <p>This lab provided a comprehensive look at the role of an IT Support Specialist. Key takeaways included:</p>
+                    <ul>
+                        <li><strong>Documentation is Critical:</strong> Solving the problem is only half the job. Documenting the <em>how</em> ensures the solution is repeatable.</li>
+                        <li><strong>Triage Matters:</strong> Properly categorizing and prioritizing tickets prevents critical issues (like a server outage) from being buried behind minor requests (like a mouse replacement).</li>
+                        <li><strong>The "Shift Left" Strategy:</strong> Creating Knowledge Base articles empowers users and other technicians, reducing the overall ticket volume.</li>
+                        <li><strong>Asset Visibility:</strong> Linking inventory to tickets helps identify recurring hardware failures that might require replacement rather than repair.</li>
+                    </ul>
+                    <p>By simulating these scenarios, I have gained practical experience in <strong>Incident Management</strong>, <strong>Service Request Fulfillment</strong>, and <strong>Asset Management</strong> using industry-standard tools.</p>
+                </section>
+
+                </div>
+        </article>
+    </div>
+    
+    <footer id="footer">
+        <div class="footer-left">
+            Copyright &copy; 2025 Anjula Meegalla
+        </div>
+        <div class="footer-right">
+            <nav>
+                <ul>
+                    <li><a href="/" style="text-decoration: none; color: inherit;">~/</a></li>
+                    <li><a href="/pgp.txt" style="text-decoration: none; color: inherit;">pgp</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                /* Toggle between adding and removing the "active" class,
+                to highlight the button that controls the panel */
+                this.classList.toggle("active");
+
+                /* Toggle between hiding and showing the active panel */
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
