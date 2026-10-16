@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"anjulameegalla.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="In this project, we are setting up an Azure Honeypot Lab using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cloud-Based Honeypot: Analyzing RDP Attacks">
+<meta property="og:url" content="https://anjulameegalla.github.io/2025/12/02/honeypot-rdp-attacks/index.html">
+<meta property="og:site_name" content="Anjula&#39;s Blog">
+<meta property="og:description" content="In this project, we are setting up an Azure Honeypot Lab using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/overview.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/pwshLogs.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/logQuery.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/sentinelMap2.png">
+<meta property="article:published_time" content="2025-12-02T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T12:44:54.315Z">
+<meta property="article:author" content="Anjula Meegalla">
+<meta property="article:tag" content="anjula, blog, infosec, cloud, security, technology, anjula meegalla, anjula blog, technology blog, cloud security, infosec blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/overview.png">
+
+
+<link rel="canonical" href="https://anjulameegalla.github.io/2025/12/02/honeypot-rdp-attacks/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://anjulameegalla.github.io/2025/12/02/honeypot-rdp-attacks/","path":"2025/12/02/honeypot-rdp-attacks/","title":"Cloud-Based Honeypot: Analyzing RDP Attacks"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Cloud-Based Honeypot: Analyzing RDP Attacks | Anjula's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Anjula's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Anjula's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Infosec, Cloud and more</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-rss"><a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>rss</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-number">1.</span> <span class="nav-text">Demo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-Architecture-Overview"><span class="nav-number">2.</span> <span class="nav-text">Lab Architecture Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Workflow"><span class="nav-number">2.1.</span> <span class="nav-text">The Workflow</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites-Setup"><span class="nav-number">3.</span> <span class="nav-text">Prerequisites &amp; Setup</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-PowerShell-Exporter"><span class="nav-number">4.</span> <span class="nav-text">The PowerShell Exporter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-the-Script-Works"><span class="nav-number">4.1.</span> <span class="nav-text">How the Script Works</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ingesting-Querying-Data-in-Azure"><span class="nav-number">5.</span> <span class="nav-text">Ingesting &amp; Querying Data in Azure</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Parsing-the-Custom-Log"><span class="nav-number">5.1.</span> <span class="nav-text">Parsing the Custom Log</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Visualizing-the-Attack-Map"><span class="nav-number">5.2.</span> <span class="nav-text">Visualizing the Attack Map</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results-Analysis"><span class="nav-number">6.</span> <span class="nav-text">Results &amp; Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Top-Attack-Sources"><span class="nav-number">6.1.</span> <span class="nav-text">Top Attack Sources</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anjula Meegalla"
+      src="https://anjulameegalla.github.io/stash/public/avatar.png">
+  <p class="site-author-name" itemprop="name">Anjula Meegalla</p>
+  <div class="site-description" itemprop="description">Infosec`er</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/anjula-meegalla/" title="LinkedIn → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;anjula-meegalla&#x2F;" rel="noopener me" target="_blank"><i class="fab fa-linkedin fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/anjulameegalla" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anjulameegalla" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:anjulameegalla@gmail.com" title="E-Mail → mailto:anjulameegalla@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/anjulaxd" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;anjulaxd" rel="noopener me" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_nd.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://anjulameegalla.github.io/2025/12/02/honeypot-rdp-attacks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://anjulameegalla.github.io/stash/public/avatar.png">
+      <meta itemprop="name" content="Anjula Meegalla">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anjula's Blog">
+      <meta itemprop="description" content="Infosec`er">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Cloud-Based Honeypot: Analyzing RDP Attacks | Anjula's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cloud-Based Honeypot: Analyzing RDP Attacks
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-12-02 12:00:00" itemprop="dateCreated datePublished" datetime="2025-12-02T12:00:00+05:30">2025-12-02</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>4 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>In this project, we are setting up an <strong>Azure Honeypot Lab</strong> using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the internet, we can gather data on where attacks are originating from and visualize them on a world map.</p>
+<p><strong>Goal:</strong> Transform raw Windows Event Logs into a visual Threat Intelligence Map.</p>
+<span id="more"></span>
+
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><video controls>
+  <source src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/demo.mp4" type="video/mp4">
+</video>
+
+<p><em>Above: A timelapse of the live attack map populating over a 24-hour period.</em></p>
+<h2 id="Lab-Architecture-Overview"><a href="#Lab-Architecture-Overview" class="headerlink" title="Lab Architecture Overview"></a>Lab Architecture Overview</h2><p>The lab consists of three main components:</p>
+<ul>
+<li><strong>Windows 10 VM:</strong> Acts as the honeypot.</li>
+<li><strong>Log Analytics Workspace:</strong> Ingests the custom logs.</li>
+<li><strong>Microsoft Sentinel:</strong> Serves as the SIEM for visualization.</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/overview.png" alt="Architecture Overview Diagram"></p>
+<h3 id="The-Workflow"><a href="#The-Workflow" class="headerlink" title="The Workflow"></a>The Workflow</h3><ol>
+<li>Attackers attempt to RDP into the exposed VM.</li>
+<li>Windows records these as <strong>Event ID 4625</strong> (Failed Logon).</li>
+<li>A custom PowerShell script extracts the IP, Username, and Timestamp.</li>
+<li>The script queries a Geolocation API to get the physical location of the IP.</li>
+<li>Data is written to a custom log file (<code>failed_rdp.log</code>) and sent to Azure Sentinel.</li>
+</ol>
+<hr>
+<h2 id="Prerequisites-Setup"><a href="#Prerequisites-Setup" class="headerlink" title="Prerequisites &amp; Setup"></a>Prerequisites &amp; Setup</h2><p>Before running the script, ensure you have the following:</p>
+<ul>
+<li><strong>Azure Resources :</strong> A Virtual Machine, Network Security Group (allowing RDP), and a Log Analytics Workspace.</li>
+<li><strong>IP2Location API Key :</strong> A free API key to enrich IP addresses with geo-data. <a target="_blank" rel="noopener" href="https://ipgeolocation.io/ip-location-api.html">Get your API Key here</a>.</li>
+</ul>
+<hr>
+<h2 id="The-PowerShell-Exporter"><a href="#The-PowerShell-Exporter" class="headerlink" title="The PowerShell Exporter"></a>The PowerShell Exporter</h2><p>This PowerShell script is the heart of the honeypot. It monitors the Windows Event Viewer for security events, specifically looking for failed login attempts.</p>
+<blockquote>
+<p><strong>Key Configuration:</strong> Set your <code>$API_KEY</code> variable and ensure the <code>$LOGFILE_PATH</code> is accessible (e.g., <code>C:\ProgramData\failed_rdp.log</code>).</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Partial Script Snippet for Context</span></span><br><span class="line"><span class="variable">$API_KEY</span>      = <span class="string">&quot;YOUR_API_KEY_HERE&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_NAME</span> = <span class="string">&quot;failed_rdp.log&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_PATH</span> = <span class="string">&quot;C:\ProgramData\<span class="variable">$</span>(<span class="variable">$LOGFILE_NAME</span>)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Filter for Failed RDP events (EventID 4625)</span></span><br><span class="line"><span class="variable">$XMLFilter</span> = <span class="string">@&#x27;</span></span><br><span class="line"><span class="string">&lt;QueryList&gt; </span></span><br><span class="line"><span class="string">   &lt;Query Id=&quot;0&quot; Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">         &lt;Select Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">              *[System[(EventID=&#x27;4625&#x27;)]]</span></span><br><span class="line"><span class="string">          &lt;/Select&gt;</span></span><br><span class="line"><span class="string">    &lt;/Query&gt;</span></span><br><span class="line"><span class="string">&lt;/QueryList&gt; </span></span><br><span class="line"><span class="string">&#x27;@</span></span><br></pre></td></tr></table></figure>
+
+<p>You can <a href="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/honeypot.ps1">download the full script here</a>.</p>
+<h3 id="How-the-Script-Works"><a href="#How-the-Script-Works" class="headerlink" title="How the Script Works"></a>How the Script Works</h3><ul>
+<li><strong>Event Monitoring :</strong> An infinite loop continuously checks Windows Event Viewer for Event ID <code>4625</code>.</li>
+<li><strong>Data Extraction :</strong> When a failed login is found, the script pulls the <code>Source IP</code> ($event.properties[19]), <code>Username</code>, and <code>Timestamp</code>.</li>
+<li><strong>Geolocation Enrichment :</strong> The script pauses for 1 second (to avoid rate limits) and queries the <em>ipgeolocation.io</em> API to get the Latitude, Longitude, and Country of the attacker.</li>
+<li><strong>Logging :</strong> The enriched data is appended to <code>failed_rdp.log</code> in a format that Azure can easily parse.</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/pwshLogs.png" alt="PowerShell Script Running and Generating Logs"></p>
+<hr>
+<h2 id="Ingesting-Querying-Data-in-Azure"><a href="#Ingesting-Querying-Data-in-Azure" class="headerlink" title="Ingesting &amp; Querying Data in Azure"></a>Ingesting &amp; Querying Data in Azure</h2><p>Once the log file is being populated on the VM, we configure the Log Analytics Workspace to ingest this custom log.</p>
+<h3 id="Parsing-the-Custom-Log"><a href="#Parsing-the-Custom-Log" class="headerlink" title="Parsing the Custom Log"></a>Parsing the Custom Log</h3><p>Use the following KQL (Kusto Query Language) query to parse the raw data fields from the custom log file:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">FAILED_RDP_GEO_CL </span><br><span class="line">| extend username = extract(@&quot;username:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         timestamp = extract(@&quot;timestamp:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         latitude = extract(@&quot;latitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         longitude = extract(@&quot;longitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         sourcehost = extract(@&quot;sourcehost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         state = extract(@&quot;state:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         label = extract(@&quot;label:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         destination = extract(@&quot;destinationhost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         country = extract(@&quot;country:([^,]+)&quot;, 1, RawData)</span><br><span class="line">| where destination != &quot;samplehost&quot;</span><br><span class="line">| where sourcehost != &quot;&quot;</span><br><span class="line">| summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/logQuery.png" alt="KQL Query Results in Azure"></p>
+<h3 id="Visualizing-the-Attack-Map"><a href="#Visualizing-the-Attack-Map" class="headerlink" title="Visualizing the Attack Map"></a>Visualizing the Attack Map</h3><p>To build the visual map in Microsoft Sentinel Workbooks, we use a similar query but summarize by location for the map render:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">| summarize event_count=count() by latitude, longitude, sourcehost, label, destination, country</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Results-Analysis"><a href="#Results-Analysis" class="headerlink" title="Results &amp; Analysis"></a>Results &amp; Analysis</h2><p>After leaving the honeypot running for 24 hours, the map populates with live attack data. The visualization below shows the volume and origin of RDP brute-force attempts.</p>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/sentinelMap2.png" alt="World Map of Incoming Attacks after 24 hours"></p>
+<h3 id="Top-Attack-Sources"><a href="#Top-Attack-Sources" class="headerlink" title="Top Attack Sources"></a>Top Attack Sources</h3><p>The data revealed significant activity from specific regions. Here is a breakdown of the top sources captured during the test run:</p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>No. of Attempts</th>
+<th>Common IPs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Poland</td>
+<td>16.4K</td>
+<td>149.50.96.98</td>
+</tr>
+<tr>
+<td>Mozambique</td>
+<td>5.88K</td>
+<td>160.242.36.216</td>
+</tr>
+<tr>
+<td>China</td>
+<td>4.17K</td>
+<td>125.75.66.99</td>
+</tr>
+<tr>
+<td>Netherlands</td>
+<td>3.85K</td>
+<td>92.63.197.23 , 185.170.144.3 , 84.84.121.37</td>
+</tr>
+<tr>
+<td>UK</td>
+<td>1.61K</td>
+<td>80.94.95.215</td>
+</tr>
+<tr>
+<td>Korea</td>
+<td>1016</td>
+<td>115.92.155.19 , 122.202.246.213</td>
+</tr>
+<tr>
+<td>India</td>
+<td>709</td>
+<td>203.192.237.115 , 103.119.179.133 , 125.18.138.42</td>
+</tr>
+<tr>
+<td>Serbia</td>
+<td>358</td>
+<td>109.92.111.135</td>
+</tr>
+<tr>
+<td>Nepal</td>
+<td>340</td>
+<td>110.44.116.60</td>
+</tr>
+<tr>
+<td>Sudan</td>
+<td>220</td>
+<td>41.209.126.101</td>
+</tr>
+<tr>
+<td>USA</td>
+<td>140</td>
+<td>185.243.96.107 , 67.205.146.203</td>
+</tr>
+<tr>
+<td>Russia</td>
+<td>64</td>
+<td>185.39.19.42</td>
+</tr>
+<tr>
+<td>Ukraine</td>
+<td>47</td>
+<td>185.243.96.107</td>
+</tr>
+<tr>
+<td>Luxembourg</td>
+<td>30</td>
+<td>158.64.24.12</td>
+</tr>
+</tbody></table>
+<p><em>Note: It is fascinating to see over 16,000 attempts originating from a single IP in Poland within a 24-hour window.</em></p>
+<p>This project demonstrates how easily a Windows machine exposed to the internet attracts malicious traffic. By integrating PowerShell scripting with Azure Sentinel, we can transform noise into actionable threat intelligence.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/24/digital-ghost-paradox/" rel="prev" title="The Digital Ghost Paradox">
+                  <i class="fa fa-angle-left"></i> The Digital Ghost Paradox
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/29/ticketing-system-lab/" rel="next" title="Implementing a Spiceworks based Cloud Ticketing System">
+                  Implementing a Spiceworks based Cloud Ticketing System <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Anjula Meegalla</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"anjulameegalla.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment (“Gotham City”) wi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows Active Directory Practice Lab on Azure">
+<meta property="og:url" content="https://anjulameegalla.github.io/2025/07/16/windows-ad-lab/index.html">
+<meta property="og:site_name" content="Anjula&#39;s Blog">
+<meta property="og:description" content="This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment (“Gotham City”) wi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599684_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599685_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599687_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599688_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599691_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599692_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599693_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599694_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599695_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599696_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599697_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599699_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599701_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599703_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599702_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599704_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599705_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599707_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599706_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599708_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599709_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599711_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/d1317293-f3a1-4a5d-b028-a16ac54999de.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599713_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599724_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599725_w.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599726_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599728_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599729_y.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599732_x.jpg">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599733_x.jpg">
+<meta property="article:published_time" content="2025-07-16T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T04:27:20.965Z">
+<meta property="article:author" content="Anjula Meegalla">
+<meta property="article:tag" content="anjula, blog, infosec, cloud, security, technology, anjula meegalla, anjula blog, technology blog, cloud security, infosec blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://anjulameegalla.github.io/stash/windows-ad-lab/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png">
+
+
+<link rel="canonical" href="https://anjulameegalla.github.io/2025/07/16/windows-ad-lab/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://anjulameegalla.github.io/2025/07/16/windows-ad-lab/","path":"2025/07/16/windows-ad-lab/","title":"Windows Active Directory Practice Lab on Azure"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Windows Active Directory Practice Lab on Azure | Anjula's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Anjula's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Anjula's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Infosec, Cloud and more</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-rss"><a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>rss</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-Architecture-Resources"><span class="nav-number">1.</span> <span class="nav-text">Lab Architecture &amp; Resources</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Domain-controller"><span class="nav-number">1.1.</span> <span class="nav-text">Domain controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#User-machine-1"><span class="nav-number">1.2.</span> <span class="nav-text">User machine 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#User-machine-2"><span class="nav-number">1.3.</span> <span class="nav-text">User machine 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connecting-to-DC-VM"><span class="nav-number">1.4.</span> <span class="nav-text">Connecting to DC VM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-services"><span class="nav-number">1.5.</span> <span class="nav-text">Configuring services</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promoting-VM-to-domain-controller"><span class="nav-number">1.6.</span> <span class="nav-text">Promoting VM to domain controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-certificate-services"><span class="nav-number">1.7.</span> <span class="nav-text">Configuring certificate services</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-up-a-share"><span class="nav-number">1.8.</span> <span class="nav-text">Setting up a share</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-domain-users"><span class="nav-number">1.9.</span> <span class="nav-text">Creating domain users</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-up-SPNs"><span class="nav-number">1.10.</span> <span class="nav-text">Setting up SPNs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Domain-machine-IP-address"><span class="nav-number">1.11.</span> <span class="nav-text">Domain machine IP address</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connecting-to-user-machines"><span class="nav-number">1.12.</span> <span class="nav-text">Connecting to user machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-Domain-users-to-user-machines"><span class="nav-number">1.13.</span> <span class="nav-text">Configuring Domain users to user machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Re-connecting-to-machines-with-Domain-user-accounts"><span class="nav-number">1.14.</span> <span class="nav-text">Re-connecting to machines with Domain user accounts</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anjula Meegalla"
+      src="https://anjulameegalla.github.io/stash/public/avatar.png">
+  <p class="site-author-name" itemprop="name">Anjula Meegalla</p>
+  <div class="site-description" itemprop="description">Infosec`er</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/anjula-meegalla/" title="LinkedIn → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;anjula-meegalla&#x2F;" rel="noopener me" target="_blank"><i class="fab fa-linkedin fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/anjulameegalla" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anjulameegalla" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:anjulameegalla@gmail.com" title="E-Mail → mailto:anjulameegalla@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/anjulaxd" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;anjulaxd" rel="noopener me" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_nd.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://anjulameegalla.github.io/2025/07/16/windows-ad-lab/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://anjulameegalla.github.io/stash/public/avatar.png">
+      <meta itemprop="name" content="Anjula Meegalla">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anjula's Blog">
+      <meta itemprop="description" content="Infosec`er">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Windows Active Directory Practice Lab on Azure | Anjula's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows Active Directory Practice Lab on Azure
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-07-16 12:00:00" itemprop="dateCreated datePublished" datetime="2025-07-16T12:00:00+05:30">2025-07-16</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>4 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment (“Gotham City”) with a Domain Controller and multiple client workstations to practice AD administration, user management, and network configuration.</p>
+<span id="more"></span>
+
+<h2 id="Lab-Architecture-Resources"><a href="#Lab-Architecture-Resources" class="headerlink" title="Lab Architecture &amp; Resources"></a>Lab Architecture &amp; Resources</h2><p>The lab is contained within a single Resource Group (<code>ADLab</code>) and Virtual Network (<code>ADLabNet</code> - 10.0.1.0&#x2F;24). It consists of three primary Virtual Machines:</p>
+<ul>
+<li><strong>GOTHAM-DC:</strong> Windows Server 2019 (The Domain Controller)</li>
+<li><strong>THEBATMAN:</strong> Windows 10 Enterprise (User: Bruce Wayne)</li>
+<li><strong>WAYNEENT:</strong> Windows 10 Enterprise (User: Lucius Fox)</li>
+</ul>
+<h3 id="Domain-controller"><a href="#Domain-controller" class="headerlink" title="Domain controller"></a>Domain controller</h3><ul>
+<li>VM name : GOTHAM-DC</li>
+<li>Image : Windows Server 2019 Datacenter</li>
+<li>Username : anjula</li>
+<li>Password : labuser123Anjula</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<h3 id="User-machine-1"><a href="#User-machine-1" class="headerlink" title="User machine 1"></a>User machine 1</h3><ul>
+<li>VM name : THEBATMAN</li>
+<li>Image : Windows 10 Enterprise</li>
+<li>Username : bwayne</li>
+<li>Password : myPassword01</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<h3 id="User-machine-2"><a href="#User-machine-2" class="headerlink" title="User machine 2"></a>User machine 2</h3><ul>
+<li>VM name : WAYNEENT</li>
+<li>Image : Windows 10 Enterprise</li>
+<li>Username : lfox</li>
+<li>Password : myPassword02</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<hr>
+<h3 id="Connecting-to-DC-VM"><a href="#Connecting-to-DC-VM" class="headerlink" title="Connecting to DC VM"></a>Connecting to DC VM</h3><p>RDP into GOTHAM-DC with Username : anjula &amp; Password : labuser123Anjula</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png" alt="RDP Connection"></p>
+<h3 id="Configuring-services"><a href="#Configuring-services" class="headerlink" title="Configuring services"></a>Configuring services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
+<ul>
+<li>Server Roles : Active Directory Domain Service</li>
+</ul>
+<p>Install service.</p>
+<p>Choose “Promote this server to a domain controller”.</p>
+<h3 id="Promoting-VM-to-domain-controller"><a href="#Promoting-VM-to-domain-controller" class="headerlink" title="Promoting VM to domain controller"></a>Promoting VM to domain controller</h3><p>Active directory domain service configuration wizard &gt; Deployment configuration &gt; Add a new forest</p>
+<ul>
+<li>Root domain name : GOTHAM.local</li>
+<li>Forest function level : Windows Server 2016</li>
+<li>Domain function level : Windows Server 2016</li>
+<li>Password : labuser123Anjula</li>
+<li>NetBIOS domain name : GOTHAM</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599684_y.jpg" alt="AD Config Wizard"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599685_y.jpg" alt="Deployment Config"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599687_y.jpg" alt="Additional Options"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599688_y.jpg" alt="Prerequisites Check"></p>
+<p>Reboot machine.</p>
+<p>RDP into GOTHAM-DC with domain credentials; Username : GOTHAM\anjula &amp; Password : labuser123Anjula</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599691_x.jpg" alt="Server Manager"></p>
+<h3 id="Configuring-certificate-services"><a href="#Configuring-certificate-services" class="headerlink" title="Configuring certificate services"></a>Configuring certificate services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
+<ul>
+<li>Server roles : Active Directory Certificate Services</li>
+</ul>
+<p>Install service.</p>
+<p>Choose “Configure Active Directory certificate services on the destination server”.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599692_y.jpg" alt="AD CS Config"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599693_y.jpg" alt="Role Services"></p>
+<p>AD CS configuration wizard &gt;</p>
+<ul>
+<li>Credentials : GOTHAM\anjula</li>
+<li>Role services : Certification Authority</li>
+<li>Setup type : Enterprise CA</li>
+<li>CA type : Root CA</li>
+<li>Private key &gt; Validity period : 99 years</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599694_y.jpg" alt="CA Type"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599695_y.jpg" alt="Private Key"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599696_y.jpg" alt="Cryptography"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599697_y.jpg" alt="Confirmation"></p>
+<p>Configure and reboot machine.</p>
+<hr>
+<h3 id="Setting-up-a-share"><a href="#Setting-up-a-share" class="headerlink" title="Setting up a share"></a>Setting up a share</h3><p>This PC &gt; C:\ Drive &gt; Create new folder “hackme”</p>
+<p>Launch Server manager &gt; File and storage services &gt; Shares &gt; Tasks &gt; New share wizard &gt;</p>
+<ul>
+<li>File share profile : SMB Share - Quick</li>
+<li>Share location &gt; custom path : C:\hackme</li>
+<li>Share name : hackme</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599699_y.jpg" alt="Share Config"></p>
+<p>Create and close.</p>
+<hr>
+<h3 id="Creating-domain-users"><a href="#Creating-domain-users" class="headerlink" title="Creating domain users"></a>Creating domain users</h3><p>Launch Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local</p>
+<p>Create new Organizational unit (OU) “Groups”</p>
+<p>Move every entry except “Guest” and “anjula” from Users to Groups</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599701_y.jpg" alt="Creating OUs"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599703_x.jpg" alt="Moving Users"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599702_y.jpg" alt="OU Structure"></p>
+<p>MARVEL.local &gt; Users &gt;</p>
+<p>Create new user</p>
+<ul>
+<li>First name : Bruce</li>
+<li>Last name : Wayne</li>
+<li>User login name : bwayne</li>
+<li>Password : Password1</li>
+<li>Check “Password never expires”</li>
+</ul>
+<p>Create another user</p>
+<ul>
+<li>First name : Lucious</li>
+<li>Last name : Fox</li>
+<li>User login name : lfox</li>
+<li>Password : Password2</li>
+<li>Check “Password never expires”</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599704_y.jpg" alt="Creating User Bruce"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599705_x.jpg" alt="Password Settings"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599707_x.jpg" alt="Creating User Lucius"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599706_x.jpg" alt="Copying User"></p>
+<p>Copy user “anjula” to create another user</p>
+<ul>
+<li>First name : SQL</li>
+<li>Last name : Service</li>
+<li>User login name : SQLService</li>
+<li>Password : MYpassword123#</li>
+</ul>
+<p>SQLService &gt; properties &gt;</p>
+<ul>
+<li>Description : “Password is MYpassword123#”</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599708_y.jpg" alt="SQLService Properties"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599709_x.jpg" alt="SQLService Description"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599711_x.jpg" alt="User List"></p>
+<hr>
+<h3 id="Setting-up-SPNs"><a href="#Setting-up-SPNs" class="headerlink" title="Setting up SPNs"></a>Setting up SPNs</h3><p>Launch Command prompt as administrator.</p>
+<p>Setup SPN for SQLService account</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -a GOTHAM-DC/SQLService.GOTHAM.local:<span class="number">60111</span> GOTHAM\SQLService</span><br></pre></td></tr></table></figure>
+
+<p>Confirm SPN.</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setspn -T GOTHAM.local -Q */*</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/d1317293-f3a1-4a5d-b028-a16ac54999de.png" alt="SPN Output"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599713_y.jpg" alt="SPN Verification"></p>
+<h3 id="Domain-machine-IP-address"><a href="#Domain-machine-IP-address" class="headerlink" title="Domain machine IP address"></a>Domain machine IP address</h3><p>Command prompt &gt;</p>
+<figure class="highlight bat"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ipconfig</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>IP : 10.0.1.4&#x2F;24</strong></li>
+</ul>
+<hr>
+<h3 id="Connecting-to-user-machines"><a href="#Connecting-to-user-machines" class="headerlink" title="Connecting to user machines"></a>Connecting to user machines</h3><p>RDP into THEBATMAN with Username : bwayne and Password : myPassword01</p>
+<p>Launch File explorer &gt; Network</p>
+<p>Turn on Network discovery.</p>
+<p>Launch Settings &gt; Network &amp; internet &gt; Ethernet &gt; Change adapter settings</p>
+<p>Choose Ethernet &gt; properties &gt; Internet Protocol version 4 (TCP&#x2F;IPv4)</p>
+<ul>
+<li>Preferred DNS server : 10.0.1.4</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599724_y.jpg" alt="DNS Configuration"></p>
+<p>RDP connection will be lost. Reconnect to the same user “bwayne”</p>
+<p>Launch Settings &gt; Accounts &gt; Access work or school &gt; Connect</p>
+<p>Choose “Join this device to a local Active Directory domain”.</p>
+<ul>
+<li>Domain name : GOTHAM.local</li>
+</ul>
+<p>Join a domain &gt;</p>
+<ul>
+<li>User : anjula</li>
+<li>Password : labuser123Anjula</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599725_w.jpg" alt="Join Domain"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599726_x.jpg" alt="Domain Success"></p>
+<p>Restart machine.</p>
+<p>RDP into WAYNEENT with Username : lfox and Password : myPassword02</p>
+<p>Repeat the same process above.</p>
+<h3 id="Configuring-Domain-users-to-user-machines"><a href="#Configuring-Domain-users-to-user-machines" class="headerlink" title="Configuring Domain users to user machines"></a>Configuring Domain users to user machines</h3><p>Launch GOTHAM-DC &gt; Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local &gt; Computers</p>
+<p>Both user computers “THEBATMAN” and “WAYNEENT” is listed under the domain.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599728_y.jpg" alt="Computers OU"></p>
+<p>RDP into THEBATMAN with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
+<p>Choose “Add”</p>
+<p>Select Users, computers, service accounts or groups &gt;</p>
+<ul>
+<li>Enter object names to select : bwayne</li>
+</ul>
+<p>Check names, then apply.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599729_y.jpg" alt="Adding bwayne to Admins"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599732_x.jpg" alt="Admin Group Confirmation"></p>
+<p>RDP into WAYNEENT with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
+<p>Choose “Add”</p>
+<p>Select Users, computers, service accounts or groups &gt;</p>
+<ul>
+<li>Enter object names to select : lfox</li>
+</ul>
+<p>Check names &amp; choose “Add” again</p>
+<ul>
+<li>Enter object names to select : bwayne</li>
+</ul>
+<p>Check names, then apply.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599733_x.jpg" alt="Adding lfox to Admins"></p>
+<hr>
+<h3 id="Re-connecting-to-machines-with-Domain-user-accounts"><a href="#Re-connecting-to-machines-with-Domain-user-accounts" class="headerlink" title="Re-connecting to machines with Domain user accounts"></a>Re-connecting to machines with Domain user accounts</h3><p>RDP into THEBATMAN machine with;</p>
+<ul>
+<li>Username : GOTHAM\bwayne</li>
+<li>Password : Password1</li>
+</ul>
+<p>RDP into WAYNEENT machine with both;</p>
+<ul>
+<li>Username : GOTHAM\bwayne</li>
+<li>Password : Password1</li>
+</ul>
+<p>and</p>
+<ul>
+<li>Username : GOTHAM\lfox</li>
+<li>Password : Password2</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/09/24/digital-ghost-paradox/" rel="next" title="The Digital Ghost Paradox">
+                  The Digital Ghost Paradox <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Anjula Meegalla</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
