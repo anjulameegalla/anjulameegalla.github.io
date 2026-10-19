@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 8.1.2">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"anjulam.me","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.29.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a brute-force attack using Hydra against a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux-Based Intrusion Detection &amp; Automated Threat Response with Wazuh">
+<meta property="og:url" content="https://anjulam.me/2025/10/12/wazuh-tdr-lab/index.html">
+<meta property="og:site_name" content="Anjula&#39;s Blog">
+<meta property="og:description" content="This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a brute-force attack using Hydra against a">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/diagram.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%201.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%202.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%206.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%207.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%208.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%209.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2010.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2011.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2012.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2015.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2013.png">
+<meta property="og:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2014.png">
+<meta property="article:published_time" content="2025-10-12T06:30:00.000Z">
+<meta property="article:modified_time" content="2026-10-19T01:38:00.873Z">
+<meta property="article:author" content="Anjula Meegalla">
+<meta property="article:tag" content="anjula, blog, infosec, cloud, security, technology, anjula meegalla, anjula blog, technology blog, cloud security, infosec blog">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/diagram.png">
+
+
+<link rel="canonical" href="https://anjulam.me/2025/10/12/wazuh-tdr-lab/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://anjulam.me/2025/10/12/wazuh-tdr-lab/","path":"2025/10/12/wazuh-tdr-lab/","title":"Linux-Based Intrusion Detection & Automated Threat Response with Wazuh"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux-Based Intrusion Detection & Automated Threat Response with Wazuh | Anjula's Blog</title>
+  
+
+
+
+
+
+
+
+
+  
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="Anjula's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Anjula's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Infosec, Cloud and more</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-rss"><a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>rss</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lab-Overview"><span class="nav-number">1.</span> <span class="nav-text">Lab Overview</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setting-up-Wazuh-Manager"><span class="nav-number">2.</span> <span class="nav-text">Setting up Wazuh Manager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-Wazuh-Manager"><span class="nav-number">2.1.</span> <span class="nav-text">Install Wazuh Manager</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setup-Wazuh-Agent-on-Ubuntu"><span class="nav-number">3.</span> <span class="nav-text">Setup Wazuh Agent on Ubuntu</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Configure-Ubuntu-Agent-Active-Response"><span class="nav-number">4.</span> <span class="nav-text">Configure Ubuntu Agent &amp; Active Response</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-Configuration"><span class="nav-number">4.1.</span> <span class="nav-text">Agent Configuration</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-Active-Response-Rule"><span class="nav-number">4.2.</span> <span class="nav-text">Adding Active Response Rule</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PoC-Proof-of-Concept"><span class="nav-number">5.</span> <span class="nav-text">PoC [Proof-of-Concept]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Initial-Connectivity"><span class="nav-number">5.1.</span> <span class="nav-text">1. Initial Connectivity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Execute-Brute-Force-Attack"><span class="nav-number">5.2.</span> <span class="nav-text">2. Execute Brute-Force Attack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Verify-Active-Response"><span class="nav-number">5.3.</span> <span class="nav-text">3. Verify Active Response</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-Wazuh-Logs"><span class="nav-number">5.4.</span> <span class="nav-text">4. Wazuh Logs</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Anjula Meegalla"
+      src="https://anjulameegalla.github.io/stash/public/avatar.png">
+  <p class="site-author-name" itemprop="name">Anjula Meegalla</p>
+  <div class="site-description" itemprop="description">Infosec`er</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/anjula-meegalla/" title="LinkedIn → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;anjula-meegalla&#x2F;" rel="noopener me" target="_blank"><i class="fab fa-linkedin fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/anjulameegalla" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;anjulameegalla" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:anjulameegalla@gmail.com" title="E-Mail → mailto:anjulameegalla@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://instagram.com/anjulaxd" title="Instagram → https:&#x2F;&#x2F;instagram.com&#x2F;anjulaxd" rel="noopener me" target="_blank"><i class="fab fa-instagram fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_nd.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://anjulam.me/2025/10/12/wazuh-tdr-lab/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://anjulameegalla.github.io/stash/public/avatar.png">
+      <meta itemprop="name" content="Anjula Meegalla">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Anjula's Blog">
+      <meta itemprop="description" content="Infosec`er">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux-Based Intrusion Detection &amp; Automated Threat Response with Wazuh | Anjula's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux-Based Intrusion Detection & Automated Threat Response with Wazuh
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-10-12 12:00:00" itemprop="dateCreated datePublished" datetime="2025-10-12T12:00:00+05:30">2025-10-12</time>
+    </span>
+
+  
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>3 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a <strong>brute-force attack</strong> using <strong>Hydra</strong> against a monitored <strong>Ubuntu Agent</strong> VM.</p>
+<span id="more"></span>
+
+<p>The Wazuh agent on the Ubuntu server detects this hostile activity, collects the relevant logs, and forwards them to the central <strong>Wazuh Manager</strong>. Upon analyzing the data and identifying the signature of the brute-force attack, the manager triggers an active response, automatically deploying a new <strong>firewall rule</strong> on the agent to block the attacker’s IP address and neutralize the threat.</p>
+<h2 id="Lab-Overview"><a href="#Lab-Overview" class="headerlink" title="Lab Overview"></a>Lab Overview</h2><p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/diagram.png" alt="Lab Overview Diagram"></p>
+<p><strong>Utilities Used:</strong></p>
+<ul>
+<li>DigitalOcean - 2x Ubuntu 24.04 Droplets</li>
+<li>VMWare - Kali VM</li>
+<li>Termius - for SSH session mgmt</li>
+</ul>
+<h2 id="Setting-up-Wazuh-Manager"><a href="#Setting-up-Wazuh-Manager" class="headerlink" title="Setting up Wazuh Manager"></a>Setting up Wazuh Manager</h2><h3 id="Install-Wazuh-Manager"><a href="#Install-Wazuh-Manager" class="headerlink" title="Install Wazuh Manager"></a>Install Wazuh Manager</h3><p>We start by installing the manager on our primary Ubuntu Droplet using the official installation script:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sO https://packages.wazuh.com/&lt;latest&gt;/wazuh-install.sh &amp;&amp; <span class="built_in">sudo</span> bash ./wazuh-install.sh -a</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://documentation.wazuh.com/current/quickstart.html">Documentation</a></p>
+<p>Copy the username and password generated at the end of the installation. If you forgot to save the password, you can recover it with this command:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt</span><br></pre></td></tr></table></figure>
+
+<p>After installation, ensure the firewall allows traffic on port 443 and verify the service status:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ufw allow 443</span><br><span class="line">systemctl status wazuh-manager.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image.png" alt="Wazuh Manager Service Status"></p>
+<p>Once running, we can log in to the Wazuh dashboard.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%201.png" alt="Wazuh Login Screen"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%202.png" alt="Wazuh Dashboard Overview"></p>
+<h2 id="Setup-Wazuh-Agent-on-Ubuntu"><a href="#Setup-Wazuh-Agent-on-Ubuntu" class="headerlink" title="Setup Wazuh Agent on Ubuntu"></a>Setup Wazuh Agent on Ubuntu</h2><p>For the Linux victim machine, we select the DEB amd64 version and run the installation commands.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%206.png" alt="Linux Agent Selection"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%207.png" alt="Linux Installation Command"></p>
+<p>Start the agent and check its status:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl start wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl status wazuh-agent</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png" alt="Ubuntu Agent Status"></p>
+<p>Back on the Wazuh dashboard, we should see the new agent connected.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%208.png" alt="Ubuntu Agent Active on Dashboard"></p>
+<h2 id="Configure-Ubuntu-Agent-Active-Response"><a href="#Configure-Ubuntu-Agent-Active-Response" class="headerlink" title="Configure Ubuntu Agent &amp; Active Response"></a>Configure Ubuntu Agent &amp; Active Response</h2><h3 id="Agent-Configuration"><a href="#Agent-Configuration" class="headerlink" title="Agent Configuration"></a>Agent Configuration</h3><p>Ensure that the Wazuh agent is properly configured to communicate with the Wazuh server (Check the IP of Wazuh):</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%209.png" alt="Editing ossec.conf"></p>
+<p>Restart the agent if any changes were done.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart wazuh-agent</span><br></pre></td></tr></table></figure>
+
+<h3 id="Adding-Active-Response-Rule"><a href="#Adding-Active-Response-Rule" class="headerlink" title="Adding Active Response Rule"></a>Adding Active Response Rule</h3><p>Navigate and edit the <code>ossec.conf</code> file on Wazuh manager.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
+
+<p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired.</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">active-response</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">command</span>&gt;</span>firewall-drop<span class="tag">&lt;/<span class="name">command</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">location</span>&gt;</span>local<span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rules_id</span>&gt;</span>5710<span class="tag">&lt;/<span class="name">rules_id</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">timeout</span>&gt;</span>600<span class="tag">&lt;/<span class="name">timeout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">active-response</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>This configuration suggests that when a rule with ID 5710 is triggered, the firewall will drop the corresponding traffic for a duration of 10 minutes. It’s a common approach for dealing with potential threats or suspicious activity.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2010.png" alt="Active Response Configuration"></p>
+<hr>
+<h2 id="PoC-Proof-of-Concept"><a href="#PoC-Proof-of-Concept" class="headerlink" title="PoC [Proof-of-Concept]"></a>PoC [Proof-of-Concept]</h2><p>To test the defense, I used <strong>Hydra</strong> (downloadable from <a target="_blank" rel="noopener" href="https://github.com/vanhauser-thc/thc-hydra.git">GitHub</a>) on a Kali Linux machine to perform an SSH brute-force attack against the Ubuntu agent.</p>
+<h3 id="1-Initial-Connectivity"><a href="#1-Initial-Connectivity" class="headerlink" title="1. Initial Connectivity"></a>1. Initial Connectivity</h3><p>First, verify we can ping the target before the attack.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping &lt;ubuntu vm public ip&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2011.png" alt="Successful Ping Test"></p>
+<h3 id="2-Execute-Brute-Force-Attack"><a href="#2-Execute-Brute-Force-Attack" class="headerlink" title="2. Execute Brute-Force Attack"></a>2. Execute Brute-Force Attack</h3><p>Run Hydra using the <code>rockyou.txt</code> wordlist.</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l [username] -P [passlist.txt] ssh://[ubuntu vm ip address]</span><br></pre></td></tr></table></figure>
+
+<p>In my case, I used the following command:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://139.59.126.244</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2012.png" alt="Hydra Attack Execution"></p>
+<h3 id="3-Verify-Active-Response"><a href="#3-Verify-Active-Response" class="headerlink" title="3. Verify Active Response"></a>3. Verify Active Response</h3><p>After the attack starts, try pinging the VM again. It should fail (timeout) because the firewall rule has been automatically applied.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2015.png" alt="Ping Failed after Attack"></p>
+<h3 id="4-Wazuh-Logs"><a href="#4-Wazuh-Logs" class="headerlink" title="4. Wazuh Logs"></a>4. Wazuh Logs</h3><p>The Wazuh dashboard confirms the events: SSHd failed login attempts followed by the <code>Host firewall-drop</code> active response.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2013.png" alt="Wazuh Alert Logs"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2014.png" alt="Firewall Drop Event"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/24/digital-ghost-paradox/" rel="prev" title="The Digital Ghost Paradox">
+                  <i class="fa fa-angle-left"></i> The Digital Ghost Paradox
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/12/02/honeypot-rdp-attacks/" rel="next" title="Cloud-Based Honeypot: Analyzing RDP Attacks">
+                  Cloud-Based Honeypot: Analyzing RDP Attacks <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Anjula Meegalla</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
