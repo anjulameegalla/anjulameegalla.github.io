@@ -1,474 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Cloud-Based Honeypot: Analyzing RDP Attacks</title>
-    <url>/2025/12/02/honeypot-rdp-attacks/</url>
-    <content><![CDATA[<p>In this project, we are setting up an <strong>Azure Honeypot Lab</strong> using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the internet, we can gather data on where attacks are originating from and visualize them on a world map.</p>
-<p><strong>Goal:</strong> Transform raw Windows Event Logs into a visual Threat Intelligence Map.</p>
-<span id="more"></span>
-
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><video controls>
-  <source src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/demo.mp4" type="video/mp4">
-</video>
-
-<p><em>Above: A timelapse of the live attack map populating over a 24-hour period.</em></p>
-<h2 id="Lab-Architecture-Overview"><a href="#Lab-Architecture-Overview" class="headerlink" title="Lab Architecture Overview"></a>Lab Architecture Overview</h2><p>The lab consists of three main components:</p>
-<ul>
-<li><strong>Windows 10 VM:</strong> Acts as the honeypot.</li>
-<li><strong>Log Analytics Workspace:</strong> Ingests the custom logs.</li>
-<li><strong>Microsoft Sentinel:</strong> Serves as the SIEM for visualization.</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/overview.png" alt="Architecture Overview Diagram"></p>
-<h3 id="The-Workflow"><a href="#The-Workflow" class="headerlink" title="The Workflow"></a>The Workflow</h3><ol>
-<li>Attackers attempt to RDP into the exposed VM.</li>
-<li>Windows records these as <strong>Event ID 4625</strong> (Failed Logon).</li>
-<li>A custom PowerShell script extracts the IP, Username, and Timestamp.</li>
-<li>The script queries a Geolocation API to get the physical location of the IP.</li>
-<li>Data is written to a custom log file (<code>failed_rdp.log</code>) and sent to Azure Sentinel.</li>
-</ol>
-<hr>
-<h2 id="Prerequisites-Setup"><a href="#Prerequisites-Setup" class="headerlink" title="Prerequisites &amp; Setup"></a>Prerequisites &amp; Setup</h2><p>Before running the script, ensure you have the following:</p>
-<ul>
-<li><strong>Azure Resources :</strong> A Virtual Machine, Network Security Group (allowing RDP), and a Log Analytics Workspace.</li>
-<li><strong>IP2Location API Key :</strong> A free API key to enrich IP addresses with geo-data. <a href="https://ipgeolocation.io/ip-location-api.html">Get your API Key here</a>.</li>
-</ul>
-<hr>
-<h2 id="The-PowerShell-Exporter"><a href="#The-PowerShell-Exporter" class="headerlink" title="The PowerShell Exporter"></a>The PowerShell Exporter</h2><p>This PowerShell script is the heart of the honeypot. It monitors the Windows Event Viewer for security events, specifically looking for failed login attempts.</p>
-<blockquote>
-<p><strong>Key Configuration:</strong> Set your <code>$API_KEY</code> variable and ensure the <code>$LOGFILE_PATH</code> is accessible (e.g., <code>C:\ProgramData\failed_rdp.log</code>).</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Partial Script Snippet for Context</span></span><br><span class="line"><span class="variable">$API_KEY</span>      = <span class="string">&quot;YOUR_API_KEY_HERE&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_NAME</span> = <span class="string">&quot;failed_rdp.log&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_PATH</span> = <span class="string">&quot;C:\ProgramData\<span class="variable">$</span>(<span class="variable">$LOGFILE_NAME</span>)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Filter for Failed RDP events (EventID 4625)</span></span><br><span class="line"><span class="variable">$XMLFilter</span> = <span class="string">@&#x27;</span></span><br><span class="line"><span class="string">&lt;QueryList&gt; </span></span><br><span class="line"><span class="string">   &lt;Query Id=&quot;0&quot; Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">         &lt;Select Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">              *[System[(EventID=&#x27;4625&#x27;)]]</span></span><br><span class="line"><span class="string">          &lt;/Select&gt;</span></span><br><span class="line"><span class="string">    &lt;/Query&gt;</span></span><br><span class="line"><span class="string">&lt;/QueryList&gt; </span></span><br><span class="line"><span class="string">&#x27;@</span></span><br></pre></td></tr></table></figure>
-
-<p>You can <a href="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/honeypot.ps1">download the full script here</a>.</p>
-<h3 id="How-the-Script-Works"><a href="#How-the-Script-Works" class="headerlink" title="How the Script Works"></a>How the Script Works</h3><ul>
-<li><strong>Event Monitoring :</strong> An infinite loop continuously checks Windows Event Viewer for Event ID <code>4625</code>.</li>
-<li><strong>Data Extraction :</strong> When a failed login is found, the script pulls the <code>Source IP</code> ($event.properties[19]), <code>Username</code>, and <code>Timestamp</code>.</li>
-<li><strong>Geolocation Enrichment :</strong> The script pauses for 1 second (to avoid rate limits) and queries the <em>ipgeolocation.io</em> API to get the Latitude, Longitude, and Country of the attacker.</li>
-<li><strong>Logging :</strong> The enriched data is appended to <code>failed_rdp.log</code> in a format that Azure can easily parse.</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/pwshLogs.png" alt="PowerShell Script Running and Generating Logs"></p>
-<hr>
-<h2 id="Ingesting-Querying-Data-in-Azure"><a href="#Ingesting-Querying-Data-in-Azure" class="headerlink" title="Ingesting &amp; Querying Data in Azure"></a>Ingesting &amp; Querying Data in Azure</h2><p>Once the log file is being populated on the VM, we configure the Log Analytics Workspace to ingest this custom log.</p>
-<h3 id="Parsing-the-Custom-Log"><a href="#Parsing-the-Custom-Log" class="headerlink" title="Parsing the Custom Log"></a>Parsing the Custom Log</h3><p>Use the following KQL (Kusto Query Language) query to parse the raw data fields from the custom log file:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FAILED_RDP_GEO_CL </span><br><span class="line">| extend username = extract(@&quot;username:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         timestamp = extract(@&quot;timestamp:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         latitude = extract(@&quot;latitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         longitude = extract(@&quot;longitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         sourcehost = extract(@&quot;sourcehost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         state = extract(@&quot;state:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         label = extract(@&quot;label:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         destination = extract(@&quot;destinationhost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         country = extract(@&quot;country:([^,]+)&quot;, 1, RawData)</span><br><span class="line">| where destination != &quot;samplehost&quot;</span><br><span class="line">| where sourcehost != &quot;&quot;</span><br><span class="line">| summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/logQuery.png" alt="KQL Query Results in Azure"></p>
-<h3 id="Visualizing-the-Attack-Map"><a href="#Visualizing-the-Attack-Map" class="headerlink" title="Visualizing the Attack Map"></a>Visualizing the Attack Map</h3><p>To build the visual map in Microsoft Sentinel Workbooks, we use a similar query but summarize by location for the map render:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">| summarize event_count=count() by latitude, longitude, sourcehost, label, destination, country</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h2 id="Results-Analysis"><a href="#Results-Analysis" class="headerlink" title="Results &amp; Analysis"></a>Results &amp; Analysis</h2><p>After leaving the honeypot running for 24 hours, the map populates with live attack data. The visualization below shows the volume and origin of RDP brute-force attempts.</p>
-<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/sentinelMap2.png" alt="World Map of Incoming Attacks after 24 hours"></p>
-<h3 id="Top-Attack-Sources"><a href="#Top-Attack-Sources" class="headerlink" title="Top Attack Sources"></a>Top Attack Sources</h3><p>The data revealed significant activity from specific regions. Here is a breakdown of the top sources captured during the test run:</p>
-<table>
-<thead>
-<tr>
-<th>Location</th>
-<th>No. of Attempts</th>
-<th>Common IPs</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Poland</td>
-<td>16.4K</td>
-<td>149.50.96.98</td>
-</tr>
-<tr>
-<td>Mozambique</td>
-<td>5.88K</td>
-<td>160.242.36.216</td>
-</tr>
-<tr>
-<td>China</td>
-<td>4.17K</td>
-<td>125.75.66.99</td>
-</tr>
-<tr>
-<td>Netherlands</td>
-<td>3.85K</td>
-<td>92.63.197.23 , 185.170.144.3 , 84.84.121.37</td>
-</tr>
-<tr>
-<td>UK</td>
-<td>1.61K</td>
-<td>80.94.95.215</td>
-</tr>
-<tr>
-<td>Korea</td>
-<td>1016</td>
-<td>115.92.155.19 , 122.202.246.213</td>
-</tr>
-<tr>
-<td>India</td>
-<td>709</td>
-<td>203.192.237.115 , 103.119.179.133 , 125.18.138.42</td>
-</tr>
-<tr>
-<td>Serbia</td>
-<td>358</td>
-<td>109.92.111.135</td>
-</tr>
-<tr>
-<td>Nepal</td>
-<td>340</td>
-<td>110.44.116.60</td>
-</tr>
-<tr>
-<td>Sudan</td>
-<td>220</td>
-<td>41.209.126.101</td>
-</tr>
-<tr>
-<td>USA</td>
-<td>140</td>
-<td>185.243.96.107 , 67.205.146.203</td>
-</tr>
-<tr>
-<td>Russia</td>
-<td>64</td>
-<td>185.39.19.42</td>
-</tr>
-<tr>
-<td>Ukraine</td>
-<td>47</td>
-<td>185.243.96.107</td>
-</tr>
-<tr>
-<td>Luxembourg</td>
-<td>30</td>
-<td>158.64.24.12</td>
-</tr>
-</tbody></table>
-<p><em>Note: It is fascinating to see over 16,000 attempts originating from a single IP in Poland within a 24-hour window.</em></p>
-<p>This project demonstrates how easily a Windows machine exposed to the internet attracts malicious traffic. By integrating PowerShell scripting with Azure Sentinel, we can transform noise into actionable threat intelligence.</p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Beginners Guide to Social Engineering: Part 1</title>
-    <url>/2026/10/16/social-engineering-part1/</url>
-    <content><![CDATA[<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img1.jpg" alt="Img1"></p>
-<p>Picture this. Your phone rings and a friendly voice says, <strong>“Hi, this is Dilan from IT Support. We’ve noticed some unusual activity on your account. I’ll need the code we just texted you, or your account will be locked in ten minutes.”</strong></p>
-<p>You’re a bit worried and you don’t want to lose access, so you read the code out. <span id="more"></span> Nothing was hacked. No virus, no clever software exploit. You simply handed over the keys yourself.</p>
-<p>That is social engineering, and it’s one of the most common ways people and organizations get compromised.</p>
-<h2 id="So-what-is-social-engineering"><a href="#So-what-is-social-engineering" class="headerlink" title="So what is social engineering?"></a>So what is social engineering?</h2><blockquote>
-<p>Social engineering is the practice of manipulating people into giving up information, access, or money by playing on human psychology instead of breaking into a system with technical tricks.</p>
-</blockquote>
-<p>Think of a castle with huge walls, deep moats and strong gates. Those are your firewalls, antivirus and encryption. A social-engineer doesn’t try to break down the walls. They walk up to the guard, smile, say they’re here to deliver something for the king, and the guard opens the gate. The strongest security in the world doesn’t help much if someone can talk their way past it.</p>
-<p>This matters more than most beginners expect. Industry reports like the Verizon Data Breach Investigations Report <sup>1</sup> regularly find that the human element plays a role in a majority of breaches. Attackers are practical. They go after whatever is easiest, and very often that’s a person rather than a machine.</p>
-<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img2.png" alt="Img2"></p>
-<h2 id="Why-does-it-work-on-smart-people"><a href="#Why-does-it-work-on-smart-people" class="headerlink" title="Why does it work on smart people?"></a>Why does it work on smart people?</h2><p>A common myth is that only careless or non-technical people fall for these tricks. That isn’t true. Social engineering works because it targets how all human brains work and intelligence doesn’t switch those instincts off.</p>
-<p>Attackers rely on a handful of predictable triggers. The first is authority. We’re wired to listen to bosses, banks, police, and IT departments, so attackers pretend to be them. The second is urgency. When we’re rushed, we stop thinking carefully, which is why messages are full of lines like <strong>“act now”</strong> or <strong>“your account closes today.”</strong></p>
-<p>Then there’s fear, such as <strong>“suspicious login detected!”</strong>, which pushes us to react before we reason. On the flip side, greed and curiosity work just as well. A prize, a discount, or <strong>“see who viewed your profile”</strong> is hard to ignore. Attackers also use trust and likability. Someone friendly and helpful is easy to say yes to. A related trick is reciprocity; they do you a small favor first, like “fixing” a problem for you, so you feel you owe them one. Finally there’s social proof, where they imply everyone else has already done it (<strong>“all staff have completed this form”</strong>).</p>
-<p>The most useful thing to remember here is this: if a message makes you feel rushed, scared or unusually excited, pause. That feeling is usually the attack working.</p>
-<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img3.jpg" alt="Img3"></p>
-<h2 id="How-an-attack-usually-unfolds"><a href="#How-an-attack-usually-unfolds" class="headerlink" title="How an attack usually unfolds"></a>How an attack usually unfolds</h2><p>Most social engineering attacks follow the same basic pattern, whether it’s a phone call, an email, or someone standing at your office door.</p>
-<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img4.png" alt="Img4"></p>
-<p>It starts with research. The attacker learns about their target using public information: social media profiles, the company website, job listings, even photos. The more they know, the more believable they sound. Next comes the hook. They build a story, called a pretext, and make contact. This might be a fake email from “HR”, a call from “the bank”, or a message from a “new colleague” who needs help.</p>
-<p>Then comes the exploit, where the attacker gets what they came for. You click the link, share the password, approve the payment, or hold the door open. Finally, there’s the exit. They disappear, often deleting traces, and by the time you realize something is wrong, they’re long gone.</p>
-<h2 id="It’s-not-just-theory-real-examples"><a href="#It’s-not-just-theory-real-examples" class="headerlink" title="It’s not just theory: real examples"></a>It’s not just theory: real examples</h2><p>In July 2020, Twitter had one of its biggest security incidents. Attackers didn’t hack Twitter’s servers directly. Twitter said they ran a phone spear-phishing attack on a small number of employees<sup>2</sup>. That access was then used to take over high-profile accounts and run a Bitcoin scam. It was a human trick, not a technical one.</p>
-<p>Another well-known example is Business Email Compromise (BEC). An attacker poses as a CEO or supplier and emails someone in finance with an “urgent” request to transfer money. It sounds simple, but the FBI’s Internet Crime Complaint Center reported about $2.77 billion in BEC losses for 2024 alone<sup>3</sup>.</p>
-<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img5.png" alt="Img5"></p>
-<p>It’s also worth knowing about Kevin Mitnick, a famous former hacker who later became a security consultant. He often argued that people are the easiest way into any system. His book The Art of Deception is a great, readable follow-up if this topic interests you.</p>
-<p><img src="https://anjulameegalla.github.io/stash/social-engineering-part1/img6.jpg" alt="Img6"></p>
-<h2 id="Wrapping-up"><a href="#Wrapping-up" class="headerlink" title="Wrapping up.."></a>Wrapping up..</h2><p>To sum up, social engineering targets people, not computers. It works by pulling on emotions like fear, urgency, trust, and curiosity. And most attacks follow the same simple pattern: research, hook, exploit, exit.</p>
-<p>In Part 02, we’ll open the attacker’s toolbox: phishing, vishing, smishing, pretexting, baiting, and tailgating. We’ll also look at how attackers gather information about their targets (a skill called OSINT) and the red flags that give them away. In Part 03, we’ll finish the series with practical ways to protect yourself, how organizations defend themselves, and what to do if you ever fall for a scam. See you there!</p>
-<br>
-
-<p>Sources<br>• <a href="https://www.helpnetsecurity.com/2020/07/31/twitter-employees-spear-phished/">Twitter employees were spear-phished over the phone (Help Net Security)</a> <sup>3</sup><br>• <a href="https://www.housingwire.com/articles/cybercrime-resulted-in-record-losses-in-2024-fbi-ic3-2024-report/">FBI IC3 2024 report summary (HousingWire)</a> <sup>2</sup><br>• <a href="https://www.securityscientist.net/blog/dbir-human-element/">Human element share by DBIR year (Security Scientist)</a> <sup>1</sup></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Windows Active Directory Practice Lab on Azure</title>
-    <url>/2025/07/16/windows-ad-lab/</url>
-    <content><![CDATA[<p>This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment (“Gotham City”) with a Domain Controller and multiple client workstations to practice AD administration, user management, and network configuration.</p>
-<span id="more"></span>
-
-<h2 id="Lab-Architecture-Resources"><a href="#Lab-Architecture-Resources" class="headerlink" title="Lab Architecture &amp; Resources"></a>Lab Architecture &amp; Resources</h2><p>The lab is contained within a single Resource Group (<code>ADLab</code>) and Virtual Network (<code>ADLabNet</code> - 10.0.1.0&#x2F;24). It consists of three primary Virtual Machines:</p>
-<ul>
-<li><strong>GOTHAM-DC:</strong> Windows Server 2019 (The Domain Controller)</li>
-<li><strong>THEBATMAN:</strong> Windows 10 Enterprise (User: Bruce Wayne)</li>
-<li><strong>WAYNEENT:</strong> Windows 10 Enterprise (User: Lucius Fox)</li>
-</ul>
-<h3 id="Domain-controller"><a href="#Domain-controller" class="headerlink" title="Domain controller"></a>Domain controller</h3><ul>
-<li>VM name : GOTHAM-DC</li>
-<li>Image : Windows Server 2019 Datacenter</li>
-<li>Username : anjula</li>
-<li>Password : labuser123Anjula</li>
-<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
-<li>Connection : RDP (3389)</li>
-</ul>
-<h3 id="User-machine-1"><a href="#User-machine-1" class="headerlink" title="User machine 1"></a>User machine 1</h3><ul>
-<li>VM name : THEBATMAN</li>
-<li>Image : Windows 10 Enterprise</li>
-<li>Username : bwayne</li>
-<li>Password : myPassword01</li>
-<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
-<li>Connection : RDP (3389)</li>
-</ul>
-<h3 id="User-machine-2"><a href="#User-machine-2" class="headerlink" title="User machine 2"></a>User machine 2</h3><ul>
-<li>VM name : WAYNEENT</li>
-<li>Image : Windows 10 Enterprise</li>
-<li>Username : lfox</li>
-<li>Password : myPassword02</li>
-<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
-<li>Connection : RDP (3389)</li>
-</ul>
-<hr>
-<h3 id="Connecting-to-DC-VM"><a href="#Connecting-to-DC-VM" class="headerlink" title="Connecting to DC VM"></a>Connecting to DC VM</h3><p>RDP into GOTHAM-DC with Username : anjula &amp; Password : labuser123Anjula</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png" alt="RDP Connection"></p>
-<h3 id="Configuring-services"><a href="#Configuring-services" class="headerlink" title="Configuring services"></a>Configuring services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
-<ul>
-<li>Server Roles : Active Directory Domain Service</li>
-</ul>
-<p>Install service.</p>
-<p>Choose “Promote this server to a domain controller”.</p>
-<h3 id="Promoting-VM-to-domain-controller"><a href="#Promoting-VM-to-domain-controller" class="headerlink" title="Promoting VM to domain controller"></a>Promoting VM to domain controller</h3><p>Active directory domain service configuration wizard &gt; Deployment configuration &gt; Add a new forest</p>
-<ul>
-<li>Root domain name : GOTHAM.local</li>
-<li>Forest function level : Windows Server 2016</li>
-<li>Domain function level : Windows Server 2016</li>
-<li>Password : labuser123Anjula</li>
-<li>NetBIOS domain name : GOTHAM</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599684_y.jpg" alt="AD Config Wizard"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599685_y.jpg" alt="Deployment Config"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599687_y.jpg" alt="Additional Options"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599688_y.jpg" alt="Prerequisites Check"></p>
-<p>Reboot machine.</p>
-<p>RDP into GOTHAM-DC with domain credentials; Username : GOTHAM\anjula &amp; Password : labuser123Anjula</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599691_x.jpg" alt="Server Manager"></p>
-<h3 id="Configuring-certificate-services"><a href="#Configuring-certificate-services" class="headerlink" title="Configuring certificate services"></a>Configuring certificate services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
-<ul>
-<li>Server roles : Active Directory Certificate Services</li>
-</ul>
-<p>Install service.</p>
-<p>Choose “Configure Active Directory certificate services on the destination server”.</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599692_y.jpg" alt="AD CS Config"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599693_y.jpg" alt="Role Services"></p>
-<p>AD CS configuration wizard &gt;</p>
-<ul>
-<li>Credentials : GOTHAM\anjula</li>
-<li>Role services : Certification Authority</li>
-<li>Setup type : Enterprise CA</li>
-<li>CA type : Root CA</li>
-<li>Private key &gt; Validity period : 99 years</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599694_y.jpg" alt="CA Type"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599695_y.jpg" alt="Private Key"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599696_y.jpg" alt="Cryptography"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599697_y.jpg" alt="Confirmation"></p>
-<p>Configure and reboot machine.</p>
-<hr>
-<h3 id="Setting-up-a-share"><a href="#Setting-up-a-share" class="headerlink" title="Setting up a share"></a>Setting up a share</h3><p>This PC &gt; C:\ Drive &gt; Create new folder “hackme”</p>
-<p>Launch Server manager &gt; File and storage services &gt; Shares &gt; Tasks &gt; New share wizard &gt;</p>
-<ul>
-<li>File share profile : SMB Share - Quick</li>
-<li>Share location &gt; custom path : C:\hackme</li>
-<li>Share name : hackme</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599699_y.jpg" alt="Share Config"></p>
-<p>Create and close.</p>
-<hr>
-<h3 id="Creating-domain-users"><a href="#Creating-domain-users" class="headerlink" title="Creating domain users"></a>Creating domain users</h3><p>Launch Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local</p>
-<p>Create new Organizational unit (OU) “Groups”</p>
-<p>Move every entry except “Guest” and “anjula” from Users to Groups</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599701_y.jpg" alt="Creating OUs"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599703_x.jpg" alt="Moving Users"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599702_y.jpg" alt="OU Structure"></p>
-<p>MARVEL.local &gt; Users &gt;</p>
-<p>Create new user</p>
-<ul>
-<li>First name : Bruce</li>
-<li>Last name : Wayne</li>
-<li>User login name : bwayne</li>
-<li>Password : Password1</li>
-<li>Check “Password never expires”</li>
-</ul>
-<p>Create another user</p>
-<ul>
-<li>First name : Lucious</li>
-<li>Last name : Fox</li>
-<li>User login name : lfox</li>
-<li>Password : Password2</li>
-<li>Check “Password never expires”</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599704_y.jpg" alt="Creating User Bruce"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599705_x.jpg" alt="Password Settings"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599707_x.jpg" alt="Creating User Lucius"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599706_x.jpg" alt="Copying User"></p>
-<p>Copy user “anjula” to create another user</p>
-<ul>
-<li>First name : SQL</li>
-<li>Last name : Service</li>
-<li>User login name : SQLService</li>
-<li>Password : MYpassword123#</li>
-</ul>
-<p>SQLService &gt; properties &gt;</p>
-<ul>
-<li>Description : “Password is MYpassword123#”</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599708_y.jpg" alt="SQLService Properties"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599709_x.jpg" alt="SQLService Description"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599711_x.jpg" alt="User List"></p>
-<hr>
-<h3 id="Setting-up-SPNs"><a href="#Setting-up-SPNs" class="headerlink" title="Setting up SPNs"></a>Setting up SPNs</h3><p>Launch Command prompt as administrator.</p>
-<p>Setup SPN for SQLService account</p>
-<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">setspn -a GOTHAM-DC/SQLService.GOTHAM.local:<span class="number">60111</span> GOTHAM\SQLService</span><br></pre></td></tr></table></figure>
-
-<p>Confirm SPN.</p>
-<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">setspn -T GOTHAM.local -Q */*</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/d1317293-f3a1-4a5d-b028-a16ac54999de.png" alt="SPN Output"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599713_y.jpg" alt="SPN Verification"></p>
-<h3 id="Domain-machine-IP-address"><a href="#Domain-machine-IP-address" class="headerlink" title="Domain machine IP address"></a>Domain machine IP address</h3><p>Command prompt &gt;</p>
-<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line"><span class="built_in">ipconfig</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>IP : 10.0.1.4&#x2F;24</strong></li>
-</ul>
-<hr>
-<h3 id="Connecting-to-user-machines"><a href="#Connecting-to-user-machines" class="headerlink" title="Connecting to user machines"></a>Connecting to user machines</h3><p>RDP into THEBATMAN with Username : bwayne and Password : myPassword01</p>
-<p>Launch File explorer &gt; Network</p>
-<p>Turn on Network discovery.</p>
-<p>Launch Settings &gt; Network &amp; internet &gt; Ethernet &gt; Change adapter settings</p>
-<p>Choose Ethernet &gt; properties &gt; Internet Protocol version 4 (TCP&#x2F;IPv4)</p>
-<ul>
-<li>Preferred DNS server : 10.0.1.4</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599724_y.jpg" alt="DNS Configuration"></p>
-<p>RDP connection will be lost. Reconnect to the same user “bwayne”</p>
-<p>Launch Settings &gt; Accounts &gt; Access work or school &gt; Connect</p>
-<p>Choose “Join this device to a local Active Directory domain”.</p>
-<ul>
-<li>Domain name : GOTHAM.local</li>
-</ul>
-<p>Join a domain &gt;</p>
-<ul>
-<li>User : anjula</li>
-<li>Password : labuser123Anjula</li>
-</ul>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599725_w.jpg" alt="Join Domain"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599726_x.jpg" alt="Domain Success"></p>
-<p>Restart machine.</p>
-<p>RDP into WAYNEENT with Username : lfox and Password : myPassword02</p>
-<p>Repeat the same process above.</p>
-<h3 id="Configuring-Domain-users-to-user-machines"><a href="#Configuring-Domain-users-to-user-machines" class="headerlink" title="Configuring Domain users to user machines"></a>Configuring Domain users to user machines</h3><p>Launch GOTHAM-DC &gt; Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local &gt; Computers</p>
-<p>Both user computers “THEBATMAN” and “WAYNEENT” is listed under the domain.</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599728_y.jpg" alt="Computers OU"></p>
-<p>RDP into THEBATMAN with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
-<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
-<p>Choose “Add”</p>
-<p>Select Users, computers, service accounts or groups &gt;</p>
-<ul>
-<li>Enter object names to select : bwayne</li>
-</ul>
-<p>Check names, then apply.</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599729_y.jpg" alt="Adding bwayne to Admins"></p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599732_x.jpg" alt="Admin Group Confirmation"></p>
-<p>RDP into WAYNEENT with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
-<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
-<p>Choose “Add”</p>
-<p>Select Users, computers, service accounts or groups &gt;</p>
-<ul>
-<li>Enter object names to select : lfox</li>
-</ul>
-<p>Check names &amp; choose “Add” again</p>
-<ul>
-<li>Enter object names to select : bwayne</li>
-</ul>
-<p>Check names, then apply.</p>
-<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599733_x.jpg" alt="Adding lfox to Admins"></p>
-<hr>
-<h3 id="Re-connecting-to-machines-with-Domain-user-accounts"><a href="#Re-connecting-to-machines-with-Domain-user-accounts" class="headerlink" title="Re-connecting to machines with Domain user accounts"></a>Re-connecting to machines with Domain user accounts</h3><p>RDP into THEBATMAN machine with;</p>
-<ul>
-<li>Username : GOTHAM\bwayne</li>
-<li>Password : Password1</li>
-</ul>
-<p>RDP into WAYNEENT machine with both;</p>
-<ul>
-<li>Username : GOTHAM\bwayne</li>
-<li>Password : Password1</li>
-</ul>
-<p>and</p>
-<ul>
-<li>Username : GOTHAM\lfox</li>
-<li>Password : Password2</li>
-</ul>
-]]></content>
-  </entry>
-  <entry>
-    <title>Linux-Based Intrusion Detection &amp; Automated Threat Response with Wazuh</title>
-    <url>/2025/10/12/wazuh-tdr-lab/</url>
-    <content><![CDATA[<p>This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a <strong>brute-force attack</strong> using <strong>Hydra</strong> against a monitored <strong>Ubuntu Agent</strong> VM.</p>
-<span id="more"></span>
-
-<p>The Wazuh agent on the Ubuntu server detects this hostile activity, collects the relevant logs, and forwards them to the central <strong>Wazuh Manager</strong>. Upon analyzing the data and identifying the signature of the brute-force attack, the manager triggers an active response, automatically deploying a new <strong>firewall rule</strong> on the agent to block the attacker’s IP address and neutralize the threat.</p>
-<h2 id="Lab-Overview"><a href="#Lab-Overview" class="headerlink" title="Lab Overview"></a>Lab Overview</h2><p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/diagram.png" alt="Lab Overview Diagram"></p>
-<p><strong>Utilities Used:</strong></p>
-<ul>
-<li>DigitalOcean - 2x Ubuntu 24.04 Droplets</li>
-<li>VMWare - Kali VM</li>
-<li>Termius - for SSH session mgmt</li>
-</ul>
-<h2 id="Setting-up-Wazuh-Manager"><a href="#Setting-up-Wazuh-Manager" class="headerlink" title="Setting up Wazuh Manager"></a>Setting up Wazuh Manager</h2><h3 id="Install-Wazuh-Manager"><a href="#Install-Wazuh-Manager" class="headerlink" title="Install Wazuh Manager"></a>Install Wazuh Manager</h3><p>We start by installing the manager on our primary Ubuntu Droplet using the official installation script:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -sO https://packages.wazuh.com/&lt;latest&gt;/wazuh-install.sh &amp;&amp; <span class="built_in">sudo</span> bash ./wazuh-install.sh -a</span><br></pre></td></tr></table></figure>
-
-<p><a href="https://documentation.wazuh.com/current/quickstart.html">Documentation</a></p>
-<p>Copy the username and password generated at the end of the installation. If you forgot to save the password, you can recover it with this command:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt</span><br></pre></td></tr></table></figure>
-
-<p>After installation, ensure the firewall allows traffic on port 443 and verify the service status:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ufw allow 443</span><br><span class="line">systemctl status wazuh-manager.service</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image.png" alt="Wazuh Manager Service Status"></p>
-<p>Once running, we can log in to the Wazuh dashboard.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%201.png" alt="Wazuh Login Screen"></p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%202.png" alt="Wazuh Dashboard Overview"></p>
-<h2 id="Setup-Wazuh-Agent-on-Ubuntu"><a href="#Setup-Wazuh-Agent-on-Ubuntu" class="headerlink" title="Setup Wazuh Agent on Ubuntu"></a>Setup Wazuh Agent on Ubuntu</h2><p>For the Linux victim machine, we select the DEB amd64 version and run the installation commands.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%206.png" alt="Linux Agent Selection"></p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%207.png" alt="Linux Installation Command"></p>
-<p>Start the agent and check its status:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl start wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl status wazuh-agent</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png" alt="Ubuntu Agent Status"></p>
-<p>Back on the Wazuh dashboard, we should see the new agent connected.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%208.png" alt="Ubuntu Agent Active on Dashboard"></p>
-<h2 id="Configure-Ubuntu-Agent-Active-Response"><a href="#Configure-Ubuntu-Agent-Active-Response" class="headerlink" title="Configure Ubuntu Agent &amp; Active Response"></a>Configure Ubuntu Agent &amp; Active Response</h2><h3 id="Agent-Configuration"><a href="#Agent-Configuration" class="headerlink" title="Agent Configuration"></a>Agent Configuration</h3><p>Ensure that the Wazuh agent is properly configured to communicate with the Wazuh server (Check the IP of Wazuh):</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%209.png" alt="Editing ossec.conf"></p>
-<p>Restart the agent if any changes were done.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart wazuh-agent</span><br></pre></td></tr></table></figure>
-
-<h3 id="Adding-Active-Response-Rule"><a href="#Adding-Active-Response-Rule" class="headerlink" title="Adding Active Response Rule"></a>Adding Active Response Rule</h3><p>Navigate and edit the <code>ossec.conf</code> file on Wazuh manager.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
-
-<p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired.</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">active-response</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">command</span>&gt;</span>firewall-drop<span class="tag">&lt;/<span class="name">command</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">location</span>&gt;</span>local<span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rules_id</span>&gt;</span>5710<span class="tag">&lt;/<span class="name">rules_id</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">timeout</span>&gt;</span>600<span class="tag">&lt;/<span class="name">timeout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">active-response</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>This configuration suggests that when a rule with ID 5710 is triggered, the firewall will drop the corresponding traffic for a duration of 10 minutes. It’s a common approach for dealing with potential threats or suspicious activity.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2010.png" alt="Active Response Configuration"></p>
-<hr>
-<h2 id="PoC-Proof-of-Concept"><a href="#PoC-Proof-of-Concept" class="headerlink" title="PoC [Proof-of-Concept]"></a>PoC [Proof-of-Concept]</h2><p>To test the defense, I used <strong>Hydra</strong> (downloadable from <a href="https://github.com/vanhauser-thc/thc-hydra.git">GitHub</a>) on a Kali Linux machine to perform an SSH brute-force attack against the Ubuntu agent.</p>
-<h3 id="1-Initial-Connectivity"><a href="#1-Initial-Connectivity" class="headerlink" title="1. Initial Connectivity"></a>1. Initial Connectivity</h3><p>First, verify we can ping the target before the attack.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping &lt;ubuntu vm public ip&gt;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2011.png" alt="Successful Ping Test"></p>
-<h3 id="2-Execute-Brute-Force-Attack"><a href="#2-Execute-Brute-Force-Attack" class="headerlink" title="2. Execute Brute-Force Attack"></a>2. Execute Brute-Force Attack</h3><p>Run Hydra using the <code>rockyou.txt</code> wordlist.</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l [username] -P [passlist.txt] ssh://[ubuntu vm ip address]</span><br></pre></td></tr></table></figure>
-
-<p>In my case, I used the following command:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://139.59.126.244</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2012.png" alt="Hydra Attack Execution"></p>
-<h3 id="3-Verify-Active-Response"><a href="#3-Verify-Active-Response" class="headerlink" title="3. Verify Active Response"></a>3. Verify Active Response</h3><p>After the attack starts, try pinging the VM again. It should fail (timeout) because the firewall rule has been automatically applied.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2015.png" alt="Ping Failed after Attack"></p>
-<h3 id="4-Wazuh-Logs"><a href="#4-Wazuh-Logs" class="headerlink" title="4. Wazuh Logs"></a>4. Wazuh Logs</h3><p>The Wazuh dashboard confirms the events: SSHd failed login attempts followed by the <code>Host firewall-drop</code> active response.</p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2013.png" alt="Wazuh Alert Logs"></p>
-<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2014.png" alt="Firewall Drop Event"></p>
-]]></content>
-  </entry>
-  <entry>
     <title>Implementing a Spiceworks based Cloud Ticketing System</title>
     <url>/2025/12/29/ticketing-system-lab/</url>
     <content><![CDATA[<p>This project is a comprehensive simulation of an IT Help Desk environment using <strong>Spiceworks Cloud Help Desk</strong>. Beyond basic ticket logging, this lab demonstrates the full lifecycle of IT support, from initial triage and prioritization to resolution and documentation.</p>
@@ -853,8 +385,8 @@
 <h3 id="Scenario-R-Phishing-Attempt"><a href="#Scenario-R-Phishing-Attempt" class="headerlink" title="Scenario R - Phishing Attempt"></a>Scenario R - Phishing Attempt</h3><p><img src="https://anjulameegalla.github.io/stash/ticketing-system-lab/R.png" alt="Session R"></p>
 <ul>
 <li>Requested by : Angela M., Accounting</li>
-<li>Summary : Phishing Attempt (<a href="mailto:&#x63;&#101;&#111;&#64;&#x67;&#x6d;&#x61;&#105;&#x31;&#x2e;&#99;&#x6f;&#x6d;">ceo@gmai1.com</a>)</li>
-<li>Description : “I got an email from the CEO asking me to buy gift cards urgently. The email address looks slightly wrong (<a href="mailto:&#x63;&#101;&#x6f;&#x40;&#103;&#109;&#x61;&#105;&#x31;&#46;&#x63;&#111;&#109;">ceo@gmai1.com</a>).”</li>
+<li>Summary : Phishing Attempt (<a href="mailto:&#99;&#101;&#111;&#64;&#x67;&#x6d;&#97;&#x69;&#49;&#x2e;&#x63;&#111;&#x6d;">ceo@gmai1.com</a>)</li>
+<li>Description : “I got an email from the CEO asking me to buy gift cards urgently. The email address looks slightly wrong (<a href="mailto:&#x63;&#x65;&#111;&#x40;&#103;&#109;&#x61;&#105;&#x31;&#46;&#99;&#111;&#x6d;">ceo@gmai1.com</a>).”</li>
 <li>Priority : High (P2)</li>
 <li>Actions taken to resolve : Analyzed email headers to confirm spoofing. Blocked the sender domain in the Email Gateway. Used PowerShell to purge the malicious email from all user mailboxes to prevent others from clicking.</li>
 <li>Response : “Hi Angela, great catch! This was indeed a phishing attempt. We have blocked the sender and removed the email from the system. Thank you for reporting this so quickly.”</li>
@@ -926,6 +458,149 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Cloud-Based Honeypot: Analyzing RDP Attacks</title>
+    <url>/2025/12/02/honeypot-rdp-attacks/</url>
+    <content><![CDATA[<p>In this project, we are setting up an <strong>Azure Honeypot Lab</strong> using Microsoft Sentinel to detect and analyze failed RDP login attempts on a Windows host. By intentionally exposing a Virtual Machine to the internet, we can gather data on where attacks are originating from and visualize them on a world map.</p>
+<p><strong>Goal:</strong> Transform raw Windows Event Logs into a visual Threat Intelligence Map.</p>
+<span id="more"></span>
+
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><video controls>
+  <source src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/demo.mp4" type="video/mp4">
+</video>
+
+<p><em>Above: A timelapse of the live attack map populating over a 24-hour period.</em></p>
+<h2 id="Lab-Architecture-Overview"><a href="#Lab-Architecture-Overview" class="headerlink" title="Lab Architecture Overview"></a>Lab Architecture Overview</h2><p>The lab consists of three main components:</p>
+<ul>
+<li><strong>Windows 10 VM:</strong> Acts as the honeypot.</li>
+<li><strong>Log Analytics Workspace:</strong> Ingests the custom logs.</li>
+<li><strong>Microsoft Sentinel:</strong> Serves as the SIEM for visualization.</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/overview.png" alt="Architecture Overview Diagram"></p>
+<h3 id="The-Workflow"><a href="#The-Workflow" class="headerlink" title="The Workflow"></a>The Workflow</h3><ol>
+<li>Attackers attempt to RDP into the exposed VM.</li>
+<li>Windows records these as <strong>Event ID 4625</strong> (Failed Logon).</li>
+<li>A custom PowerShell script extracts the IP, Username, and Timestamp.</li>
+<li>The script queries a Geolocation API to get the physical location of the IP.</li>
+<li>Data is written to a custom log file (<code>failed_rdp.log</code>) and sent to Azure Sentinel.</li>
+</ol>
+<hr>
+<h2 id="Prerequisites-Setup"><a href="#Prerequisites-Setup" class="headerlink" title="Prerequisites &amp; Setup"></a>Prerequisites &amp; Setup</h2><p>Before running the script, ensure you have the following:</p>
+<ul>
+<li><strong>Azure Resources :</strong> A Virtual Machine, Network Security Group (allowing RDP), and a Log Analytics Workspace.</li>
+<li><strong>IP2Location API Key :</strong> A free API key to enrich IP addresses with geo-data. <a href="https://ipgeolocation.io/ip-location-api.html">Get your API Key here</a>.</li>
+</ul>
+<hr>
+<h2 id="The-PowerShell-Exporter"><a href="#The-PowerShell-Exporter" class="headerlink" title="The PowerShell Exporter"></a>The PowerShell Exporter</h2><p>This PowerShell script is the heart of the honeypot. It monitors the Windows Event Viewer for security events, specifically looking for failed login attempts.</p>
+<blockquote>
+<p><strong>Key Configuration:</strong> Set your <code>$API_KEY</code> variable and ensure the <code>$LOGFILE_PATH</code> is accessible (e.g., <code>C:\ProgramData\failed_rdp.log</code>).</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Partial Script Snippet for Context</span></span><br><span class="line"><span class="variable">$API_KEY</span>      = <span class="string">&quot;YOUR_API_KEY_HERE&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_NAME</span> = <span class="string">&quot;failed_rdp.log&quot;</span></span><br><span class="line"><span class="variable">$LOGFILE_PATH</span> = <span class="string">&quot;C:\ProgramData\<span class="variable">$</span>(<span class="variable">$LOGFILE_NAME</span>)&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Filter for Failed RDP events (EventID 4625)</span></span><br><span class="line"><span class="variable">$XMLFilter</span> = <span class="string">@&#x27;</span></span><br><span class="line"><span class="string">&lt;QueryList&gt; </span></span><br><span class="line"><span class="string">   &lt;Query Id=&quot;0&quot; Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">         &lt;Select Path=&quot;Security&quot;&gt;</span></span><br><span class="line"><span class="string">              *[System[(EventID=&#x27;4625&#x27;)]]</span></span><br><span class="line"><span class="string">          &lt;/Select&gt;</span></span><br><span class="line"><span class="string">    &lt;/Query&gt;</span></span><br><span class="line"><span class="string">&lt;/QueryList&gt; </span></span><br><span class="line"><span class="string">&#x27;@</span></span><br></pre></td></tr></table></figure>
+
+<p>You can <a href="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/honeypot.ps1">download the full script here</a>.</p>
+<h3 id="How-the-Script-Works"><a href="#How-the-Script-Works" class="headerlink" title="How the Script Works"></a>How the Script Works</h3><ul>
+<li><strong>Event Monitoring :</strong> An infinite loop continuously checks Windows Event Viewer for Event ID <code>4625</code>.</li>
+<li><strong>Data Extraction :</strong> When a failed login is found, the script pulls the <code>Source IP</code> ($event.properties[19]), <code>Username</code>, and <code>Timestamp</code>.</li>
+<li><strong>Geolocation Enrichment :</strong> The script pauses for 1 second (to avoid rate limits) and queries the <em>ipgeolocation.io</em> API to get the Latitude, Longitude, and Country of the attacker.</li>
+<li><strong>Logging :</strong> The enriched data is appended to <code>failed_rdp.log</code> in a format that Azure can easily parse.</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/pwshLogs.png" alt="PowerShell Script Running and Generating Logs"></p>
+<hr>
+<h2 id="Ingesting-Querying-Data-in-Azure"><a href="#Ingesting-Querying-Data-in-Azure" class="headerlink" title="Ingesting &amp; Querying Data in Azure"></a>Ingesting &amp; Querying Data in Azure</h2><p>Once the log file is being populated on the VM, we configure the Log Analytics Workspace to ingest this custom log.</p>
+<h3 id="Parsing-the-Custom-Log"><a href="#Parsing-the-Custom-Log" class="headerlink" title="Parsing the Custom Log"></a>Parsing the Custom Log</h3><p>Use the following KQL (Kusto Query Language) query to parse the raw data fields from the custom log file:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">FAILED_RDP_GEO_CL </span><br><span class="line">| extend username = extract(@&quot;username:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         timestamp = extract(@&quot;timestamp:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         latitude = extract(@&quot;latitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         longitude = extract(@&quot;longitude:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         sourcehost = extract(@&quot;sourcehost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         state = extract(@&quot;state:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         label = extract(@&quot;label:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         destination = extract(@&quot;destinationhost:([^,]+)&quot;, 1, RawData),</span><br><span class="line">         country = extract(@&quot;country:([^,]+)&quot;, 1, RawData)</span><br><span class="line">| where destination != &quot;samplehost&quot;</span><br><span class="line">| where sourcehost != &quot;&quot;</span><br><span class="line">| summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/logQuery.png" alt="KQL Query Results in Azure"></p>
+<h3 id="Visualizing-the-Attack-Map"><a href="#Visualizing-the-Attack-Map" class="headerlink" title="Visualizing the Attack Map"></a>Visualizing the Attack Map</h3><p>To build the visual map in Microsoft Sentinel Workbooks, we use a similar query but summarize by location for the map render:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">| summarize event_count=count() by latitude, longitude, sourcehost, label, destination, country</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="Results-Analysis"><a href="#Results-Analysis" class="headerlink" title="Results &amp; Analysis"></a>Results &amp; Analysis</h2><p>After leaving the honeypot running for 24 hours, the map populates with live attack data. The visualization below shows the volume and origin of RDP brute-force attempts.</p>
+<p><img src="https://anjulameegalla.github.io/stash/honeypot-rdp-attacks/sentinelMap2.png" alt="World Map of Incoming Attacks after 24 hours"></p>
+<h3 id="Top-Attack-Sources"><a href="#Top-Attack-Sources" class="headerlink" title="Top Attack Sources"></a>Top Attack Sources</h3><p>The data revealed significant activity from specific regions. Here is a breakdown of the top sources captured during the test run:</p>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>No. of Attempts</th>
+<th>Common IPs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Poland</td>
+<td>16.4K</td>
+<td>149.50.96.98</td>
+</tr>
+<tr>
+<td>Mozambique</td>
+<td>5.88K</td>
+<td>160.242.36.216</td>
+</tr>
+<tr>
+<td>China</td>
+<td>4.17K</td>
+<td>125.75.66.99</td>
+</tr>
+<tr>
+<td>Netherlands</td>
+<td>3.85K</td>
+<td>92.63.197.23 , 185.170.144.3 , 84.84.121.37</td>
+</tr>
+<tr>
+<td>UK</td>
+<td>1.61K</td>
+<td>80.94.95.215</td>
+</tr>
+<tr>
+<td>Korea</td>
+<td>1016</td>
+<td>115.92.155.19 , 122.202.246.213</td>
+</tr>
+<tr>
+<td>India</td>
+<td>709</td>
+<td>203.192.237.115 , 103.119.179.133 , 125.18.138.42</td>
+</tr>
+<tr>
+<td>Serbia</td>
+<td>358</td>
+<td>109.92.111.135</td>
+</tr>
+<tr>
+<td>Nepal</td>
+<td>340</td>
+<td>110.44.116.60</td>
+</tr>
+<tr>
+<td>Sudan</td>
+<td>220</td>
+<td>41.209.126.101</td>
+</tr>
+<tr>
+<td>USA</td>
+<td>140</td>
+<td>185.243.96.107 , 67.205.146.203</td>
+</tr>
+<tr>
+<td>Russia</td>
+<td>64</td>
+<td>185.39.19.42</td>
+</tr>
+<tr>
+<td>Ukraine</td>
+<td>47</td>
+<td>185.243.96.107</td>
+</tr>
+<tr>
+<td>Luxembourg</td>
+<td>30</td>
+<td>158.64.24.12</td>
+</tr>
+</tbody></table>
+<p><em>Note: It is fascinating to see over 16,000 attempts originating from a single IP in Poland within a 24-hour window.</em></p>
+<p>This project demonstrates how easily a Windows machine exposed to the internet attracts malicious traffic. By integrating PowerShell scripting with Azure Sentinel, we can transform noise into actionable threat intelligence.</p>
+]]></content>
+  </entry>
+  <entry>
     <title>The Digital Ghost Paradox</title>
     <url>/2025/09/24/digital-ghost-paradox/</url>
     <content><![CDATA[<blockquote>
@@ -961,6 +636,297 @@
 <li><a href="https://en.wikipedia.org/wiki/Observer_effect_(information_technology)">The Observer Effect</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Quantum_Zeno_effect">The Quantum Zeno Effect</a></li>
 </ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Windows Active Directory Practice Lab on Azure</title>
+    <url>/2025/07/16/windows-ad-lab/</url>
+    <content><![CDATA[<p>This project documents the step-by-step creation of a Windows Active Directory (AD) practice lab hosted entirely on Azure. The goal was to simulate a realistic corporate environment (“Gotham City”) with a Domain Controller and multiple client workstations to practice AD administration, user management, and network configuration.</p>
+<span id="more"></span>
+
+<h2 id="Lab-Architecture-Resources"><a href="#Lab-Architecture-Resources" class="headerlink" title="Lab Architecture &amp; Resources"></a>Lab Architecture &amp; Resources</h2><p>The lab is contained within a single Resource Group (<code>ADLab</code>) and Virtual Network (<code>ADLabNet</code> - 10.0.1.0&#x2F;24). It consists of three primary Virtual Machines:</p>
+<ul>
+<li><strong>GOTHAM-DC:</strong> Windows Server 2019 (The Domain Controller)</li>
+<li><strong>THEBATMAN:</strong> Windows 10 Enterprise (User: Bruce Wayne)</li>
+<li><strong>WAYNEENT:</strong> Windows 10 Enterprise (User: Lucius Fox)</li>
+</ul>
+<h3 id="Domain-controller"><a href="#Domain-controller" class="headerlink" title="Domain controller"></a>Domain controller</h3><ul>
+<li>VM name : GOTHAM-DC</li>
+<li>Image : Windows Server 2019 Datacenter</li>
+<li>Username : anjula</li>
+<li>Password : labuser123Anjula</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<h3 id="User-machine-1"><a href="#User-machine-1" class="headerlink" title="User machine 1"></a>User machine 1</h3><ul>
+<li>VM name : THEBATMAN</li>
+<li>Image : Windows 10 Enterprise</li>
+<li>Username : bwayne</li>
+<li>Password : myPassword01</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<h3 id="User-machine-2"><a href="#User-machine-2" class="headerlink" title="User machine 2"></a>User machine 2</h3><ul>
+<li>VM name : WAYNEENT</li>
+<li>Image : Windows 10 Enterprise</li>
+<li>Username : lfox</li>
+<li>Password : myPassword02</li>
+<li>Vnet : ADLabNet (10.0.1.0&#x2F;24)</li>
+<li>Connection : RDP (3389)</li>
+</ul>
+<hr>
+<h3 id="Connecting-to-DC-VM"><a href="#Connecting-to-DC-VM" class="headerlink" title="Connecting to DC VM"></a>Connecting to DC VM</h3><p>RDP into GOTHAM-DC with Username : anjula &amp; Password : labuser123Anjula</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/DA4CEC44-B8D5-40E1-90AB-57BFC38D5772.png" alt="RDP Connection"></p>
+<h3 id="Configuring-services"><a href="#Configuring-services" class="headerlink" title="Configuring services"></a>Configuring services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
+<ul>
+<li>Server Roles : Active Directory Domain Service</li>
+</ul>
+<p>Install service.</p>
+<p>Choose “Promote this server to a domain controller”.</p>
+<h3 id="Promoting-VM-to-domain-controller"><a href="#Promoting-VM-to-domain-controller" class="headerlink" title="Promoting VM to domain controller"></a>Promoting VM to domain controller</h3><p>Active directory domain service configuration wizard &gt; Deployment configuration &gt; Add a new forest</p>
+<ul>
+<li>Root domain name : GOTHAM.local</li>
+<li>Forest function level : Windows Server 2016</li>
+<li>Domain function level : Windows Server 2016</li>
+<li>Password : labuser123Anjula</li>
+<li>NetBIOS domain name : GOTHAM</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599684_y.jpg" alt="AD Config Wizard"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599685_y.jpg" alt="Deployment Config"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599687_y.jpg" alt="Additional Options"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599688_y.jpg" alt="Prerequisites Check"></p>
+<p>Reboot machine.</p>
+<p>RDP into GOTHAM-DC with domain credentials; Username : GOTHAM\anjula &amp; Password : labuser123Anjula</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599691_x.jpg" alt="Server Manager"></p>
+<h3 id="Configuring-certificate-services"><a href="#Configuring-certificate-services" class="headerlink" title="Configuring certificate services"></a>Configuring certificate services</h3><p>Launch Server manager &gt; Add roles and features &gt; Add roles and features wizard</p>
+<ul>
+<li>Server roles : Active Directory Certificate Services</li>
+</ul>
+<p>Install service.</p>
+<p>Choose “Configure Active Directory certificate services on the destination server”.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599692_y.jpg" alt="AD CS Config"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599693_y.jpg" alt="Role Services"></p>
+<p>AD CS configuration wizard &gt;</p>
+<ul>
+<li>Credentials : GOTHAM\anjula</li>
+<li>Role services : Certification Authority</li>
+<li>Setup type : Enterprise CA</li>
+<li>CA type : Root CA</li>
+<li>Private key &gt; Validity period : 99 years</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599694_y.jpg" alt="CA Type"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599695_y.jpg" alt="Private Key"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599696_y.jpg" alt="Cryptography"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599697_y.jpg" alt="Confirmation"></p>
+<p>Configure and reboot machine.</p>
+<hr>
+<h3 id="Setting-up-a-share"><a href="#Setting-up-a-share" class="headerlink" title="Setting up a share"></a>Setting up a share</h3><p>This PC &gt; C:\ Drive &gt; Create new folder “hackme”</p>
+<p>Launch Server manager &gt; File and storage services &gt; Shares &gt; Tasks &gt; New share wizard &gt;</p>
+<ul>
+<li>File share profile : SMB Share - Quick</li>
+<li>Share location &gt; custom path : C:\hackme</li>
+<li>Share name : hackme</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599699_y.jpg" alt="Share Config"></p>
+<p>Create and close.</p>
+<hr>
+<h3 id="Creating-domain-users"><a href="#Creating-domain-users" class="headerlink" title="Creating domain users"></a>Creating domain users</h3><p>Launch Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local</p>
+<p>Create new Organizational unit (OU) “Groups”</p>
+<p>Move every entry except “Guest” and “anjula” from Users to Groups</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599701_y.jpg" alt="Creating OUs"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599703_x.jpg" alt="Moving Users"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599702_y.jpg" alt="OU Structure"></p>
+<p>MARVEL.local &gt; Users &gt;</p>
+<p>Create new user</p>
+<ul>
+<li>First name : Bruce</li>
+<li>Last name : Wayne</li>
+<li>User login name : bwayne</li>
+<li>Password : Password1</li>
+<li>Check “Password never expires”</li>
+</ul>
+<p>Create another user</p>
+<ul>
+<li>First name : Lucious</li>
+<li>Last name : Fox</li>
+<li>User login name : lfox</li>
+<li>Password : Password2</li>
+<li>Check “Password never expires”</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599704_y.jpg" alt="Creating User Bruce"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599705_x.jpg" alt="Password Settings"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599707_x.jpg" alt="Creating User Lucius"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599706_x.jpg" alt="Copying User"></p>
+<p>Copy user “anjula” to create another user</p>
+<ul>
+<li>First name : SQL</li>
+<li>Last name : Service</li>
+<li>User login name : SQLService</li>
+<li>Password : MYpassword123#</li>
+</ul>
+<p>SQLService &gt; properties &gt;</p>
+<ul>
+<li>Description : “Password is MYpassword123#”</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599708_y.jpg" alt="SQLService Properties"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599709_x.jpg" alt="SQLService Description"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599711_x.jpg" alt="User List"></p>
+<hr>
+<h3 id="Setting-up-SPNs"><a href="#Setting-up-SPNs" class="headerlink" title="Setting up SPNs"></a>Setting up SPNs</h3><p>Launch Command prompt as administrator.</p>
+<p>Setup SPN for SQLService account</p>
+<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">setspn -a GOTHAM-DC/SQLService.GOTHAM.local:<span class="number">60111</span> GOTHAM\SQLService</span><br></pre></td></tr></table></figure>
+
+<p>Confirm SPN.</p>
+<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">setspn -T GOTHAM.local -Q */*</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/d1317293-f3a1-4a5d-b028-a16ac54999de.png" alt="SPN Output"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599713_y.jpg" alt="SPN Verification"></p>
+<h3 id="Domain-machine-IP-address"><a href="#Domain-machine-IP-address" class="headerlink" title="Domain machine IP address"></a>Domain machine IP address</h3><p>Command prompt &gt;</p>
+<figure class="highlight bat"><table><tr><td class="code"><pre><span class="line"><span class="built_in">ipconfig</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>IP : 10.0.1.4&#x2F;24</strong></li>
+</ul>
+<hr>
+<h3 id="Connecting-to-user-machines"><a href="#Connecting-to-user-machines" class="headerlink" title="Connecting to user machines"></a>Connecting to user machines</h3><p>RDP into THEBATMAN with Username : bwayne and Password : myPassword01</p>
+<p>Launch File explorer &gt; Network</p>
+<p>Turn on Network discovery.</p>
+<p>Launch Settings &gt; Network &amp; internet &gt; Ethernet &gt; Change adapter settings</p>
+<p>Choose Ethernet &gt; properties &gt; Internet Protocol version 4 (TCP&#x2F;IPv4)</p>
+<ul>
+<li>Preferred DNS server : 10.0.1.4</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599724_y.jpg" alt="DNS Configuration"></p>
+<p>RDP connection will be lost. Reconnect to the same user “bwayne”</p>
+<p>Launch Settings &gt; Accounts &gt; Access work or school &gt; Connect</p>
+<p>Choose “Join this device to a local Active Directory domain”.</p>
+<ul>
+<li>Domain name : GOTHAM.local</li>
+</ul>
+<p>Join a domain &gt;</p>
+<ul>
+<li>User : anjula</li>
+<li>Password : labuser123Anjula</li>
+</ul>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599725_w.jpg" alt="Join Domain"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599726_x.jpg" alt="Domain Success"></p>
+<p>Restart machine.</p>
+<p>RDP into WAYNEENT with Username : lfox and Password : myPassword02</p>
+<p>Repeat the same process above.</p>
+<h3 id="Configuring-Domain-users-to-user-machines"><a href="#Configuring-Domain-users-to-user-machines" class="headerlink" title="Configuring Domain users to user machines"></a>Configuring Domain users to user machines</h3><p>Launch GOTHAM-DC &gt; Server manager &gt; Tools &gt; Active Directory users and computers &gt; MARVEL.local &gt; Computers</p>
+<p>Both user computers “THEBATMAN” and “WAYNEENT” is listed under the domain.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599728_y.jpg" alt="Computers OU"></p>
+<p>RDP into THEBATMAN with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
+<p>Choose “Add”</p>
+<p>Select Users, computers, service accounts or groups &gt;</p>
+<ul>
+<li>Enter object names to select : bwayne</li>
+</ul>
+<p>Check names, then apply.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599729_y.jpg" alt="Adding bwayne to Admins"></p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599732_x.jpg" alt="Admin Group Confirmation"></p>
+<p>RDP into WAYNEENT with admin credentials; Username : GOTHAM\anjula and Password : labuser123Anjula</p>
+<p>Go to Computer management &gt; Local users and groups &gt; Groups &gt; Administrators.</p>
+<p>Choose “Add”</p>
+<p>Select Users, computers, service accounts or groups &gt;</p>
+<ul>
+<li>Enter object names to select : lfox</li>
+</ul>
+<p>Check names &amp; choose “Add” again</p>
+<ul>
+<li>Enter object names to select : bwayne</li>
+</ul>
+<p>Check names, then apply.</p>
+<p><img src="https://anjulameegalla.github.io/stash/windows-ad-lab/photo_6320918058767599733_x.jpg" alt="Adding lfox to Admins"></p>
+<hr>
+<h3 id="Re-connecting-to-machines-with-Domain-user-accounts"><a href="#Re-connecting-to-machines-with-Domain-user-accounts" class="headerlink" title="Re-connecting to machines with Domain user accounts"></a>Re-connecting to machines with Domain user accounts</h3><p>RDP into THEBATMAN machine with;</p>
+<ul>
+<li>Username : GOTHAM\bwayne</li>
+<li>Password : Password1</li>
+</ul>
+<p>RDP into WAYNEENT machine with both;</p>
+<ul>
+<li>Username : GOTHAM\bwayne</li>
+<li>Password : Password1</li>
+</ul>
+<p>and</p>
+<ul>
+<li>Username : GOTHAM\lfox</li>
+<li>Password : Password2</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Linux-Based Intrusion Detection &amp; Automated Threat Response with Wazuh</title>
+    <url>/2025/10/12/wazuh-tdr-lab/</url>
+    <content><![CDATA[<p>This project establishes an automated security monitoring and active response pipeline. The core workflow begins with a Kali Linux Attacker machine launching a <strong>brute-force attack</strong> using <strong>Hydra</strong> against a monitored <strong>Ubuntu Agent</strong> VM.</p>
+<span id="more"></span>
+
+<p>The Wazuh agent on the Ubuntu server detects this hostile activity, collects the relevant logs, and forwards them to the central <strong>Wazuh Manager</strong>. Upon analyzing the data and identifying the signature of the brute-force attack, the manager triggers an active response, automatically deploying a new <strong>firewall rule</strong> on the agent to block the attacker’s IP address and neutralize the threat.</p>
+<h2 id="Lab-Overview"><a href="#Lab-Overview" class="headerlink" title="Lab Overview"></a>Lab Overview</h2><p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/diagram.png" alt="Lab Overview Diagram"></p>
+<p><strong>Utilities Used:</strong></p>
+<ul>
+<li>DigitalOcean - 2x Ubuntu 24.04 Droplets</li>
+<li>VMWare - Kali VM</li>
+<li>Termius - for SSH session mgmt</li>
+</ul>
+<h2 id="Setting-up-Wazuh-Manager"><a href="#Setting-up-Wazuh-Manager" class="headerlink" title="Setting up Wazuh Manager"></a>Setting up Wazuh Manager</h2><h3 id="Install-Wazuh-Manager"><a href="#Install-Wazuh-Manager" class="headerlink" title="Install Wazuh Manager"></a>Install Wazuh Manager</h3><p>We start by installing the manager on our primary Ubuntu Droplet using the official installation script:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -sO https://packages.wazuh.com/&lt;latest&gt;/wazuh-install.sh &amp;&amp; <span class="built_in">sudo</span> bash ./wazuh-install.sh -a</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://documentation.wazuh.com/current/quickstart.html">Documentation</a></p>
+<p>Copy the username and password generated at the end of the installation. If you forgot to save the password, you can recover it with this command:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> tar -O -xvf wazuh-install-files.tar wazuh-install-files/wazuh-passwords.txt</span><br></pre></td></tr></table></figure>
+
+<p>After installation, ensure the firewall allows traffic on port 443 and verify the service status:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ufw allow 443</span><br><span class="line">systemctl status wazuh-manager.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image.png" alt="Wazuh Manager Service Status"></p>
+<p>Once running, we can log in to the Wazuh dashboard.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%201.png" alt="Wazuh Login Screen"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%202.png" alt="Wazuh Dashboard Overview"></p>
+<h2 id="Setup-Wazuh-Agent-on-Ubuntu"><a href="#Setup-Wazuh-Agent-on-Ubuntu" class="headerlink" title="Setup Wazuh Agent on Ubuntu"></a>Setup Wazuh Agent on Ubuntu</h2><p>For the Linux victim machine, we select the DEB amd64 version and run the installation commands.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%206.png" alt="Linux Agent Selection"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%207.png" alt="Linux Installation Command"></p>
+<p>Start the agent and check its status:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl daemon-reload</span><br><span class="line"><span class="built_in">sudo</span> systemctl <span class="built_in">enable</span> wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl start wazuh-agent</span><br><span class="line"><span class="built_in">sudo</span> systemctl status wazuh-agent</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/e2f978c7-1a8e-41a7-921f-ceefb26bad8a.png" alt="Ubuntu Agent Status"></p>
+<p>Back on the Wazuh dashboard, we should see the new agent connected.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%208.png" alt="Ubuntu Agent Active on Dashboard"></p>
+<h2 id="Configure-Ubuntu-Agent-Active-Response"><a href="#Configure-Ubuntu-Agent-Active-Response" class="headerlink" title="Configure Ubuntu Agent &amp; Active Response"></a>Configure Ubuntu Agent &amp; Active Response</h2><h3 id="Agent-Configuration"><a href="#Agent-Configuration" class="headerlink" title="Agent Configuration"></a>Agent Configuration</h3><p>Ensure that the Wazuh agent is properly configured to communicate with the Wazuh server (Check the IP of Wazuh):</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%209.png" alt="Editing ossec.conf"></p>
+<p>Restart the agent if any changes were done.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> systemctl restart wazuh-agent</span><br></pre></td></tr></table></figure>
+
+<h3 id="Adding-Active-Response-Rule"><a href="#Adding-Active-Response-Rule" class="headerlink" title="Adding Active Response Rule"></a>Adding Active Response Rule</h3><p>Navigate and edit the <code>ossec.conf</code> file on Wazuh manager.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nano /var/ossec/etc/ossec.conf</span><br></pre></td></tr></table></figure>
+
+<p>We configure the Wazuh Manager to trigger a firewall drop when a specific rule ID (5710 - SSHD brute force) is fired.</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">active-response</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">command</span>&gt;</span>firewall-drop<span class="tag">&lt;/<span class="name">command</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">location</span>&gt;</span>local<span class="tag">&lt;/<span class="name">location</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">rules_id</span>&gt;</span>5710<span class="tag">&lt;/<span class="name">rules_id</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">timeout</span>&gt;</span>600<span class="tag">&lt;/<span class="name">timeout</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">active-response</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>This configuration suggests that when a rule with ID 5710 is triggered, the firewall will drop the corresponding traffic for a duration of 10 minutes. It’s a common approach for dealing with potential threats or suspicious activity.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2010.png" alt="Active Response Configuration"></p>
+<hr>
+<h2 id="PoC-Proof-of-Concept"><a href="#PoC-Proof-of-Concept" class="headerlink" title="PoC [Proof-of-Concept]"></a>PoC [Proof-of-Concept]</h2><p>To test the defense, I used <strong>Hydra</strong> (downloadable from <a href="https://github.com/vanhauser-thc/thc-hydra.git">GitHub</a>) on a Kali Linux machine to perform an SSH brute-force attack against the Ubuntu agent.</p>
+<h3 id="1-Initial-Connectivity"><a href="#1-Initial-Connectivity" class="headerlink" title="1. Initial Connectivity"></a>1. Initial Connectivity</h3><p>First, verify we can ping the target before the attack.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ping &lt;ubuntu vm public ip&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2011.png" alt="Successful Ping Test"></p>
+<h3 id="2-Execute-Brute-Force-Attack"><a href="#2-Execute-Brute-Force-Attack" class="headerlink" title="2. Execute Brute-Force Attack"></a>2. Execute Brute-Force Attack</h3><p>Run Hydra using the <code>rockyou.txt</code> wordlist.</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l [username] -P [passlist.txt] ssh://[ubuntu vm ip address]</span><br></pre></td></tr></table></figure>
+
+<p>In my case, I used the following command:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://139.59.126.244</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2012.png" alt="Hydra Attack Execution"></p>
+<h3 id="3-Verify-Active-Response"><a href="#3-Verify-Active-Response" class="headerlink" title="3. Verify Active Response"></a>3. Verify Active Response</h3><p>After the attack starts, try pinging the VM again. It should fail (timeout) because the firewall rule has been automatically applied.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2015.png" alt="Ping Failed after Attack"></p>
+<h3 id="4-Wazuh-Logs"><a href="#4-Wazuh-Logs" class="headerlink" title="4. Wazuh Logs"></a>4. Wazuh Logs</h3><p>The Wazuh dashboard confirms the events: SSHd failed login attempts followed by the <code>Host firewall-drop</code> active response.</p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2013.png" alt="Wazuh Alert Logs"></p>
+<p><img src="https://anjulameegalla.github.io/stash/wazuh-tdr-lab/image%2014.png" alt="Firewall Drop Event"></p>
 ]]></content>
   </entry>
 </search>
